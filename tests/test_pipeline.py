@@ -163,6 +163,23 @@ def test_caption_generator_mock_per_platform():
     assert all(c.hook and c.body for c in caps)
 
 
+# ── 카피 강화 (few-shot / 대체 후킹) ────────────────────────────────
+def test_fewshot_block_is_platform_specific():
+    from kupas.exemplars import fewshot_block
+
+    tt = fewshot_block("tiktok")
+    assert "잘 터진 예시" in tt and "hook:" in tt
+
+
+def test_mock_caption_has_alt_hooks_and_varies():
+    gen = CaptionGenerator()
+    a = gen.generate(_product(50_000, name="A상품", cat="캠핑"))[0]
+    b = gen.generate(_product(90_000, name="B상품", cat="주방용품"))[0]
+    assert len(a.alt_hooks) == 2 and len(b.alt_hooks) == 2
+    # 서로 다른 상품이면 후킹도 달라야(아키타입 분산)
+    assert a.hook != b.hook
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for fn in fns:

@@ -83,6 +83,8 @@ def cmd_run(args: argparse.Namespace) -> int:
             print(f"\n  ── {cap.platform.upper()} ───────────────────────")
             for line in cap.render(piece.deeplink, DISCLOSURE).splitlines():
                 print(f"  {line}")
+            if cap.alt_hooks:
+                print(f"  · 대체 후킹(A/B): {' / '.join(cap.alt_hooks)}")
     _print_logs(result)
     if not args.no_save:
         print(f"\n{len(result.pieces)}건 저장 완료 → {orch.config.db_path}")

@@ -59,6 +59,7 @@ class Caption:
     hook: str                # 첫 줄 — 스크롤 멈추게 하는 후킹
     body: str                # 본문 (제품 설득)
     hashtags: list[str] = field(default_factory=list)
+    alt_hooks: list[str] = field(default_factory=list)  # A/B 테스트용 대체 후킹
 
     def render(self, link: str, disclosure: str) -> str:
         """게시용 최종 텍스트로 조립한다 (광고 고지 + 링크 포함)."""
