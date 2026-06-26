@@ -16,9 +16,9 @@
 ```
 Brief(키워드/카테고리·플랫폼·목표개수) 가 사슬을 따라 흐른다
 
- ① DiscoveryAgent ─▶ ② CurationAgent ─▶ ③ CopyAgent ─▶ ④ PublishAgent
-     발굴               선별(★핵심)         카피             게시준비
-  후보 상품           점수·랭킹·컷         플랫폼 카피      딥링크+고지+저장
+ ① Discovery ─▶ ② Curation ─▶ ③ Copy ─▶ ④ Media(선택) ─▶ ⑤ Publish
+    발굴           선별(★핵심)    카피       소재 기획         게시준비
+  후보 상품       점수·랭킹·컷    후킹 카피  샷리스트·프롬프트  딥링크+고지+저장
         └──────────── Orchestrator 가 조율 / 단계별 로그 ────────────┘
 ```
 
@@ -26,7 +26,8 @@ Brief(키워드/카테고리·플랫폼·목표개수) 가 사슬을 따라 흐�
 |----------|------|--------|
 | **DiscoveryAgent** | 키워드/카테고리로 후보 상품 발굴 (+키워드 확장) | 선택 |
 | **CurationAgent** ★ | 수수료·가격대·로켓·신박함으로 터질 상품 선별 | 선택(비전) |
-| **CopyAgent** | 스레드/틱톡 후킹 카피 생성 | 필수 |
+| **CopyAgent** | 스레드/틱톡 후킹 카피 (+ few-shot, 대체 후킹) | 필수 |
+| **MediaAgent** | 틱톡·릴스 소재 기획 (샷리스트·자막·생성 프롬프트) | 선택 |
 | **PublishAgent** | 딥링크·광고고지 조립, 성과 추적 저장 | 없음 |
 
 ### 선별 에이전트 (상품 자동 선별)
@@ -51,6 +52,13 @@ Brief(키워드/카테고리·플랫폼·목표개수) 가 사슬을 따라 흐�
 플랫폼별 카피마다 **대체 후킹 2개**(A/B 테스트용)도 함께 뽑아, 어떤 첫 줄이 더
 잘 먹히는지 비교할 수 있습니다. Claude 키가 없으면 아키타입을 돌려가며 다양한
 mock 후킹을 생성합니다.
+
+### 미디어 에이전트 (소재 기획)
+
+`--media` 를 켜면 각 카피에 맞는 **소재 기획서**를 만듭니다 — 3초 후킹부터 시작하는
+샷리스트(장면+자막), BGM/페이싱 가이드, 그리고 바로 붙여넣어 쓸 수 있는 **이미지·
+영상 생성 프롬프트**까지. 실제 영상 생성(외부 유료 API)은 하지 않고 "무엇을 어떻게
+찍을지/생성할지" 직전 단계를 책임집니다. 생성 도구 연동은 별도 옵션으로 확장 가능.
 
 > **mock 모드** — API 키가 없어도 가짜 상품·카피·링크로 전체 흐름이 그대로
 > 돌아갑니다. 키를 넣는 순간 실 API로 전환됩니다.
@@ -87,6 +95,9 @@ python -m kupas discover --keyword "캠핑 텐트" --top 5
 # 전체 사슬: 발굴→선별→카피→게시준비
 python -m kupas run --keyword "캠핑 텐트" --top 3
 
+# 미디어 소재 기획서까지 (샷리스트·생성 프롬프트)
+python -m kupas run --keyword "캠핑 텐트" --top 3 --media
+
 # 카테고리 베스트로 발굴, 틱톡만, 신박도 점수까지
 python -m kupas run --category 1016 --platforms tiktok --top 5 --vision
 
@@ -121,6 +132,7 @@ kupas/
   config.py     환경설정 로딩
   coupang.py    쿠팡 파트너스 Open API (HMAC, 검색/베스트/딥링크)  ← 도구
   captions.py   Claude 기반 플랫폼별 후킹 카피                      ← 도구
+  exemplars.py  검증된 후킹 아키타입·예시 게시물 (few-shot)          ← 도구
   storage.py    SQLite 콘텐츠·점수·성과 추적                         ← 도구
   models.py     Product / ProductScore / ScoredProduct / Caption / ContentPiece
   agents/
@@ -128,6 +140,7 @@ kupas/
     discovery.py    DiscoveryAgent  (발굴)
     curation.py     CurationAgent + 점수 엔진  (선별 ★)
     copy.py         CopyAgent  (카피)
+    media.py        MediaAgent  (소재 기획)
     publish.py      PublishAgent  (게시준비)
     orchestrator.py Orchestrator  (사슬 조율)
   pipeline.py   호환 래퍼 (→ Orchestrator)

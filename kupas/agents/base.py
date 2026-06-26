@@ -20,6 +20,7 @@ class Brief:
     target_count: int = 3          # 최종 콘텐츠 개수
     shortlist_size: int = 10       # 발굴·선별 후보 수
     use_vision: bool = False       # 신박도(Claude vision) 점수 사용 여부
+    with_media: bool = False       # 미디어 소재 기획서 생성 여부
 
 
 @dataclass

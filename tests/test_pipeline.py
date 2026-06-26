@@ -171,6 +171,29 @@ def test_fewshot_block_is_platform_specific():
     assert "잘 터진 예시" in tt and "hook:" in tt
 
 
+def test_media_agent_builds_brief_from_caption():
+    from kupas.agents.media import MediaAgent
+    from kupas.models import Caption, ScoredProduct
+    from kupas.agents.curation import CurationAgent
+
+    product = _product(50_000, name="신박 청소기")
+    scored = ScoredProduct(product, CurationAgent()._heuristic(product))
+    cap = Caption(platform="tiktok", hook="이거 5초컷", body="흡입력 실화", hashtags=["청소"])
+    briefs = MediaAgent().run(Brief(), scored, [cap], AgentLog("media"))
+    assert len(briefs) == 1
+    mb = briefs[0]
+    assert mb.platform == "tiktok" and mb.shots and mb.video_prompt
+    assert mb.shots[0].overlay == cap.hook  # 첫 컷이 후킹
+
+
+def test_orchestrator_with_media_attaches_briefs():
+    orch = Orchestrator(_mock_config())
+    result = orch.run(Brief(keyword="청소기", target_count=1, with_media=True))
+    piece = result.pieces[0]
+    assert len(piece.media) == len(piece.captions)
+    assert all(m.shots for m in piece.media)
+
+
 def test_mock_caption_has_alt_hooks_and_varies():
     gen = CaptionGenerator()
     a = gen.generate(_product(50_000, name="A상품", cat="캠핑"))[0]

@@ -16,6 +16,7 @@ from .base import AgentLog, Brief
 from .copy import CopyAgent
 from .curation import CurationAgent, ScoreWeights
 from .discovery import DiscoveryAgent
+from .media import MediaAgent
 from .publish import PublishAgent
 
 
@@ -45,6 +46,7 @@ class Orchestrator:
         self.discovery = DiscoveryAgent(self.coupang, llm=llm, model=model)
         self.curation = CurationAgent(weights=weights, llm=llm, model=model)
         self.copy = CopyAgent(CaptionGenerator(self.config.anthropic_api_key, model))
+        self.media = MediaAgent(llm=llm, model=model)
         self.publish = PublishAgent(self.coupang, self.config.subid_prefix)
 
     @property
@@ -56,7 +58,8 @@ class Orchestrator:
 
     @property
     def roster(self) -> list[tuple[str, str]]:
-        return [(a.name, a.role) for a in (self.discovery, self.curation, self.copy, self.publish)]
+        agents = (self.discovery, self.curation, self.copy, self.media, self.publish)
+        return [(a.name, a.role) for a in agents]
 
     def curate(self, brief: Brief) -> OrchestrationResult:
         """발굴 + 선별까지만 (무료 triage). 카피·딥링크는 생략."""
@@ -75,12 +78,18 @@ class Orchestrator:
         result = self.curate(brief)
 
         copy_log = AgentLog(self.copy.name)
+        media_log = AgentLog(self.media.name)
         pub_log = AgentLog(self.publish.name)
         for scored in result.shortlist:
             captions = self.copy.run(brief, scored, copy_log)
             piece = self.publish.run(brief, scored, captions, pub_log)
+            if brief.with_media:
+                piece.media = self.media.run(brief, scored, captions, media_log)
             if save:
                 self.storage.save_content(piece)
             result.pieces.append(piece)
-        result.logs.extend([copy_log, pub_log])
+        result.logs.append(copy_log)
+        if brief.with_media:
+            result.logs.append(media_log)
+        result.logs.append(pub_log)
         return result

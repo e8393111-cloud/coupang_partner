@@ -28,6 +28,7 @@ def _brief(args: argparse.Namespace) -> Brief:
         target_count=top,
         shortlist_size=max(top, 10),
         use_vision=getattr(args, "vision", False),
+        with_media=getattr(args, "media", False),
     )
 
 
@@ -85,6 +86,17 @@ def cmd_run(args: argparse.Namespace) -> int:
                 print(f"  {line}")
             if cap.alt_hooks:
                 print(f"  · 대체 후킹(A/B): {' / '.join(cap.alt_hooks)}")
+        for mb in piece.media:
+            print(f"\n  ── 🎬 미디어 기획 [{mb.platform.upper()}] {mb.format} ─────")
+            for j, shot in enumerate(mb.shots, 1):
+                dur = f"{shot.seconds:g}s" if shot.seconds else "슬라이드"
+                print(f"     {j}. ({dur}) {shot.visual}")
+                print(f"        자막: {shot.overlay}")
+            print(f"     BGM: {mb.music}")
+            if mb.image_prompts:
+                print(f"     이미지 프롬프트: {mb.image_prompts[0]}")
+            if mb.video_prompt:
+                print(f"     영상 프롬프트: {mb.video_prompt}")
     _print_logs(result)
     if not args.no_save:
         print(f"\n{len(result.pieces)}건 저장 완료 → {orch.config.db_path}")
@@ -143,6 +155,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--platforms", nargs="+", choices=["threads", "tiktok"],
         help="대상 플랫폼 (기본: threads tiktok)",
     )
+    pr.add_argument("--media", action="store_true", help="틱톡·릴스 소재 기획서 생성")
     pr.add_argument("--no-save", action="store_true", help="DB 저장 생략")
     pr.set_defaults(func=cmd_run)
 

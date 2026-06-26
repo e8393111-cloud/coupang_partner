@@ -68,6 +68,28 @@ class Caption:
 
 
 @dataclass
+class Shot:
+    """영상/캐러셀의 한 컷."""
+
+    seconds: float
+    visual: str       # 화면에 보일 장면
+    overlay: str      # 화면 자막(텍스트 오버레이)
+
+
+@dataclass
+class MediaBrief:
+    """틱톡·릴스·캐러셀 제작용 소재 기획서."""
+
+    platform: str
+    format: str                  # 예: "9:16 세로 숏폼 영상"
+    duration_sec: float
+    shots: list[Shot] = field(default_factory=list)
+    music: str = ""              # BGM/페이싱 가이드
+    image_prompts: list[str] = field(default_factory=list)  # 이미지 생성 프롬프트
+    video_prompt: str = ""       # 영상 생성 프롬프트
+
+
+@dataclass
 class ContentPiece:
     """상품 + 플랫폼별 카피 + 딥링크가 묶인 최종 콘텐츠 단위."""
 
@@ -76,6 +98,7 @@ class ContentPiece:
     sub_id: str
     captions: list[Caption] = field(default_factory=list)
     score: ProductScore | None = None
+    media: list[MediaBrief] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -84,4 +107,5 @@ class ContentPiece:
             "sub_id": self.sub_id,
             "captions": [asdict(c) for c in self.captions],
             "score": asdict(self.score) if self.score else None,
+            "media": [asdict(m) for m in self.media],
         }
