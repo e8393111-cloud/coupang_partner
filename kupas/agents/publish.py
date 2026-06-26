@@ -17,9 +17,12 @@ DISCLOSURE = "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이�
 _SUBID_SAFE = re.compile(r"[^A-Za-z0-9]")
 
 
-def make_subid(prefix: str, product: Product) -> str:
-    """상품별 성과 분리를 위한 subId. 영숫자만 허용."""
-    return _SUBID_SAFE.sub("", f"{prefix}-{product.product_id}")[:32]
+def make_subid(prefix: str, platform: str, product: Product) -> str:
+    """플랫폼·상품별 성과 분리를 위한 subId. 영숫자만 허용.
+
+    플랫폼을 포함해 스레드/틱톡 전환을 파트너스 리포트에서 분리 추적한다.
+    """
+    return _SUBID_SAFE.sub("", f"{prefix}-{platform}-{product.product_id}")[:32]
 
 
 class PublishAgent:
@@ -38,14 +41,30 @@ class PublishAgent:
         log: AgentLog,
     ) -> ContentPiece:
         product = scored.product
-        sub_id = make_subid(self.subid_prefix, product)
-        link_map = self.coupang.create_deeplink([product.product_url], sub_id=sub_id)
-        deeplink = link_map.get(product.product_url, product.product_url)
-        log.add(f"[{product.name}] 딥링크 생성 (subId={sub_id})")
+        platform_links: dict[str, str] = {}
+        platform_subids: dict[str, str] = {}
+        rendered: dict[str, str] = {}
+
+        for cap in captions:
+            sub_id = make_subid(self.subid_prefix, cap.platform, product)
+            link_map = self.coupang.create_deeplink([product.product_url], sub_id=sub_id)
+            deeplink = link_map.get(product.product_url, product.product_url)
+            platform_subids[cap.platform] = sub_id
+            platform_links[cap.platform] = deeplink
+            rendered[cap.platform] = cap.render(deeplink, DISCLOSURE)
+
+        # 대표 딥링크/subId (하위호환): 첫 플랫폼 기준
+        first = captions[0].platform if captions else "all"
+        primary_link = platform_links.get(first, product.product_url)
+        primary_sub = platform_subids.get(first, make_subid(self.subid_prefix, "all", product))
+        log.add(f"[{product.name}] 플랫폼별 딥링크 {len(platform_links)}개 생성")
         return ContentPiece(
             product=product,
-            deeplink=deeplink,
-            sub_id=sub_id,
+            deeplink=primary_link,
+            sub_id=primary_sub,
             captions=captions,
             score=scored.score,
+            platform_links=platform_links,
+            platform_subids=platform_subids,
+            rendered=rendered,
         )

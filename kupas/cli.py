@@ -123,6 +123,83 @@ def cmd_stats(_: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_queue(_: argparse.Namespace) -> int:
+    rows = Orchestrator().storage.export_queue()
+    if not rows:
+        print("게시 대기 중인 항목이 없습니다.")
+        return 0
+    print(f"── 게시 큐 ({len(rows)}건) ──")
+    for r in rows:
+        when = r["scheduled_at"] or "즉시"
+        print(f"post #{r['post_id']:>3}  [{r['platform']}]  예약: {when}  {r['deeplink']}")
+    return 0
+
+
+def cmd_export(args: argparse.Namespace) -> int:
+    import csv as _csv
+    import json as _json
+
+    rows = Orchestrator().storage.export_queue()
+    if args.format == "json":
+        with open(args.out, "w", encoding="utf-8") as f:
+            _json.dump(rows, f, ensure_ascii=False, indent=2)
+    else:
+        with open(args.out, "w", newline="", encoding="utf-8-sig") as f:
+            w = _csv.DictWriter(
+                f, fieldnames=["post_id", "platform", "scheduled_at", "deeplink", "sub_id", "caption"]
+            )
+            w.writeheader()
+            for r in rows:
+                w.writerow(r)
+    print(f"게시 큐 {len(rows)}건 → {args.out} ({args.format})")
+    return 0
+
+
+def cmd_schedule(args: argparse.Namespace) -> int:
+    Orchestrator().storage.schedule_post(args.post_id, args.at)
+    print(f"post #{args.post_id} 예약: {args.at}")
+    return 0
+
+
+def cmd_import_report(args: argparse.Namespace) -> int:
+    from .report import parse_coupang_report
+
+    try:
+        report = parse_coupang_report(args.csv_path)
+    except (OSError, ValueError) as e:
+        print(f"오류: {e}", file=sys.stderr)
+        return 2
+    updated = Orchestrator().storage.import_report(report)
+    print(f"리포트 {len(report)}개 subId 파싱, post {updated}건 성과 반영.")
+    if updated == 0 and report:
+        print("(매칭된 subId 가 없습니다. subId 접두/플랫폼 설정을 확인하세요.)")
+    return 0
+
+
+def cmd_push(args: argparse.Namespace) -> int:
+    import json as _json
+
+    import requests
+
+    orch = Orchestrator()
+    url = args.webhook or orch.config.make_webhook
+    if not url:
+        print("웹훅 URL 이 없습니다. --webhook 또는 KUPAS_MAKE_WEBHOOK 설정 필요.", file=sys.stderr)
+        return 2
+    rows = orch.storage.export_queue()
+    if not rows:
+        print("보낼 게시 큐가 없습니다.")
+        return 0
+    try:
+        resp = requests.post(url, json={"posts": rows}, timeout=15)
+        resp.raise_for_status()
+    except requests.RequestException as e:
+        print(f"웹훅 전송 실패: {e}", file=sys.stderr)
+        return 1
+    print(f"게시 큐 {len(rows)}건을 Make 웹훅으로 전송 완료 (status {resp.status_code}).")
+    return 0
+
+
 def cmd_perf(args: argparse.Namespace) -> int:
     Orchestrator().storage.record_performance(
         args.post_id, clicks=args.clicks, orders=args.orders, revenue=args.revenue
@@ -165,6 +242,27 @@ def build_parser() -> argparse.ArgumentParser:
 
     ps = sub.add_parser("stats", help="성과 요약")
     ps.set_defaults(func=cmd_stats)
+
+    pq = sub.add_parser("queue", help="게시 대기 큐 보기")
+    pq.set_defaults(func=cmd_queue)
+
+    pe = sub.add_parser("export", help="게시 큐를 파일로 내보내기 (Make/Buffer 연동)")
+    pe.add_argument("--out", default="kupas_queue.csv", help="출력 파일 경로")
+    pe.add_argument("--format", choices=["csv", "json"], default="csv")
+    pe.set_defaults(func=cmd_export)
+
+    psc = sub.add_parser("schedule", help="게시물 예약 시각 지정")
+    psc.add_argument("post_id", type=int)
+    psc.add_argument("--at", required=True, help="예약 시각 'YYYY-MM-DD HH:MM'")
+    psc.set_defaults(func=cmd_schedule)
+
+    pir = sub.add_parser("import-report", help="파트너스 리포트 CSV 로 성과 자동 수집")
+    pir.add_argument("csv_path", help="쿠팡 파트너스 리포트 CSV 경로")
+    pir.set_defaults(func=cmd_import_report)
+
+    ppush = sub.add_parser("push", help="게시 큐를 Make 웹훅으로 전송 (반자동 게시)")
+    ppush.add_argument("--webhook", help="웹훅 URL (미지정 시 KUPAS_MAKE_WEBHOOK)")
+    ppush.set_defaults(func=cmd_push)
 
     pp = sub.add_parser("perf", help="게시물 성과 기록 (클릭/주문/수수료)")
     pp.add_argument("post_id", type=int)

@@ -118,9 +118,12 @@ def test_curation_ranks_and_cuts_to_target():
 
 
 # ── 게시 에이전트 ───────────────────────────────────────────────────
-def test_subid_is_alphanumeric():
-    sid = make_subid("test-채널", _product(50_000))
-    assert sid.isalnum()
+def test_subid_is_alphanumeric_and_platform_scoped():
+    p = _product(50_000)
+    tt = make_subid("test-채널", "tiktok", p)
+    th = make_subid("test-채널", "threads", p)
+    assert tt.isalnum() and th.isalnum()
+    assert tt != th  # 플랫폼별로 분리
 
 
 def test_caption_render_includes_disclosure_and_link():
@@ -201,6 +204,51 @@ def test_mock_caption_has_alt_hooks_and_varies():
     assert len(a.alt_hooks) == 2 and len(b.alt_hooks) == 2
     # 서로 다른 상품이면 후킹도 달라야(아키타입 분산)
     assert a.hook != b.hook
+
+
+# ── 게시 에이전트 확장 (큐·예약·리포트 수집) ──────────────────────
+def test_per_platform_links_and_rendered():
+    orch = Orchestrator(_mock_config())
+    piece = orch.run(Brief(keyword="텐트", target_count=1)).pieces[0]
+    assert set(piece.platform_subids) == {"threads", "tiktok"}
+    assert piece.platform_subids["threads"] != piece.platform_subids["tiktok"]
+    assert all(DISCLOSURE in piece.rendered[p] for p in piece.platform_subids)
+
+
+def test_queue_and_schedule():
+    orch = Orchestrator(_mock_config())
+    orch.run(Brief(keyword="텐트", target_count=1))
+    queue = orch.storage.export_queue()
+    assert len(queue) == 2 and all(q["caption"] and q["deeplink"] for q in queue)
+    # 미래 예약은 큐(현재 due)에서 빠진다
+    orch.storage.schedule_post(queue[0]["post_id"], "2999-01-01 00:00")
+    assert len(orch.storage.export_queue()) == 1
+
+
+def test_import_report_matches_by_subid():
+    orch = Orchestrator(_mock_config())
+    piece = orch.run(Brief(keyword="텐트", target_count=1)).pieces[0]
+    tiktok_sub = piece.platform_subids["tiktok"]
+    updated = orch.storage.import_report({tiktok_sub: {"clicks": 200, "orders": 5, "revenue": 17500}})
+    assert updated == 1  # 틱톡 post 1건만 매칭
+    s = orch.storage.summary()
+    assert s["clicks"] == 200 and s["revenue"] == 17500
+
+
+def test_report_parser_handles_korean_headers():
+    import tempfile
+    from kupas.report import parse_coupang_report
+
+    fd, path = tempfile.mkstemp(suffix=".csv")
+    with os.fdopen(fd, "w", encoding="utf-8-sig", newline="") as f:
+        f.write("서브아이디,클릭수,주문건수,수수료\n")
+        f.write("kupastiktokP1,120,3,\"12,500\"\n")
+        f.write("kupastiktokP1,30,1,4000\n")  # 같은 subId 합산
+    report = parse_coupang_report(path)
+    os.remove(path)
+    assert report["kupastiktokP1"]["clicks"] == 150
+    assert report["kupastiktokP1"]["orders"] == 4
+    assert report["kupastiktokP1"]["revenue"] == 16500
 
 
 if __name__ == "__main__":

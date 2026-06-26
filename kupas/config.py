@@ -21,6 +21,7 @@ class Config:
     caption_model: str
     subid_prefix: str
     db_path: str
+    make_webhook: str | None = None
 
     @property
     def has_coupang(self) -> bool:
@@ -39,4 +40,5 @@ class Config:
             caption_model=os.getenv("KUPAS_CAPTION_MODEL", "claude-opus-4-8"),
             subid_prefix=os.getenv("KUPAS_SUBID_PREFIX", "kupas"),
             db_path=os.getenv("KUPAS_DB_PATH", "kupas.db"),
+            make_webhook=os.getenv("KUPAS_MAKE_WEBHOOK") or None,
         )

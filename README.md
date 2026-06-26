@@ -101,11 +101,33 @@ python -m kupas run --keyword "캠핑 텐트" --top 3 --media
 # 카테고리 베스트로 발굴, 틱톡만, 신박도 점수까지
 python -m kupas run --category 1016 --platforms tiktok --top 5 --vision
 
-# 저장된 콘텐츠 목록 / 성과 기록 / 성과 요약
+# 게시 큐 보기 / 예약 / 스케줄러용 export
+python -m kupas queue
+python -m kupas schedule 2 --at "2026-07-01 19:00"
+python -m kupas export --out queue.csv          # Make/Buffer 로 연동
+python -m kupas push                            # Make 웹훅으로 게시 큐 전송(반자동)
+
+# 성과 수집: 파트너스 리포트 CSV import (subId 매칭, 플랫폼별 분리)
+python -m kupas import-report report.csv
+
+# 저장된 콘텐츠 목록 / 수동 성과 기록 / 성과 요약
 python -m kupas list
 python -m kupas perf 1 --clicks 120 --orders 4 --revenue 22680
 python -m kupas stats
 ```
+
+### 게시 에이전트 (반자동 게시 + 성과 수집)
+
+Threads/TikTok **완전 자동 게시**는 공식 앱 심사 승인이 필요해, 본 도구는 **반자동**
+흐름을 제공합니다.
+
+- **게시 큐 / 예약** — 플랫폼별 게시본문·딥링크를 큐로 관리하고 `schedule` 로 예약.
+- **export / push** — `export` 로 CSV·JSON 내보내 Buffer·Metricool 등에 연결하거나,
+  `push` 로 Make 웹훅(`KUPAS_MAKE_WEBHOOK`)에 보내 시나리오로 자동 게시.
+- **성과 자동 수집** — 쿠팡 Open API엔 실적 리포트 엔드포인트가 없어, 파트너스
+  대시보드에서 받은 **리포트 CSV를 `import-report` 로 흡수**합니다. subId를
+  **플랫폼별로** 부여하므로(`kupas-tiktok-…` / `kupas-threads-…`) 스레드·틱톡 어느
+  쪽이 전환을 내는지 분리해서 집계됩니다.
 
 ## 코드로 쓰기
 
@@ -133,7 +155,8 @@ kupas/
   coupang.py    쿠팡 파트너스 Open API (HMAC, 검색/베스트/딥링크)  ← 도구
   captions.py   Claude 기반 플랫폼별 후킹 카피                      ← 도구
   exemplars.py  검증된 후킹 아키타입·예시 게시물 (few-shot)          ← 도구
-  storage.py    SQLite 콘텐츠·점수·성과 추적                         ← 도구
+  report.py     파트너스 리포트 CSV 파서 (성과 수집)                 ← 도구
+  storage.py    SQLite 콘텐츠·점수·게시큐·성과 추적                  ← 도구
   models.py     Product / ProductScore / ScoredProduct / Caption / ContentPiece
   agents/
     base.py         Brief · Agent 프로토콜 · AgentLog

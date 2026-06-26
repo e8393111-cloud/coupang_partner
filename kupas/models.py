@@ -99,6 +99,10 @@ class ContentPiece:
     captions: list[Caption] = field(default_factory=list)
     score: ProductScore | None = None
     media: list[MediaBrief] = field(default_factory=list)
+    # 플랫폼별 성과 분리를 위한 정보 (subId·딥링크·게시본문이 플랫폼마다 다름)
+    platform_links: dict[str, str] = field(default_factory=dict)   # platform → deeplink
+    platform_subids: dict[str, str] = field(default_factory=dict)  # platform → subId
+    rendered: dict[str, str] = field(default_factory=dict)         # platform → 게시 본문
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -108,4 +112,6 @@ class ContentPiece:
             "captions": [asdict(c) for c in self.captions],
             "score": asdict(self.score) if self.score else None,
             "media": [asdict(m) for m in self.media],
+            "platform_links": self.platform_links,
+            "platform_subids": self.platform_subids,
         }
