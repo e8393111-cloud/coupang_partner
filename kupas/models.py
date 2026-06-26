@@ -32,6 +32,26 @@ class Product:
 
 
 @dataclass
+class ProductScore:
+    """선별 에이전트가 매긴 상품 점수. 하위 점수 합 + 근거."""
+
+    commission: float = 0.0   # 수수료 기대값 점수
+    price: float = 0.0        # 가격대 적합도 점수
+    rocket: float = 0.0       # 로켓배송 보너스
+    novelty: float = 0.0      # 신박도(비주얼 임팩트) 점수, 선택
+    total: float = 0.0
+    reasons: list[str] = field(default_factory=list)
+
+
+@dataclass
+class ScoredProduct:
+    """상품 + 점수. 선별 에이전트의 산출물."""
+
+    product: "Product"
+    score: ProductScore
+
+
+@dataclass
 class Caption:
     """한 플랫폼용으로 생성된 후킹 카피."""
 
@@ -54,6 +74,7 @@ class ContentPiece:
     deeplink: str
     sub_id: str
     captions: list[Caption] = field(default_factory=list)
+    score: ProductScore | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -61,4 +82,5 @@ class ContentPiece:
             "deeplink": self.deeplink,
             "sub_id": self.sub_id,
             "captions": [asdict(c) for c in self.captions],
+            "score": asdict(self.score) if self.score else None,
         }

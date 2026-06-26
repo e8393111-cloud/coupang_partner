@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS content (
     deeplink    TEXT NOT NULL,
     sub_id      TEXT NOT NULL,
     payload     TEXT NOT NULL,
+    score       REAL,
+    score_reasons TEXT,
     created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -54,10 +56,15 @@ class Storage:
 
     def save_content(self, piece: ContentPiece) -> int:
         """콘텐츠 1건과 플랫폼별 게시 초안(draft)을 저장하고 content id 를 반환."""
+        score_total = piece.score.total if piece.score else None
+        score_reasons = (
+            "; ".join(piece.score.reasons) if piece.score and piece.score.reasons else None
+        )
         with self._conn() as c:
             cur = c.execute(
-                "INSERT INTO content (product_id, name, price, category, deeplink, sub_id, payload) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO content "
+                "(product_id, name, price, category, deeplink, sub_id, payload, score, score_reasons) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     piece.product.product_id,
                     piece.product.name,
@@ -66,6 +73,8 @@ class Storage:
                     piece.deeplink,
                     piece.sub_id,
                     json.dumps(piece.to_dict(), ensure_ascii=False),
+                    score_total,
+                    score_reasons,
                 ),
             )
             content_id = int(cur.lastrowid)

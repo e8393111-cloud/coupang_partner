@@ -8,19 +8,40 @@
 `todaypick100` 류의 게시물처럼, "이게 된다고?" 싶은 상품에 스크롤을 멈추게 하는
 첫 줄을 붙이고, 단축 제휴 링크와 광고 고지를 자동으로 조립합니다.
 
-## 동작 방식
+## 동작 방식 — 분야별 에이전트 사슬
+
+각 분야가 독립 에이전트로 동작하고 오케스트레이터가 조율합니다(경량 방식 —
+역할 모듈 + 필요한 곳에만 Claude 프롬프트).
 
 ```
-[발굴]            [카피]                 [링크]               [추적]
-쿠팡 Open API  →  Claude(opus-4-8)  →   파트너스 딥링크   →   SQLite
-상품검색/베스트     플랫폼별 후킹 카피     subId 로 채널 분리     클릭·주문·수수료
+Brief(키워드/카테고리·플랫폼·목표개수) 가 사슬을 따라 흐른다
+
+ ① DiscoveryAgent ─▶ ② CurationAgent ─▶ ③ CopyAgent ─▶ ④ PublishAgent
+     발굴               선별(★핵심)         카피             게시준비
+  후보 상품           점수·랭킹·컷         플랫폼 카피      딥링크+고지+저장
+        └──────────── Orchestrator 가 조율 / 단계별 로그 ────────────┘
 ```
 
-- **발굴** — 키워드 검색 또는 카테고리 베스트로 임팩트 있는 상품을 찾습니다.
-- **카피** — 스레드/틱톡 각각의 톤에 맞춰 후킹 첫 줄·본문·해시태그를 생성합니다.
-- **링크** — 상품 URL을 단축 제휴 링크로 변환하고, `subId`로 플랫폼·상품별
-  클릭/전환을 분리 추적합니다.
-- **추적** — 생성 콘텐츠와 게시 성과(클릭·주문·수수료)를 SQLite에 기록합니다.
+| 에이전트 | 역할 | Claude |
+|----------|------|--------|
+| **DiscoveryAgent** | 키워드/카테고리로 후보 상품 발굴 (+키워드 확장) | 선택 |
+| **CurationAgent** ★ | 수수료·가격대·로켓·신박함으로 터질 상품 선별 | 선택(비전) |
+| **CopyAgent** | 스레드/틱톡 후킹 카피 생성 | 필수 |
+| **PublishAgent** | 딥링크·광고고지 조립, 성과 추적 저장 | 없음 |
+
+### 선별 에이전트 (상품 자동 선별)
+
+"카피보다 상품 보는 눈이 8할"이라, 발굴한 상품을 **2단계 깔때기**로 거릅니다.
+
+1. **휴리스틱 점수** (전수, 무료) — API 데이터만으로:
+   - 수수료 기대값 = `가격 × 카테고리 수수료율`
+   - 가격대 적합도 = sweet-spot 곡선(5만원 부근 피크)
+   - 로켓배송 보너스
+2. **신박도 점수** (`--vision`, 상위 후보만) — 상품명+이미지를 Claude가 보고
+   "이게 된다고?" 호기심 유발도를 0~100으로 평가. 비주얼 임팩트 큰 상품을 끌어올림.
+
+상위 `--top`개만 다음 단계로 넘겨, 카피 생성 토큰도 그만큼만 씁니다.
+수수료율 테이블·가중치는 `kupas/agents/curation.py`에서 조정합니다.
 
 > **mock 모드** — API 키가 없어도 가짜 상품·카피·링크로 전체 흐름이 그대로
 > 돌아갑니다. 키를 넣는 순간 실 API로 전환됩니다.
@@ -48,47 +69,62 @@ cp .env.example .env   # 키 입력 (없으면 mock 모드로 동작)
 ## 사용법
 
 ```bash
-# 키워드로 상품 발굴 → 스레드/틱톡 카피 생성
-python -m kupas run --keyword "캠핑 텐트" --limit 3
+# 에이전트 로스터·역할 확인
+python -m kupas agents
 
-# 카테고리 베스트로 발굴, 틱톡만
-python -m kupas run --category 1016 --platforms tiktok --limit 5
+# 발굴+선별 랭킹만 (카피 미생성, 무료 triage)
+python -m kupas discover --keyword "캠핑 텐트" --top 5
 
-# 저장된 콘텐츠 목록
+# 전체 사슬: 발굴→선별→카피→게시준비
+python -m kupas run --keyword "캠핑 텐트" --top 3
+
+# 카테고리 베스트로 발굴, 틱톡만, 신박도 점수까지
+python -m kupas run --category 1016 --platforms tiktok --top 5 --vision
+
+# 저장된 콘텐츠 목록 / 성과 기록 / 성과 요약
 python -m kupas list
-
-# 게시물 성과 기록 (post id 는 list/DB 에서 확인)
 python -m kupas perf 1 --clicks 120 --orders 4 --revenue 22680
-
-# 성과 요약
 python -m kupas stats
 ```
 
 ## 코드로 쓰기
 
 ```python
-from kupas.pipeline import Pipeline
+from kupas.agents import Orchestrator, Brief
 
-pipe = Pipeline()
-pieces = pipe.run(keyword="무선 청소기", limit=3)
-for piece in pieces:
+orch = Orchestrator()
+result = orch.run(Brief(keyword="무선 청소기", target_count=3))
+for piece in result.pieces:
+    print(int(piece.score.total), piece.product.name)
     for cap in piece.captions:
         print(cap.platform, "→", cap.render(piece.deeplink, ""))
+
+# 발굴+선별만 (무료 triage)
+shortlist = orch.curate(Brief(keyword="캠핑", target_count=5)).shortlist
 ```
+
+기존 `kupas.pipeline.Pipeline` 도 호환 래퍼로 유지됩니다.
 
 ## 구조
 
 ```
 kupas/
   config.py     환경설정 로딩
-  coupang.py    쿠팡 파트너스 Open API (HMAC, 검색/베스트/딥링크)
-  captions.py   Claude 기반 플랫폼별 후킹 카피
-  models.py     Product / Caption / ContentPiece
-  storage.py    SQLite 콘텐츠·성과 추적
-  pipeline.py   발굴→카피→링크→저장 오케스트레이션
+  coupang.py    쿠팡 파트너스 Open API (HMAC, 검색/베스트/딥링크)  ← 도구
+  captions.py   Claude 기반 플랫폼별 후킹 카피                      ← 도구
+  storage.py    SQLite 콘텐츠·점수·성과 추적                         ← 도구
+  models.py     Product / ProductScore / ScoredProduct / Caption / ContentPiece
+  agents/
+    base.py         Brief · Agent 프로토콜 · AgentLog
+    discovery.py    DiscoveryAgent  (발굴)
+    curation.py     CurationAgent + 점수 엔진  (선별 ★)
+    copy.py         CopyAgent  (카피)
+    publish.py      PublishAgent  (게시준비)
+    orchestrator.py Orchestrator  (사슬 조율)
+  pipeline.py   호환 래퍼 (→ Orchestrator)
   cli.py        커맨드라인
 tests/
-  test_pipeline.py   mock 모드 스모크 테스트
+  test_pipeline.py   에이전트 단위 + 오케스트레이터 통합 스모크 테스트
 ```
 
 ## 주의 (운영 시)
