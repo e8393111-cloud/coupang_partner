@@ -319,6 +319,51 @@ def test_compliance_runs_inside_chain():
     assert any(log.agent == "compliance" for log in result.logs)
 
 
+# ── 인사이트 에이전트 (성과→학습 루프) ─────────────────────────────
+def test_insight_holds_back_on_small_sample():
+    from kupas.agents.insight import InsightAgent
+
+    orch = Orchestrator(_mock_config())
+    orch.run(Brief(keyword="텐트", target_count=1))  # 성과 0 상태
+    assert InsightAgent().category_boosts(orch.storage) == {}
+
+
+def test_insight_boosts_revenue_category_and_feeds_curation():
+    from kupas.agents.insight import InsightAgent
+    from kupas.agents.curation import CurationAgent
+
+    orch = Orchestrator(_mock_config())
+    piece = orch.run(Brief(keyword="텐트", target_count=1)).pieces[0]
+    cat = piece.product.category_name  # 예: 자동차용품
+    # 충분한 성과 주입 (클릭 임계 초과 + 수수료 발생)
+    sub = piece.platform_subids["tiktok"]
+    orch.storage.import_report({sub: {"clicks": 100, "orders": 5, "revenue": 50000}})
+
+    boosts = InsightAgent().category_boosts(orch.storage)
+    assert boosts and cat.lower() in boosts and boosts[cat.lower()] > 0
+
+    # 부스트가 실제로 랭킹을 바꾼다: 같은 조건 상품 2개 중 학습된 카테고리가 위
+    a = _product(50_000, cat=cat, name="터진 카테고리 상품")
+    b = _product(50_000, cat="사무용품", name="다른 카테고리 상품")
+    ranked = CurationAgent().run(
+        Brief(target_count=2), [b, a], AgentLog("c"), boosts=boosts
+    )
+    assert ranked[0].product.category_name == cat
+    assert any("성과 학습" in r for r in ranked[0].score.reasons)
+
+
+def test_insight_report_recommendations():
+    from kupas.agents.insight import InsightAgent
+
+    orch = Orchestrator(_mock_config())
+    piece = orch.run(Brief(keyword="텐트", target_count=1)).pieces[0]
+    sub = piece.platform_subids["threads"]
+    orch.storage.import_report({sub: {"clicks": 80, "orders": 3, "revenue": 30000}})
+    report = InsightAgent().run(orch.storage, AgentLog("i"))
+    assert report.recommendations
+    assert report.by_category and report.by_platform
+
+
 # ── 이중트랙 (국내+글로벌) ──────────────────────────────────────────
 def test_resolve_markets_all():
     assert resolve_markets("all") == ["kr", "global"]

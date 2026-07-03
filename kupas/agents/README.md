@@ -6,8 +6,10 @@ Claude 를 역할별 프롬프트로 호출한다. 모든 에이전트는 **mock
 (키 없이 전체 사슬 동작).
 
 ```
-Brief ─▶ ① Discovery ▶ ② Curation ▶ ③ Copy ▶ ④ Media(선택) ▶ ⑤ Publish ─▶ ContentPiece
-              발굴          선별★         카피        소재 기획         게시 준비
+Brief ─▶ ⓪ Trend ▶ ① Discovery ▶ ② Curation ▶ ③ Copy ▶ ④ Compliance ▶ ⑤ Media(선택) ▶ ⑥ Publish
+          키워드       발굴           선별★        카피        검수           소재 기획        게시 준비
+            ▲                          ▲
+            └── (니치·시즌)            └── 카테고리 부스트 ◀── ⑦ Insight (성과→학습 루프)
 ```
 
 공통 규약(`base.py`):
@@ -17,6 +19,23 @@ Brief ─▶ ① Discovery ▶ ② Curation ▶ ③ Copy ▶ ④ Media(선택) �
 | `Brief` | 작업 지시서. 키워드/카테고리·플랫폼·목표개수·마켓(kr/global/ali)·언어·통화·타깃(audience) |
 | `Agent` | `name`·`role`·`run(...)` 프로토콜 |
 | `AgentLog` | 각 에이전트가 "왜 이렇게 했는지" 남기는 근거 로그 (CLI 가 출력) |
+
+---
+
+## ⓪ TrendAgent — `trend.py`
+
+**역할**: 키워드 전략가. "뭘 검색할지"를 스스로 정한다 — 파이프라인에서 유일하게
+사람이 매번 생각해야 했던 입력(keyword)을 자동화.
+
+| | |
+|--|--|
+| 입력 | `Brief`(niche·audience·market), `AgentLog` |
+| 출력 | `list[str]` 키워드 후보 (터질 가능성 순) |
+| Claude | 선택 — 시즌·트렌드 반영 생성. mock=니치·시즌 시드 + **날짜 로테이션**(매일 다른 후보) |
+
+`brief.keyword`/`category_id` 가 없을 때만 오케스트레이터가 실행해 1순위 키워드를
+채운다. `--niche 건강`(ko) / `--niche kitchen`(en) 으로 힌트를 줄 수 있고, 없으면
+전체 풀에서 뽑는다. 시즌(월별: 여름=쿨링/cooling)이 마지막 후보에 반영된다.
 
 ---
 
@@ -63,6 +82,9 @@ Brief ─▶ ① Discovery ▶ ② Curation ▶ ③ Copy ▶ ④ Media(선택) �
 튜닝 포인트: `ScoreWeights`(가중치), `CATEGORY_COMMISSION`(실 정산율에 맞게 조정),
 `SWEET_SPOT`/`SIGMA`(통화별), `AUDIENCE_40_CATS`.
 
+`run(..., boosts=)` 로 InsightAgent 의 **성과 학습 부스트**(수익 난 카테고리 가점)를
+받는다 — 오케스트레이터가 주입.
+
 ---
 
 ## ③ CopyAgent — `copy.py` (엔진: `../captions.py`)
@@ -84,7 +106,27 @@ Brief ─▶ ① Discovery ▶ ② Curation ▶ ③ Copy ▶ ④ Media(선택) �
 
 ---
 
-## ④ MediaAgent — `media.py` (선택 단계)
+## ④ ComplianceAgent — `compliance.py`
+
+**역할**: 검수 문지기. 효능 단정·과장 표현을 게시 전에 걸러 **계정 정지·법적
+리스크**(한국 표시광고법·의료기기법, 미국 FTC)를 차단한다. 40+ 타깃은 건강 제품
+비중이 높아 특히 중요.
+
+| | |
+|--|--|
+| 입력 | `Brief`, `list[Caption]`, `AgentLog` |
+| 출력 | (순화된 `list[Caption]`, `ComplianceReport`) |
+| Claude | 선택(순화 문장 다듬기). **규칙 기반은 무료로 항상 실행** |
+
+- 언어별 규칙(`_RULES_KO`/`_RULES_EN`): "치료→관리", "cure→help with" 등 자동 순화.
+- 자동 순화 불가 건("의사 추천", "FDA-approved")은 `report.flagged` 로 남겨
+  **게시 전 수동 확인**을 요구한다 (로그에 ⚠ 표시).
+- 사슬 위치: **Copy 다음, Media/Publish 앞** — 순화된 카피가 TTS 대본·렌더본에
+  반영되도록.
+
+---
+
+## ⑤ MediaAgent — `media.py` (선택 단계)
 
 **역할**: 숏폼 PD. 카피를 살리는 소재 기획서를 만든다. **실제 영상 생성은 하지
 않는다** — 그 직전(무엇을 어떻게 찍을지/생성할지)까지가 책임.
@@ -104,7 +146,7 @@ Brief ─▶ ① Discovery ▶ ② Curation ▶ ③ Copy ▶ ④ Media(선택) �
 
 ---
 
-## ⑤ PublishAgent — `publish.py`
+## ⑥ PublishAgent — `publish.py`
 
 **역할**: 게시 준비 담당. 딥링크·광고고지를 조립해 게시 직전 콘텐츠로 만든다.
 자동 게시는 하지 않는다(플랫폼 약관).
@@ -127,13 +169,33 @@ Brief ─▶ ① Discovery ▶ ② Curation ▶ ③ Copy ▶ ④ Media(선택) �
 
 ---
 
+## ⑦ InsightAgent — `insight.py` (피드백 루프)
+
+**역할**: 성과 분석가. 쌓인 클릭·주문·수수료를 읽어 "뭐가 터졌는지"를 찾고,
+그 학습을 다음 선별에 되먹인다 — 던지고→배우는 루프의 클로저.
+
+| | |
+|--|--|
+| 입력 | `Storage`, `AgentLog` |
+| 출력 | `InsightReport` (카테고리·플랫폼 집계, 추천, `category_boosts`) |
+| Claude | 없음 — 순수 집계 |
+
+- **소표본 보호**: 총 클릭 `MIN_TOTAL_CLICKS`(30) 미만이면 부스트를 내지 않는다
+  (노이즈 과적합 방지).
+- 부스트 = 카테고리별 수수료 점유율 × `MAX_BOOST`(40) — 40+ 가점과 같은 스케일.
+- 오케스트레이터가 `curate()` 때마다 `category_boosts()` 를 조회해 Curation 에 주입.
+- CLI: `python -m kupas insights` — 사람이 읽는 리포트(집계·추천·부스트).
+
+---
+
 ## Orchestrator — `orchestrator.py`
 
 에이전트 사슬의 지휘자. 에이전트가 아니라 조율자다.
 
 - `_market_brief()`: `brief.market` 으로 언어·통화를 채운 Brief 사본 생성
-- `curate(brief)`: 발굴+선별만 (무료 triage, 카피·링크 없음)
-- `run(brief)`: 단일 마켓 전체 사슬 (+`with_media` 시 미디어, `save` 시 SQLite 저장)
+- `curate(brief)`: (keyword 없으면 Trend) → 발굴 → 선별(+Insight 부스트). 무료 triage
+- `run(brief)`: 단일 마켓 전체 사슬 — curate → Copy → Compliance → (Media) → Publish
+  (+`save` 시 SQLite 저장)
 - `run_markets(brief)` / `curate_markets(brief)`: `market="all"` 이면 국내+글로벌을
   순차 실행해 결과를 합침
 - 소스(`SourceProvider`)와 Claude 클라이언트를 **여기서 만들어 에이전트에 주입**

@@ -196,6 +196,31 @@ class Storage:
                 ).fetchall()
             return [dict(r) for r in rows]
 
+    def perf_by_category(self) -> list[dict]:
+        """카테고리별 성과 집계 (posts ⋈ content). 수수료 내림차순."""
+        with self._conn() as c:
+            rows = c.execute(
+                "SELECT co.category AS category, COUNT(p.id) AS posts, "
+                "COALESCE(SUM(p.clicks),0) AS clicks, "
+                "COALESCE(SUM(p.orders),0) AS orders, "
+                "COALESCE(SUM(p.revenue),0) AS revenue "
+                "FROM posts p JOIN content co ON p.content_id = co.id "
+                "GROUP BY co.category ORDER BY revenue DESC, clicks DESC"
+            ).fetchall()
+            return [dict(r) for r in rows]
+
+    def perf_by_platform(self) -> list[dict]:
+        """플랫폼별 성과 집계. 수수료 내림차순."""
+        with self._conn() as c:
+            rows = c.execute(
+                "SELECT platform, COUNT(id) AS posts, "
+                "COALESCE(SUM(clicks),0) AS clicks, "
+                "COALESCE(SUM(orders),0) AS orders, "
+                "COALESCE(SUM(revenue),0) AS revenue "
+                "FROM posts GROUP BY platform ORDER BY revenue DESC, clicks DESC"
+            ).fetchall()
+            return [dict(r) for r in rows]
+
     def summary(self) -> dict[str, int]:
         with self._conn() as c:
             row = c.execute(

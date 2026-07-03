@@ -48,7 +48,10 @@ def cmd_agents(_: argparse.Namespace) -> int:
     print("── 에이전트 로스터 ──")
     for i, (name, role) in enumerate(orch.roster, 1):
         print(f"  {i}. {name:<10} {role}")
-    print("\n흐름: discovery ▶ curation ▶ copy ▶ publish")
+    print(
+        "\n흐름: trend ▶ discovery ▶ curation ▶ copy ▶ compliance ▶ media(선택) ▶ publish"
+        "\n      insight 는 성과를 분석해 curation 점수에 되먹인다 (피드백 루프)"
+    )
     return 0
 
 
@@ -128,6 +131,36 @@ def cmd_stats(_: argparse.Namespace) -> int:
     print("── 성과 요약 ──")
     print(f"게시(초안 포함): {s['posts']}건")
     print(f"클릭: {s['clicks']:,}   주문: {s['orders']:,}   추정 수수료: {s['revenue']:,}원")
+    return 0
+
+
+def cmd_insights(_: argparse.Namespace) -> int:
+    from .agents.base import AgentLog
+    from .agents.insight import InsightAgent
+
+    orch = Orchestrator()
+    log = AgentLog("insight")
+    report = InsightAgent().run(orch.storage, log)
+    t = report.total
+    print("── 성과 인사이트 ──")
+    print(f"게시 {t['posts']}건 · 클릭 {t['clicks']:,} · 주문 {t['orders']:,} · 수수료 {t['revenue']:,}원\n")
+    if report.by_category:
+        print("카테고리별:")
+        for r in report.by_category:
+            print(f"  {r['category'] or '(미분류)':<14} 게시 {r['posts']:>3} · 클릭 {r['clicks']:>5,} · 수수료 {r['revenue']:>9,}원")
+    if report.by_platform:
+        print("플랫폼별:")
+        for r in report.by_platform:
+            print(f"  {r['platform']:<14} 게시 {r['posts']:>3} · 클릭 {r['clicks']:>5,} · 수수료 {r['revenue']:>9,}원")
+    print("\n추천:")
+    for rec in report.recommendations:
+        print(f"  · {rec}")
+    if report.category_boosts:
+        print("\n다음 선별부터 적용되는 카테고리 부스트:")
+        for k, v in report.category_boosts.items():
+            print(f"  {k} +{v:g}")
+    for msg in log.messages:
+        print(f"  [insight] {msg}")
     return 0
 
 
@@ -256,6 +289,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     ps = sub.add_parser("stats", help="성과 요약")
     ps.set_defaults(func=cmd_stats)
+
+    pi = sub.add_parser("insights", help="성과 인사이트 (카테고리·플랫폼 분석 + 학습 부스트)")
+    pi.set_defaults(func=cmd_insights)
 
     pq = sub.add_parser("queue", help="게시 대기 큐 보기")
     pq.set_defaults(func=cmd_queue)

@@ -13,15 +13,21 @@ python -m kupas run --market all --keyword "무선 청소기" --top 3 --audience
 python -m kupas discover --market global --keyword "massager" --top 5   # 카피 없이 선별만(무료)
 ```
 
-- `--keyword`(또는 `--category`)는 **필수** — 없으면 ValueError.
+- `--keyword` 는 선택 — 없으면 TrendAgent 가 니치·시즌으로 자동 발굴.
 - 테스트·실행 후 생기는 `kupas.db` 는 커밋 금지(.gitignore 됨). 루트에 남았으면 삭제.
 
 ## 아키텍처 (핵심 규칙)
 
 ```
 Brief(마켓·키워드·플랫폼·타깃) ─▶ Orchestrator
-  ① Discovery ▶ ② Curation ▶ ③ Copy ▶ ④ Media(선택) ▶ ⑤ Publish
+  ⓪ Trend(키워드 자동) ▶ ① Discovery ▶ ② Curation ▶ ③ Copy ▶ ④ Compliance(검수)
+  ▶ ⑤ Media(선택) ▶ ⑥ Publish     ⑦ Insight: 성과→카테고리 부스트→②에 되먹임
 ```
+
+- `--keyword` 없이도 돈다(Trend 가 니치·시즌으로 발굴). `--niche` 로 힌트.
+- 검수(Compliance)는 규칙 기반이라 항상 실행 — 효능 단정·과장 표현 자동 순화,
+  순화 불가 건은 로그에 ⚠ 로 표시되므로 게시 전 확인.
+- `python -m kupas insights` — 성과 분석·추천·학습 부스트 확인.
 
 - **에이전트 = 역할 + `run(입력)→출력` 모듈** (`kupas/agents/`). 자율 도구루프 없음,
   지능이 필요한 곳만 Claude(`claude-opus-4-8`) 호출. 상세: `kupas/agents/README.md`.

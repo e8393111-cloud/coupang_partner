@@ -19,6 +19,7 @@ from .compliance import ComplianceAgent
 from .copy import CopyAgent
 from .curation import CurationAgent, ScoreWeights
 from .discovery import DiscoveryAgent
+from .insight import InsightAgent
 from .media import MediaAgent
 from .publish import PublishAgent
 from .trend import TrendAgent
@@ -50,6 +51,7 @@ class Orchestrator:
         self.compliance = ComplianceAgent(llm=llm, model=model)
         self.media = MediaAgent(llm=llm, model=model)
         self.publish = PublishAgent(self.config.subid_prefix)
+        self.insight = InsightAgent()
 
     @property
     def mode_note(self) -> str:
@@ -62,7 +64,7 @@ class Orchestrator:
     def roster(self) -> list[tuple[str, str]]:
         agents = (
             self.trend, self.discovery, self.curation, self.copy,
-            self.compliance, self.media, self.publish,
+            self.compliance, self.media, self.publish, self.insight,
         )
         return [(a.name, a.role) for a in agents]
 
@@ -90,8 +92,11 @@ class Orchestrator:
         products = self.discovery.run(brief, source, d_log)
         result.logs.append(d_log)
 
+        # 성과 학습: 수익 난 카테고리에 부스트 (데이터 부족하면 빈 dict)
+        boosts = self.insight.category_boosts(self.storage)
+
         c_log = AgentLog(self.curation.name)
-        result.shortlist = self.curation.run(brief, products, c_log)
+        result.shortlist = self.curation.run(brief, products, c_log, boosts=boosts)
         result.logs.append(c_log)
         return result
 

@@ -88,10 +88,16 @@ class CurationAgent:
         self.llm = llm
         self.model = model
 
-    def run(self, brief: Brief, products: list[Product], log: AgentLog) -> list[ScoredProduct]:
-        # 1단계: 전수 휴리스틱 점수 (통화·타깃 반영)
+    def run(
+        self,
+        brief: Brief,
+        products: list[Product],
+        log: AgentLog,
+        boosts: dict[str, float] | None = None,
+    ) -> list[ScoredProduct]:
+        # 1단계: 전수 휴리스틱 점수 (통화·타깃·성과학습 반영)
         scored = [
-            ScoredProduct(p, self._heuristic(p, brief.currency, brief.audience))
+            ScoredProduct(p, self._heuristic(p, brief.currency, brief.audience, boosts))
             for p in products
         ]
         scored.sort(key=lambda s: s.score.total, reverse=True)
@@ -112,7 +118,11 @@ class CurationAgent:
 
     # ------------------------------------------------------------------ #
     def _heuristic(
-        self, product: Product, currency: str = "KRW", audience: str = "general"
+        self,
+        product: Product,
+        currency: str = "KRW",
+        audience: str = "general",
+        boosts: dict[str, float] | None = None,
     ) -> ProductScore:
         w = self.weights
         c_s, c_r = _commission_score(product)
@@ -120,10 +130,15 @@ class CurationAgent:
         r_s, r_r = _rocket_score(product)
         total = c_s * w.commission + p_s * w.price + r_s * w.rocket
         reasons = [c_r, p_r, r_r]
+        cat = product.category_name.lower()
         # 40+ 타깃이면 해당 카테고리에 가점
-        if audience == "40+" and product.category_name.lower() in AUDIENCE_40_CATS:
+        if audience == "40+" and cat in AUDIENCE_40_CATS:
             total += 40.0
             reasons.append("40+ 적합 카테고리 +40")
+        # 성과 학습 부스트 (InsightAgent — 실제로 수익 난 카테고리)
+        if boosts and cat in boosts:
+            total += boosts[cat]
+            reasons.append(f"성과 학습 +{boosts[cat]:g}")
         return ProductScore(
             commission=c_s, price=p_s, rocket=r_s, novelty=0.0,
             total=total, reasons=reasons,

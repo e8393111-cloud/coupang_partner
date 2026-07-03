@@ -5,6 +5,7 @@ from .compliance import ComplianceAgent, ComplianceReport
 from .copy import CopyAgent
 from .curation import CATEGORY_COMMISSION, CurationAgent, ScoreWeights
 from .discovery import DiscoveryAgent
+from .insight import InsightAgent, InsightReport
 from .media import MediaAgent
 from .orchestrator import Orchestrator, OrchestrationResult
 from .publish import DISCLOSURE, PublishAgent
@@ -22,6 +23,8 @@ __all__ = [
     "CopyAgent",
     "ComplianceAgent",
     "ComplianceReport",
+    "InsightAgent",
+    "InsightReport",
     "MediaAgent",
     "PublishAgent",
     "DISCLOSURE",
