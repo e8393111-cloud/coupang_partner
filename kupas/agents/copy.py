@@ -18,7 +18,7 @@ class CopyAgent:
         self.generator = generator
 
     def run(self, brief: Brief, scored: ScoredProduct, log: AgentLog) -> list[Caption]:
-        caps = self.generator.generate(scored.product, brief.platforms)
+        caps = self.generator.generate(scored.product, brief.platforms, brief.language)
         engine = "mock" if self.generator.is_mock else "Claude"
-        log.add(f"[{scored.product.name}] {engine} 카피 {len(caps)}종 생성")
+        log.add(f"[{scored.product.name}] {engine} {brief.language} 카피 {len(caps)}종 생성")
         return caps

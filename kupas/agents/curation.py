@@ -29,9 +29,15 @@ CATEGORY_COMMISSION: dict[str, float] = {
 }
 DEFAULT_COMMISSION = 0.03
 
-# 가격대 sweet-spot (원): 이 근처에서 점수 최고. 너무 싸거나 비싸면 감점.
-PRICE_SWEET_SPOT = 50_000
-PRICE_SIGMA = 80_000  # 곡선 폭
+# 가격대 sweet-spot: 통화별. 이 근처에서 점수 최고, 너무 싸거나 비싸면 감점.
+SWEET_SPOT = {"KRW": 50_000, "USD": 40}
+SIGMA = {"KRW": 80_000, "USD": 70}
+
+# 40+ 타깃이 잘 사는 카테고리 (국내/영문) — 가점
+AUDIENCE_40_CATS = {
+    "건강", "생활가전", "주방용품", "정원", "반려", "안마",
+    "health", "kitchen", "home", "garden", "pet", "auto",
+}
 
 
 @dataclass
@@ -55,10 +61,12 @@ def _commission_score(product: Product) -> tuple[float, str]:
     return score, f"기대수수료 ~{int(expected):,}원"
 
 
-def _price_score(product: Product) -> tuple[float, str]:
-    """sweet-spot 가우시안 곡선. 1만~30만 사이에서 높게."""
-    diff = product.price - PRICE_SWEET_SPOT
-    score = 100.0 * math.exp(-(diff**2) / (2 * PRICE_SIGMA**2))
+def _price_score(product: Product, currency: str = "KRW") -> tuple[float, str]:
+    """통화별 sweet-spot 가우시안 곡선."""
+    center = SWEET_SPOT.get(currency, SWEET_SPOT["KRW"])
+    sigma = SIGMA.get(currency, SIGMA["KRW"])
+    diff = product.price - center
+    score = 100.0 * math.exp(-(diff**2) / (2 * sigma**2))
     return score, f"가격대 적합도 {int(score)}"
 
 
@@ -81,8 +89,11 @@ class CurationAgent:
         self.model = model
 
     def run(self, brief: Brief, products: list[Product], log: AgentLog) -> list[ScoredProduct]:
-        # 1단계: 전수 휴리스틱 점수
-        scored = [ScoredProduct(p, self._heuristic(p)) for p in products]
+        # 1단계: 전수 휴리스틱 점수 (통화·타깃 반영)
+        scored = [
+            ScoredProduct(p, self._heuristic(p, brief.currency, brief.audience))
+            for p in products
+        ]
         scored.sort(key=lambda s: s.score.total, reverse=True)
         log.add(f"휴리스틱 점수 {len(scored)}개 산출")
 
@@ -100,15 +111,22 @@ class CurationAgent:
         return final
 
     # ------------------------------------------------------------------ #
-    def _heuristic(self, product: Product) -> ProductScore:
+    def _heuristic(
+        self, product: Product, currency: str = "KRW", audience: str = "general"
+    ) -> ProductScore:
         w = self.weights
         c_s, c_r = _commission_score(product)
-        p_s, p_r = _price_score(product)
+        p_s, p_r = _price_score(product, currency)
         r_s, r_r = _rocket_score(product)
         total = c_s * w.commission + p_s * w.price + r_s * w.rocket
+        reasons = [c_r, p_r, r_r]
+        # 40+ 타깃이면 해당 카테고리에 가점
+        if audience == "40+" and product.category_name.lower() in AUDIENCE_40_CATS:
+            total += 40.0
+            reasons.append("40+ 적합 카테고리 +40")
         return ProductScore(
             commission=c_s, price=p_s, rocket=r_s, novelty=0.0,
-            total=total, reasons=[c_r, p_r, r_r],
+            total=total, reasons=reasons,
         )
 
     def _apply_novelty(self, shortlist: list[ScoredProduct], log: AgentLog) -> None:

@@ -8,12 +8,19 @@ from __future__ import annotations
 import re
 import secrets
 
-from ..coupang import CoupangClient
 from ..models import Caption, ContentPiece, Product, ScoredProduct
+from ..sources import SourceProvider
 from .base import AgentLog, Brief
 
-# 쿠팡 파트너스 광고 고지 (의무 표기)
-DISCLOSURE = "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
+# 광고 고지 (의무 표기) — 언어별
+DISCLOSURE_KO = "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
+DISCLOSURE_EN = "As an affiliate, I earn from qualifying purchases through the links in this post."
+DISCLOSURES = {"ko": DISCLOSURE_KO, "en": DISCLOSURE_EN}
+DISCLOSURE = DISCLOSURE_KO  # 하위호환
+
+
+def disclosure_for(language: str) -> str:
+    return DISCLOSURES.get(language, DISCLOSURE_KO)
 
 _SUBID_SAFE = re.compile(r"[^A-Za-z0-9]")
 
@@ -35,8 +42,7 @@ class PublishAgent:
     name = "publish"
     role = "게시 준비 담당 — 딥링크·광고고지 조립 및 저장"
 
-    def __init__(self, coupang: CoupangClient, subid_prefix: str = "kupas") -> None:
-        self.coupang = coupang
+    def __init__(self, subid_prefix: str = "kupas") -> None:
         self.subid_prefix = subid_prefix
 
     def run(
@@ -44,9 +50,11 @@ class PublishAgent:
         brief: Brief,
         scored: ScoredProduct,
         captions: list[Caption],
+        source: SourceProvider,
         log: AgentLog,
     ) -> ContentPiece:
         product = scored.product
+        disclosure = disclosure_for(brief.language)
         platform_links: dict[str, str] = {}
         platform_subids: dict[str, str] = {}
         rendered: dict[str, str] = {}
@@ -55,11 +63,11 @@ class PublishAgent:
         run_token = secrets.token_hex(3)
         for cap in captions:
             sub_id = make_subid(self.subid_prefix, cap.platform, product, run_token)
-            link_map = self.coupang.create_deeplink([product.product_url], sub_id=sub_id)
+            link_map = source.create_deeplink([product.product_url], sub_id=sub_id)
             deeplink = link_map.get(product.product_url, product.product_url)
             platform_subids[cap.platform] = sub_id
             platform_links[cap.platform] = deeplink
-            rendered[cap.platform] = cap.render(deeplink, DISCLOSURE)
+            rendered[cap.platform] = cap.render(deeplink, disclosure)
 
         # 대표 딥링크/subId (하위호환): 첫 플랫폼 기준
         first = captions[0].platform if captions else "all"

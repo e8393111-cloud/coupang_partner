@@ -21,6 +21,7 @@ from kupas.captions import CaptionGenerator
 from kupas.config import Config
 from kupas.coupang import CoupangClient, _signed_authorization
 from kupas.models import Caption, Product
+from kupas.sources import get_source, resolve_markets
 
 
 def _mock_config() -> Config:
@@ -66,19 +67,21 @@ def test_coupang_mock_search_and_deeplink():
 
 # ── 발굴 에이전트 ───────────────────────────────────────────────────
 def test_discovery_agent_keyword_and_category():
-    agent = DiscoveryAgent(CoupangClient())
+    source = get_source("kr", _mock_config())
+    agent = DiscoveryAgent()
     brief = Brief(keyword="텐트", shortlist_size=5)
-    products = agent.run(brief, AgentLog("discovery"))
+    products = agent.run(brief, source, AgentLog("discovery"))
     assert 1 <= len(products) <= 5
 
-    cat_products = agent.run(Brief(category_id=1016, shortlist_size=4), AgentLog("d"))
+    cat_products = agent.run(Brief(category_id=1016, shortlist_size=4), source, AgentLog("d"))
     assert len(cat_products) >= 1
 
 
 def test_discovery_requires_keyword_or_category():
-    agent = DiscoveryAgent(CoupangClient())
+    source = get_source("kr", _mock_config())
+    agent = DiscoveryAgent()
     try:
-        agent.run(Brief(), AgentLog("d"))
+        agent.run(Brief(), source, AgentLog("d"))
     except ValueError:
         pass
     else:
@@ -264,6 +267,45 @@ def test_report_parser_handles_korean_headers():
     assert report["kupastiktokP1"]["clicks"] == 150
     assert report["kupastiktokP1"]["orders"] == 4
     assert report["kupastiktokP1"]["revenue"] == 16500
+
+
+# ── 이중트랙 (국내+글로벌) ──────────────────────────────────────────
+def test_resolve_markets_all():
+    assert resolve_markets("all") == ["kr", "global"]
+    assert resolve_markets("global") == ["global"]
+
+
+def test_global_market_english_usd_and_link():
+    from kupas.agents.publish import DISCLOSURE_EN
+
+    orch = Orchestrator(_mock_config())
+    piece = orch.run(Brief(
+        keyword="massager", market="global", language="en", currency="USD", target_count=1
+    )).pieces[0]
+    plat = piece.captions[0].platform
+    assert DISCLOSURE_EN in piece.rendered[plat]     # 영어 고지
+    assert "amzn.to" in piece.deeplink               # 글로벌(Amazon) 딥링크
+
+
+def test_run_markets_all_runs_domestic_and_global():
+    orch = Orchestrator(_mock_config())
+    result = orch.run_markets(Brief(keyword="test", market="all", target_count=1))
+    hosts = {p.product.product_url.split("/")[2] for p in result.pieces}
+    assert any("coupang" in h for h in hosts)   # 국내
+    assert any("amazon" in h for h in hosts)    # 글로벌
+
+
+def test_currency_aware_price_score():
+    from kupas.agents.curation import _price_score
+    usd, _ = _price_score(_product(40), "USD")   # $40 → USD 스위트스팟 근처
+    krw, _ = _price_score(_product(40), "KRW")   # 40원 → KRW 기준 극단
+    assert usd > krw
+
+
+def test_media_brief_has_tts_script():
+    orch = Orchestrator(_mock_config())
+    piece = orch.run(Brief(keyword="텐트", target_count=1, with_media=True)).pieces[0]
+    assert all(m.tts_script for m in piece.media)
 
 
 if __name__ == "__main__":

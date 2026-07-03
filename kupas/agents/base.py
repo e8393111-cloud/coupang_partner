@@ -21,6 +21,10 @@ class Brief:
     shortlist_size: int = 10       # 발굴·선별 후보 수
     use_vision: bool = False       # 신박도(Claude vision) 점수 사용 여부
     with_media: bool = False       # 미디어 소재 기획서 생성 여부
+    market: str = "kr"             # 마켓 키 (kr | global | ali)
+    language: str = "ko"           # 카피 언어 (ko | en)
+    currency: str = "KRW"          # 가격대 점수용 통화
+    audience: str = "general"      # 타깃 (예: "40+")
 
 
 @dataclass

@@ -87,6 +87,7 @@ class MediaBrief:
     music: str = ""              # BGM/페이싱 가이드
     image_prompts: list[str] = field(default_factory=list)  # 이미지 생성 프롬프트
     video_prompt: str = ""       # 영상 생성 프롬프트
+    tts_script: str = ""         # 캡컷 텍스트읽기(TTS)에 그대로 붙일 나레이션 대본
 
 
 @dataclass

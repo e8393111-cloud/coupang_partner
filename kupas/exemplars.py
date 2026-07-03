@@ -27,6 +27,17 @@ HOOK_ARCHETYPES: list[HookArchetype] = [
 ]
 
 
+# 영어(글로벌 40+) 후킹 아키타입 — 혜택·명확 중심
+HOOK_ARCHETYPES_EN: list[HookArchetype] = [
+    HookArchetype("shock", "I couldn't believe this actually exists…", "즉각적 호기심"),
+    HookArchetype("regret", "Why did no one tell me about this sooner?", "후회·FOMO"),
+    HookArchetype("relief", "The one thing my back needed all along", "구체적 페인포인트"),
+    HookArchetype("value", "This costs less than a dinner out?", "가성비 충격"),
+    HookArchetype("routine", "This quietly changed my whole day", "일상 개선(40+ 공감)"),
+    HookArchetype("before_after", "Before vs after — I wasn't ready for this", "변화 대비"),
+]
+
+
 @dataclass(frozen=True)
 class Exemplar:
     platform: str
@@ -67,17 +78,46 @@ EXEMPLARS: list[Exemplar] = [
 ]
 
 
-def fewshot_block(platform: str, limit: int = 2) -> str:
-    """플랫폼에 맞는 few-shot 예시를 프롬프트용 텍스트로 만든다."""
-    picks = [e for e in EXEMPLARS if e.platform == platform][:limit]
+# 영어 few-shot 예시 (글로벌 40+)
+EXEMPLARS_EN: list[Exemplar] = [
+    Exemplar(
+        platform="reels",
+        product="Cordless Neck & Shoulder Massager",
+        hook="Why did no one tell me about this sooner?",
+        body="Deep-tissue relief in 10 minutes, cordless, right at your desk. "
+        "My shoulders haven't felt this loose in years.",
+    ),
+    Exemplar(
+        platform="shorts",
+        product="Anti-Fatigue Kitchen Standing Mat",
+        hook="The one thing my kitchen was missing",
+        body="Stand for an hour and your back still feels fine. "
+        "Wish I'd bought this a decade ago.",
+    ),
+    Exemplar(
+        platform="tiktok",
+        product="Raised Garden Bed Planter Kit",
+        hook="No more bending over to garden",
+        body="Waist-high beds, zero back strain, set up in minutes. "
+        "Gardening just got easy again.",
+    ),
+]
+
+
+def fewshot_block(platform: str, language: str = "ko", limit: int = 2) -> str:
+    """플랫폼·언어에 맞는 few-shot 예시를 프롬프트용 텍스트로 만든다."""
+    pool = EXEMPLARS_EN if language == "en" else EXEMPLARS
+    picks = [e for e in pool if e.platform == platform][:limit]
     if not picks:
-        picks = EXEMPLARS[:limit]
-    lines = ["[잘 터진 예시]"]
+        picks = pool[:limit]
+    header = "[High-performing examples]" if language == "en" else "[잘 터진 예시]"
+    lines = [header]
     for e in picks:
-        lines.append(f"- 상품: {e.product}\n  hook: {e.hook}\n  body: {e.body}")
+        lines.append(f"- product: {e.product}\n  hook: {e.hook}\n  body: {e.body}")
     return "\n".join(lines)
 
 
-def archetype_for(seed: int) -> HookArchetype:
-    """시드(상품 해시 등)로 아키타입을 고르게 분산 선택 — mock 다양화용."""
-    return HOOK_ARCHETYPES[seed % len(HOOK_ARCHETYPES)]
+def archetype_for(seed: int, language: str = "ko") -> HookArchetype:
+    """시드로 아키타입을 고르게 분산 선택 — mock 다양화용 (언어별)."""
+    pool = HOOK_ARCHETYPES_EN if language == "en" else HOOK_ARCHETYPES
+    return pool[seed % len(pool)]

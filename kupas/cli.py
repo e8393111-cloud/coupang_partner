@@ -29,6 +29,8 @@ def _brief(args: argparse.Namespace) -> Brief:
         shortlist_size=max(top, 10),
         use_vision=getattr(args, "vision", False),
         with_media=getattr(args, "media", False),
+        market=getattr(args, "market", "kr"),
+        audience=getattr(args, "audience", "general"),
     )
 
 
@@ -51,16 +53,16 @@ def cmd_agents(_: argparse.Namespace) -> int:
 
 def cmd_discover(args: argparse.Namespace) -> int:
     orch = Orchestrator()
-    print(f"모드: {orch.mode_note}")
+    print(f"모드: {orch.mode_note}  |  마켓: {args.market}")
     try:
-        result = orch.curate(_brief(args))
+        result = orch.curate_markets(_brief(args))
     except ValueError as e:
         print(f"오류: {e}", file=sys.stderr)
         return 2
     print("\n── 선별 랭킹 (카피 미생성, 무료 triage) ──")
     for rank, s in enumerate(result.shortlist, 1):
         p = s.product
-        print(f"\n[{rank}] 점수 {int(s.score.total):>4}  {p.name}  ({p.price:,}원, {p.category_name})")
+        print(f"\n[{rank}] 점수 {int(s.score.total):>4}  {p.name}  ({p.price:,} {p.category_name})")
         print(f"     근거: {', '.join(s.score.reasons)}")
     _print_logs(result)
     return 0
@@ -68,9 +70,9 @@ def cmd_discover(args: argparse.Namespace) -> int:
 
 def cmd_run(args: argparse.Namespace) -> int:
     orch = Orchestrator()
-    print(f"모드: {orch.mode_note}")
+    print(f"모드: {orch.mode_note}  |  마켓: {args.market}")
     try:
-        result = orch.run(_brief(args), save=not args.no_save)
+        result = orch.run_markets(_brief(args), save=not args.no_save)
     except ValueError as e:
         print(f"오류: {e}", file=sys.stderr)
         return 2
@@ -78,13 +80,15 @@ def cmd_run(args: argparse.Namespace) -> int:
         p = piece.product
         sc = int(piece.score.total) if piece.score else 0
         print(f"\n{'=' * 64}")
-        print(f"[{i}] 점수 {sc}  {p.name}  ({p.price:,}원, {p.category_name})")
+        print(f"[{i}] 점수 {sc}  {p.name}  ({p.price:,} {p.category_name})")
         print(f"딥링크: {piece.deeplink}   subId: {piece.sub_id}")
         for cap in piece.captions:
             print(f"\n  ── {cap.platform.upper()} ───────────────────────")
-            # 플랫폼별 딥링크/subId 를 써야 복붙 시 성과 귀속이 안 깨진다
-            link = piece.platform_links.get(cap.platform, piece.deeplink)
-            for line in cap.render(link, DISCLOSURE).splitlines():
+            # 저장된 렌더본(플랫폼별 링크·언어별 고지 포함)을 그대로 출력
+            text = piece.rendered.get(cap.platform) or cap.render(
+                piece.platform_links.get(cap.platform, piece.deeplink), DISCLOSURE
+            )
+            for line in text.splitlines():
                 print(f"  {line}")
             if cap.alt_hooks:
                 print(f"  · 대체 후킹(A/B): {' / '.join(cap.alt_hooks)}")
@@ -92,13 +96,14 @@ def cmd_run(args: argparse.Namespace) -> int:
             print(f"\n  ── 🎬 미디어 기획 [{mb.platform.upper()}] {mb.format} ─────")
             for j, shot in enumerate(mb.shots, 1):
                 dur = f"{shot.seconds:g}s" if shot.seconds else "슬라이드"
-                print(f"     {j}. ({dur}) {shot.visual}")
-                print(f"        자막: {shot.overlay}")
+                print(f"     {j}. ({dur}) {shot.visual}  | 자막: {shot.overlay}")
             print(f"     BGM: {mb.music}")
+            if mb.tts_script:
+                print(f"     📝 캡컷 TTS 대본: {mb.tts_script}")
             if mb.image_prompts:
-                print(f"     이미지 프롬프트: {mb.image_prompts[0]}")
+                print(f"     🖼  이미지 프롬프트: {mb.image_prompts[0]}")
             if mb.video_prompt:
-                print(f"     영상 프롬프트: {mb.video_prompt}")
+                print(f"     🎬 영상 프롬프트: {mb.video_prompt}")
     _print_logs(result)
     if not args.no_save:
         print(f"\n{len(result.pieces)}건 저장 완료 → {orch.config.db_path}")
@@ -215,6 +220,11 @@ def _add_discovery_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--category", type=int, help="카테고리 ID 로 베스트 상품 발굴")
     p.add_argument("--top", type=int, default=3, help="최종 선별 개수 (기본 3)")
     p.add_argument("--vision", action="store_true", help="Claude vision 신박도 점수 사용")
+    p.add_argument(
+        "--market", default="kr", choices=["kr", "global", "ali", "all"],
+        help="마켓: kr(쿠팡/한국어) | global(Amazon/영어) | ali(AliExpress/영어) | all(국내+글로벌 동시)",
+    )
+    p.add_argument("--audience", default="general", help="타깃 (예: 40+ → 관련 카테고리 가점)")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -231,8 +241,8 @@ def build_parser() -> argparse.ArgumentParser:
     pr = sub.add_parser("run", help="발굴→선별→카피→게시준비 전체 사슬")
     _add_discovery_args(pr)
     pr.add_argument(
-        "--platforms", nargs="+", choices=["threads", "tiktok"],
-        help="대상 플랫폼 (기본: threads tiktok)",
+        "--platforms", nargs="+", choices=["threads", "tiktok", "reels", "shorts"],
+        help="대상 플랫폼 (기본: threads tiktok / 40+는 reels shorts 권장)",
     )
     pr.add_argument("--media", action="store_true", help="틱톡·릴스 소재 기획서 생성")
     pr.add_argument("--no-save", action="store_true", help="DB 저장 생략")

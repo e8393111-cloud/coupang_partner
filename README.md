@@ -8,6 +8,29 @@
 `todaypick100` 류의 게시물처럼, "이게 된다고?" 싶은 상품에 스크롤을 멈추게 하는
 첫 줄을 붙이고, 단축 제휴 링크와 광고 고지를 자동으로 조립합니다.
 
+## 국내 + 글로벌 동시진행 (멀티마켓)
+
+한 번의 실행으로 **국내(쿠팡/한국어)와 글로벌(Amazon·AliExpress/영어)**을 동시에
+돌립니다. 마켓에 따라 소스·언어·통화·광고고지가 자동으로 바뀝니다.
+
+| `--market` | 소스 | 언어 | 통화 |
+|-----------|------|------|------|
+| `kr` | 쿠팡 파트너스 | 한국어 | KRW |
+| `global` | Amazon Associates | English | USD |
+| `ali` | AliExpress | English | USD |
+| `all` | 국내 + 글로벌 동시 | 각각 | 각각 |
+
+```bash
+python -m kupas run --market all --keyword "massager" --top 3        # 국내+글로벌 동시
+python -m kupas run --market global --audience 40+ --platforms reels shorts --media
+```
+
+- **`--audience 40+`**: 40대 이상 타깃 — 건강·홈·주방·정원·반려 등 카테고리에 가점,
+  카피 톤도 혜택 중심·명확하게. (릴스·쇼츠 권장)
+- **캡컷 TTS 대본**: `--media` 시 각 소재에 **캡컷 텍스트읽기에 그대로 붙일 나레이션
+  대본**(`tts_script`)이 언어에 맞춰 생성됩니다 → 캡컷 자동자막으로 바로 자막화.
+- 실제 Amazon/AliExpress API는 추후 연결(현재 mock). 쿠팡은 키 넣으면 실 API.
+
 ## 동작 방식 — 분야별 에이전트 사슬
 
 각 분야가 독립 에이전트로 동작하고 오케스트레이터가 조율합니다(경량 방식 —
@@ -152,6 +175,7 @@ shortlist = orch.curate(Brief(keyword="캠핑", target_count=5)).shortlist
 ```
 kupas/
   config.py     환경설정 로딩
+  sources.py    멀티마켓 소스 추상화 (쿠팡/Amazon/AliExpress)      ← 도구
   coupang.py    쿠팡 파트너스 Open API (HMAC, 검색/베스트/딥링크)  ← 도구
   captions.py   Claude 기반 플랫폼별 후킹 카피                      ← 도구
   exemplars.py  검증된 후킹 아키타입·예시 게시물 (few-shot)          ← 도구
