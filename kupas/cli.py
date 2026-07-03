@@ -82,7 +82,9 @@ def cmd_run(args: argparse.Namespace) -> int:
         print(f"딥링크: {piece.deeplink}   subId: {piece.sub_id}")
         for cap in piece.captions:
             print(f"\n  ── {cap.platform.upper()} ───────────────────────")
-            for line in cap.render(piece.deeplink, DISCLOSURE).splitlines():
+            # 플랫폼별 딥링크/subId 를 써야 복붙 시 성과 귀속이 안 깨진다
+            link = piece.platform_links.get(cap.platform, piece.deeplink)
+            for line in cap.render(link, DISCLOSURE).splitlines():
                 print(f"  {line}")
             if cap.alt_hooks:
                 print(f"  · 대체 후킹(A/B): {' / '.join(cap.alt_hooks)}")

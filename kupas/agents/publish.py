@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import re
+import secrets
 
 from ..coupang import CoupangClient
 from ..models import Caption, ContentPiece, Product, ScoredProduct
@@ -17,12 +18,17 @@ DISCLOSURE = "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이�
 _SUBID_SAFE = re.compile(r"[^A-Za-z0-9]")
 
 
-def make_subid(prefix: str, platform: str, product: Product) -> str:
-    """플랫폼·상품별 성과 분리를 위한 subId. 영숫자만 허용.
+def make_subid(prefix: str, platform: str, product: Product, suffix: str = "") -> str:
+    """플랫폼·상품·게시물별 성과 분리를 위한 subId. 영숫자만 허용.
 
-    플랫폼을 포함해 스레드/틱톡 전환을 파트너스 리포트에서 분리 추적한다.
+    플랫폼을 포함해 스레드/틱톡 전환을 분리 추적하고, suffix(게시물 고유 토큰)로
+    같은 상품을 같은 플랫폼에 여러 번 올려도 subId 가 겹치지 않게 한다.
+    (겹치면 리포트 import 시 여러 행이 같은 실적으로 갱신돼 이중 집계됨)
     """
-    return _SUBID_SAFE.sub("", f"{prefix}-{platform}-{product.product_id}")[:32]
+    raw = f"{prefix}-{platform}-{product.product_id}"
+    if suffix:
+        raw += f"-{suffix}"
+    return _SUBID_SAFE.sub("", raw)[:40]
 
 
 class PublishAgent:
@@ -45,8 +51,10 @@ class PublishAgent:
         platform_subids: dict[str, str] = {}
         rendered: dict[str, str] = {}
 
+        # 게시물 고유 토큰: 같은 상품·플랫폼을 여러 번 올려도 subId 가 겹치지 않게
+        run_token = secrets.token_hex(3)
         for cap in captions:
-            sub_id = make_subid(self.subid_prefix, cap.platform, product)
+            sub_id = make_subid(self.subid_prefix, cap.platform, product, run_token)
             link_map = self.coupang.create_deeplink([product.product_url], sub_id=sub_id)
             deeplink = link_map.get(product.product_url, product.product_url)
             platform_subids[cap.platform] = sub_id

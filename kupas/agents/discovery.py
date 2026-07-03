@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+import math
+
 from ..coupang import CoupangClient
 from ..models import Product
 from .base import AgentLog, Brief
@@ -31,7 +33,8 @@ class DiscoveryAgent:
 
         keywords = self._expand(brief.keyword, log)
         seen: dict[str, Product] = {}
-        per_kw = max(1, brief.shortlist_size // len(keywords))
+        # 올림 나눗셈 — 여러 키워드로 나눠도 shortlist_size 아래로 부족해지지 않게
+        per_kw = max(1, math.ceil(brief.shortlist_size / len(keywords)))
         for kw in keywords:
             for p in self.coupang.search_products(kw, per_kw):
                 seen.setdefault(p.product_id, p)

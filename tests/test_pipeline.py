@@ -213,6 +213,21 @@ def test_per_platform_links_and_rendered():
     assert set(piece.platform_subids) == {"threads", "tiktok"}
     assert piece.platform_subids["threads"] != piece.platform_subids["tiktok"]
     assert all(DISCLOSURE in piece.rendered[p] for p in piece.platform_subids)
+    # 각 플랫폼 게시본문엔 자기 플랫폼 링크만 들어가야(귀속 안 깨짐)
+    assert piece.platform_links["tiktok"] in piece.rendered["tiktok"]
+    assert piece.platform_links["threads"] not in piece.rendered["tiktok"]
+
+
+def test_subid_unique_across_reposts():
+    orch = Orchestrator(_mock_config())
+    p1 = orch.run(Brief(keyword="텐트", target_count=1)).pieces[0]
+    p2 = orch.run(Brief(keyword="텐트", target_count=1)).pieces[0]
+    # 같은 상품을 다시 올려도 게시물 고유 토큰으로 subId 가 겹치지 않는다
+    if p1.product.product_id == p2.product.product_id:
+        assert p1.platform_subids["tiktok"] != p2.platform_subids["tiktok"]
+    # 리포트 import 는 정확히 한 행만 갱신(이중 집계 방지)
+    sub = p1.platform_subids["tiktok"]
+    assert orch.storage.import_report({sub: {"clicks": 10, "orders": 0, "revenue": 0}}) == 1
 
 
 def test_queue_and_schedule():
