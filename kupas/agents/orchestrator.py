@@ -20,6 +20,7 @@ from .curation import CurationAgent, ScoreWeights
 from .discovery import DiscoveryAgent
 from .media import MediaAgent
 from .publish import PublishAgent
+from .trend import TrendAgent
 
 
 @dataclass
@@ -41,6 +42,7 @@ class Orchestrator:
             llm = anthropic.Anthropic(api_key=self.config.anthropic_api_key)
         model = self.config.caption_model
 
+        self.trend = TrendAgent(llm=llm, model=model)
         self.discovery = DiscoveryAgent(llm=llm, model=model)
         self.curation = CurationAgent(weights=weights, llm=llm, model=model)
         self.copy = CopyAgent(CaptionGenerator(self.config.anthropic_api_key, model))
@@ -56,7 +58,7 @@ class Orchestrator:
 
     @property
     def roster(self) -> list[tuple[str, str]]:
-        agents = (self.discovery, self.curation, self.copy, self.media, self.publish)
+        agents = (self.trend, self.discovery, self.curation, self.copy, self.media, self.publish)
         return [(a.name, a.role) for a in agents]
 
     def _market_brief(self, brief: Brief, market_key: str) -> Brief:
@@ -68,9 +70,17 @@ class Orchestrator:
     # 단일 마켓
     # ------------------------------------------------------------------ #
     def curate(self, brief: Brief) -> OrchestrationResult:
-        """발굴 + 선별까지만 (무료 triage)."""
+        """발굴 + 선별까지만 (무료 triage). keyword 없으면 TrendAgent 가 정한다."""
         source = get_source(brief.market, self.config)
         result = OrchestrationResult()
+
+        if brief.keyword is None and brief.category_id is None:
+            t_log = AgentLog(self.trend.name)
+            keywords = self.trend.run(brief, t_log)
+            brief = replace(brief, keyword=keywords[0])
+            t_log.add(f"선택: '{keywords[0]}' (후보 {len(keywords)}개)")
+            result.logs.append(t_log)
+
         d_log = AgentLog(self.discovery.name)
         products = self.discovery.run(brief, source, d_log)
         result.logs.append(d_log)

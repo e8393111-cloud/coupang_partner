@@ -16,6 +16,7 @@ class Brief:
 
     keyword: str | None = None
     category_id: int | None = None
+    niche: str | None = None       # 니치(주제) — keyword 없으면 TrendAgent 가 이걸로 발굴
     platforms: tuple[str, ...] = ("threads", "tiktok")
     target_count: int = 3          # 최종 콘텐츠 개수
     shortlist_size: int = 10       # 발굴·선별 후보 수

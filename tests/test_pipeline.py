@@ -269,6 +269,26 @@ def test_report_parser_handles_korean_headers():
     assert report["kupastiktokP1"]["revenue"] == 16500
 
 
+# ── 트렌드 에이전트 (키워드 자동 발굴) ─────────────────────────────
+def test_trend_agent_mock_returns_keywords_per_language():
+    from kupas.agents.trend import TrendAgent
+
+    agent = TrendAgent()
+    ko = agent.run(Brief(niche="주방", language="ko"), AgentLog("trend"))
+    en = agent.run(Brief(niche="kitchen", language="en"), AgentLog("trend"))
+    assert ko and en
+    assert all(isinstance(k, str) and k for k in ko + en)
+    # 언어별 풀이 다르다 (한글 니치 풀 vs 영문 니치 풀)
+    assert ko != en
+
+
+def test_run_without_keyword_uses_trend():
+    orch = Orchestrator(_mock_config())
+    result = orch.run(Brief(target_count=1))  # keyword/category 없음
+    assert len(result.pieces) == 1
+    assert any(log.agent == "trend" for log in result.logs)
+
+
 # ── 이중트랙 (국내+글로벌) ──────────────────────────────────────────
 def test_resolve_markets_all():
     assert resolve_markets("all") == ["kr", "global"]

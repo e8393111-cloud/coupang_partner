@@ -24,6 +24,7 @@ def _brief(args: argparse.Namespace) -> Brief:
     return Brief(
         keyword=args.keyword,
         category_id=args.category,
+        niche=getattr(args, "niche", None),
         platforms=platforms,
         target_count=top,
         shortlist_size=max(top, 10),
@@ -216,8 +217,9 @@ def cmd_perf(args: argparse.Namespace) -> int:
 
 
 def _add_discovery_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--keyword", help="검색 키워드로 상품 발굴")
+    p.add_argument("--keyword", help="검색 키워드 (생략 시 TrendAgent 가 자동 발굴)")
     p.add_argument("--category", type=int, help="카테고리 ID 로 베스트 상품 발굴")
+    p.add_argument("--niche", help="니치(주제) — 키워드 자동 발굴의 힌트 (예: 건강, 주방, kitchen)")
     p.add_argument("--top", type=int, default=3, help="최종 선별 개수 (기본 3)")
     p.add_argument("--vision", action="store_true", help="Claude vision 신박도 점수 사용")
     p.add_argument(

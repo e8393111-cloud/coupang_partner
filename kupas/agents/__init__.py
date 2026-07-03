@@ -7,11 +7,13 @@ from .discovery import DiscoveryAgent
 from .media import MediaAgent
 from .orchestrator import Orchestrator, OrchestrationResult
 from .publish import DISCLOSURE, PublishAgent
+from .trend import TrendAgent
 
 __all__ = [
     "Agent",
     "AgentLog",
     "Brief",
+    "TrendAgent",
     "DiscoveryAgent",
     "CurationAgent",
     "ScoreWeights",
