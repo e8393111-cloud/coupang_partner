@@ -1,6 +1,7 @@
 """분야별 경량 에이전트 + 오케스트레이터."""
 
 from .base import Agent, AgentLog, Brief
+from .compliance import ComplianceAgent, ComplianceReport
 from .copy import CopyAgent
 from .curation import CATEGORY_COMMISSION, CurationAgent, ScoreWeights
 from .discovery import DiscoveryAgent
@@ -19,6 +20,8 @@ __all__ = [
     "ScoreWeights",
     "CATEGORY_COMMISSION",
     "CopyAgent",
+    "ComplianceAgent",
+    "ComplianceReport",
     "MediaAgent",
     "PublishAgent",
     "DISCLOSURE",

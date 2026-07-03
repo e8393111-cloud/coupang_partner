@@ -15,6 +15,7 @@ from ..models import ContentPiece, ScoredProduct
 from ..sources import MARKETS, get_source, resolve_markets
 from ..storage import Storage
 from .base import AgentLog, Brief
+from .compliance import ComplianceAgent
 from .copy import CopyAgent
 from .curation import CurationAgent, ScoreWeights
 from .discovery import DiscoveryAgent
@@ -46,6 +47,7 @@ class Orchestrator:
         self.discovery = DiscoveryAgent(llm=llm, model=model)
         self.curation = CurationAgent(weights=weights, llm=llm, model=model)
         self.copy = CopyAgent(CaptionGenerator(self.config.anthropic_api_key, model))
+        self.compliance = ComplianceAgent(llm=llm, model=model)
         self.media = MediaAgent(llm=llm, model=model)
         self.publish = PublishAgent(self.config.subid_prefix)
 
@@ -58,7 +60,10 @@ class Orchestrator:
 
     @property
     def roster(self) -> list[tuple[str, str]]:
-        agents = (self.trend, self.discovery, self.curation, self.copy, self.media, self.publish)
+        agents = (
+            self.trend, self.discovery, self.curation, self.copy,
+            self.compliance, self.media, self.publish,
+        )
         return [(a.name, a.role) for a in agents]
 
     def _market_brief(self, brief: Brief, market_key: str) -> Brief:
@@ -96,10 +101,13 @@ class Orchestrator:
         result = self.curate(brief)
 
         copy_log = AgentLog(self.copy.name)
+        comp_log = AgentLog(self.compliance.name)
         media_log = AgentLog(self.media.name)
         pub_log = AgentLog(self.publish.name)
         for scored in result.shortlist:
             captions = self.copy.run(brief, scored, copy_log)
+            # 검수: 순화된 카피가 미디어(TTS)·렌더본에 반영되도록 publish 앞에서
+            captions, _report = self.compliance.run(brief, captions, comp_log)
             piece = self.publish.run(brief, scored, captions, source, pub_log)
             if brief.with_media:
                 piece.media = self.media.run(brief, scored, captions, media_log)
@@ -107,6 +115,7 @@ class Orchestrator:
                 self.storage.save_content(piece)
             result.pieces.append(piece)
         result.logs.append(copy_log)
+        result.logs.append(comp_log)
         if brief.with_media:
             result.logs.append(media_log)
         result.logs.append(pub_log)

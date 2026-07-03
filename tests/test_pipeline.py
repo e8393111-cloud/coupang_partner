@@ -289,6 +289,36 @@ def test_run_without_keyword_uses_trend():
     assert any(log.agent == "trend" for log in result.logs)
 
 
+# ── 검수 에이전트 (컴플라이언스) ───────────────────────────────────
+def test_compliance_softens_korean_medical_claims():
+    from kupas.agents.compliance import ComplianceAgent
+
+    cap = Caption(platform="tiktok", hook="어깨 통증 치료되는 마사지기",
+                  body="부작용이 없어서 무조건 사세요", hashtags=[])
+    caps, report = ComplianceAgent().run(Brief(language="ko"), [cap], AgentLog("c"))
+    assert "치료" not in caps[0].hook and "관리" in caps[0].hook
+    assert "부작용" not in caps[0].body and "무조건" not in caps[0].body
+    assert len(report.issues) >= 3 and not report.flagged  # 전부 자동 순화
+
+
+def test_compliance_flags_unfixable_and_english_rules():
+    from kupas.agents.compliance import ComplianceAgent
+
+    cap = Caption(platform="reels", hook="This massager cures back pain",
+                  body="FDA-approved and guaranteed results", hashtags=[])
+    caps, report = ComplianceAgent().run(Brief(language="en"), [cap], AgentLog("c"))
+    assert "cure" not in caps[0].hook.lower()
+    assert "guaranteed" not in caps[0].body.lower()
+    # FDA-approved 는 자동 순화 불가 → 수동 확인 플래그
+    assert any("FDA" in i.pattern for i in report.flagged)
+
+
+def test_compliance_runs_inside_chain():
+    orch = Orchestrator(_mock_config())
+    result = orch.run(Brief(keyword="텐트", target_count=1))
+    assert any(log.agent == "compliance" for log in result.logs)
+
+
 # ── 이중트랙 (국내+글로벌) ──────────────────────────────────────────
 def test_resolve_markets_all():
     assert resolve_markets("all") == ["kr", "global"]
