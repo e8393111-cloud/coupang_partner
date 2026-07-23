@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>쿠팡 파트너스 수익화 대시보드</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --line:#2a2f3a;
+    --txt:#e7eaf0; --muted:#9aa3b2; --accent:#ff5a5f; --accent2:#3ea6ff;
+    --ok:#37c98b; --warn:#f5b74e; --bad:#ff6b6b;
+    --chip:#242a35;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    background:var(--bg);color:var(--txt);font-size:15px;line-height:1.55}
+  a{color:var(--accent2)}
+  header{position:sticky;top:0;z-index:20;background:rgba(15,17,21,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);padding:12px 16px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+  .brand .dot{width:12px;height:12px;border-radius:50%;background:var(--accent)}
+  nav{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  nav button{background:var(--chip);border:1px solid var(--line);color:var(--muted);
+    padding:7px 12px;border-radius:999px;cursor:pointer;font-size:13.5px;font-weight:600}
+  nav button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  main{max-width:920px;margin:0 auto;padding:18px 16px 80px}
+  .tab{display:none} .tab.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h2{font-size:20px;margin:4px 0 14px}
+  h3{font-size:16px;margin:20px 0 8px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+  .grid{display:grid;gap:12px}
+  .g2{grid-template-columns:1fr 1fr}
+  @media(max-width:640px){.g2{grid-template-columns:1fr}}
+  label{display:block;font-size:12.5px;color:var(--muted);margin:0 0 4px;font-weight:600}
+  input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+    border-radius:10px;padding:9px 11px;font-size:14px;font-family:inherit}
+  textarea{resize:vertical;min-height:60px}
+  button.act{background:var(--accent);border:none;color:#fff;padding:9px 14px;border-radius:10px;
+    font-weight:700;cursor:pointer;font-size:14px}
+  button.ghost{background:var(--chip);border:1px solid var(--line);color:var(--txt);padding:8px 12px;
+    border-radius:10px;cursor:pointer;font-size:13px;font-weight:600}
+  button.mini{padding:5px 9px;font-size:12px;border-radius:8px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .muted{color:var(--muted)}
+  .pill{display:inline-block;background:var(--chip);border:1px solid var(--line);border-radius:999px;
+    padding:2px 9px;font-size:12px;color:var(--muted)}
+  .stat{font-size:26px;font-weight:800}
+  .stat.accent{color:var(--accent)} .stat.ok{color:var(--ok)}
+  hr{border:none;border-top:1px solid var(--line);margin:14px 0}
+  .check{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px dashed var(--line)}
+  .check:last-child{border-bottom:none}
+  .check input[type=checkbox]{width:18px;height:18px;margin-top:2px;flex:0 0 auto;accent-color:var(--accent)}
+  .check.done label{color:var(--muted);text-decoration:line-through}
+  details{border:1px solid var(--line);border-radius:12px;padding:6px 14px;margin-bottom:10px;background:var(--panel2)}
+  details summary{cursor:pointer;font-weight:700;padding:8px 0;list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"▸ ";color:var(--accent)}
+  details[open] summary::before{content:"▾ "}
+  .copybox{position:relative;background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+    padding:11px 12px;font-size:13.5px;white-space:pre-wrap;word-break:break-word}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ok);color:#062;
+    padding:10px 18px;border-radius:999px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:50}
+  .toast.show{opacity:1}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-size:12px;font-weight:600}
+  .score{font-weight:800}
+  .tag-ok{color:var(--ok)} .tag-warn{color:var(--warn)} .tag-bad{color:var(--bad)}
+  .plat{display:inline-flex;align-items:center;gap:4px;background:var(--chip);border:1px solid var(--line);
+    border-radius:8px;padding:3px 7px;font-size:12px;cursor:pointer;user-select:none}
+  .plat.on{background:var(--ok);color:#043;border-color:var(--ok);font-weight:700}
+  .item-card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+  .del{color:var(--bad);cursor:pointer;font-size:12px}
+  .kbd{background:var(--chip);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12px}
+  .foot{color:var(--muted);font-size:12px;text-align:center;margin-top:24px}
+  .bar{height:8px;background:var(--chip);border-radius:999px;overflow:hidden}
+  .bar > i{display:block;height:100%;background:var(--accent)}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="dot"></span> 쿠팡 파트너스 수익화 대시보드</div>
+  <nav id="nav">
+    <button data-t="home" class="active">🏠 대시보드</button>
+    <button data-t="guide">📋 실행 가이드</button>
+    <button data-t="score">🎯 상품 선정</button>
+    <button data-t="osmu">📤 배포 트래커</button>
+    <button data-t="ftc">⚖️ 공정위 문구</button>
+    <button data-t="calc">💰 정산 계산기</button>
+  </nav>
+</header>
+
+<main>
+  <!-- ================= HOME ================= -->
+  <section class="tab active" id="home">
+    <h2>오늘의 현황</h2>
+    <div class="grid g2">
+      <div class="card">
+        <label>이번 달 예상 확정 수익</label>
+        <div class="stat accent" id="h-rev">₩0</div>
+        <div class="muted" id="h-rev-sub" style="font-size:12.5px">정산 계산기에 판매액을 기록하면 집계됩니다</div>
+      </div>
+      <div class="card">
+        <label>진행 중인 영상 (배포 미완료)</label>
+        <div class="stat" id="h-videos">0</div>
+        <div class="muted" style="font-size:12.5px">배포 트래커 기준</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:2px">📌 매일 루틴 체크 (하루 2~3시간)</h3>
+      <div class="muted" style="font-size:12.5px;margin-bottom:8px">자정에 자동 초기화 · 주말 업로드 필수</div>
+      <div id="daily"></div>
+      <div class="bar" style="margin-top:10px"><i id="daily-bar" style="width:0%"></i></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:2px">🧭 수익 구조 한눈에</h3>
+      <div class="muted" style="font-size:13.5px">
+        영상 소싱 → 편집(중국어 제거·AI더빙·자막) → <b>OSMU 동시배포</b>(릴스·쇼츠·틱톡·페북·스레드)
+        → 인포크링크+공정위 문구 → 클릭 후 <b>24시간 내 아무 물건</b> 구매 시 결제액의 <b>3%</b> 수익
+        → <b>익익월 15일</b> 입금.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GUIDE ================= -->
+  <section class="tab" id="guide">
+    <h2>실행 가이드 (플레이북)</h2>
+    <p class="muted" style="margin-top:-6px">유튜브 요약을 "따라 하면 되는" 순서로 재구성했습니다.</p>
+
+    <details open><summary>1. 마인드셋 & 수익 원리</summary>
+      <ul>
+        <li>나는 판매자가 아니라 <b>트래픽(방문자)을 만드는 마케터</b>. 내 링크로 쿠팡에 넘기는 게 역할.</li>
+        <li>시청자가 링크 클릭 후 <b>24시간 내 어떤 물건이든</b> 구매 → 결제액의 <b>3%</b> 수익.</li>
+        <li>⚠️ 본인이 클릭 후 본인이 구매하는 건 수익 인정 안 됨.</li>
+        <li><b>OSMU</b>: 잘 만든 영상 1개 → 릴스·쇼츠·틱톡·페북·스레드에 동시 배포. 페북은 30~50대 구매력층이라 전환율 높음.</li>
+      </ul>
+    </details>
+
+    <details><summary>2. 가입 & 정산</summary>
+      <ul>
+        <li>기존 쿠팡 아이디로 가입, 처음엔 개인 → <b>월 50만원↑</b> 되면 사업자 전환 추천.</li>
+        <li>가입 시 활동할 SNS 주소 등록.</li>
+        <li>승인 단계: <span class="pill">회색불(예비, 활동·수익 가능)</span> → 누적판매 <b>15만원</b> → <span class="pill">노란불</span> → <span class="pill">초록불(최종)</span>.</li>
+        <li>정산: <b>익익월 15일</b> 입금 (1월 수익 → 2월 확정 → 3월 15일 입금).</li>
+      </ul>
+    </details>
+
+    <details><summary>3. 계정 세팅 & 벤치마킹</summary>
+      <ul>
+        <li>초반엔 카테고리 제한 말고 다양한 아이템 올리며 감 잡기.</li>
+        <li><b>A/B 전략</b>: 고품질 메인(A) + 남은 소스 재활용 서브(B)로 여러 플랫폼 배포.</li>
+        <li>새 인스타에서 '꿀템·살림템' 검색, 관련 영상에 좋아요/저장 → 알고리즘을 제품소개 영상으로 학습시키기.</li>
+      </ul>
+    </details>
+
+    <details><summary>4. 인포크링크 & 자동 DM</summary>
+      <ul>
+        <li>프로필에 쿠팡 링크를 직관적으로 다는 <b>인포크링크</b>(링크허브) 사용.</li>
+        <li><b>자동 DM</b>(유료): 댓글 달면 자동으로 제품 링크 DM 발송 → 클릭률·전환율 크게 상승.</li>
+      </ul>
+    </details>
+
+    <details><summary>5. 소싱 & 해외 영상 소스</summary>
+      <ul>
+        <li>소싱처: <b>더우인</b>(중국 틱톡), <b>샤오홍슈</b>(중국 인스타)에서 제품 영상 가져와 잘게 쪼개 편집.</li>
+        <li>툴: <b>알리프라이스</b>(이미지 검색 크롬 확장)로 제품 찾기, <b>틱비디오(TikVideo)</b>로 워터마크 없이 다운로드.</li>
+        <li>ChatGPT로 중국어 검색어 번역·추천 받기.</li>
+        <li>⚠️ 저작권 리스크 상존. 여러 원본 이어붙이기는 알고리즘 중복 회피용이지 저작권 해결책 아님.</li>
+      </ul>
+    </details>
+
+    <details><summary>6. 공정위 문구 (⚖️ 탭에서 바로 복사)</summary>
+      <ul>
+        <li>표준 문구를 <b>영상 내에 직접 표기</b>하는 게 가장 안전.</li>
+        <li>본문 맨 앞 / 스레드·페북 댓글 / 인포크링크 상단 등 <b>링크 노출되는 모든 곳</b>에 필수.</li>
+      </ul>
+    </details>
+
+    <details><summary>7. 조회수 부르는 상품 선정 & 스토리텔링</summary>
+      <ul>
+        <li>선정 기준: ① 확실히 <b>문제 해결</b> ② <b>바이럴</b>(재미/신기함) 요소.</li>
+        <li>기능 나열식 ✕ → 공감 <b>훅(Hook) + 스토리</b>. 예) "여친이 꽉 끼는 바지 입어서 생긴 고민을 이걸로 해결".</li>
+      </ul>
+    </details>
+
+    <details><summary>8. 캡컷 편집</summary>
+      <ul>
+        <li>중국어 지우기: 크롭 확대 / 클립 복사해 블러 덮기 / 유료 'AI 삭제'.</li>
+        <li>더빙: 직접 녹음 or <b>타이캐스트</b>. AI 더빙은 <b>1.2~1.3배속</b>, 끊어읽기 0으로 → 숏폼 속도감.</li>
+        <li>자동 자막 생성 + 하단 품질 보정으로 완성도 ↑.</li>
+      </ul>
+    </details>
+
+    <details><summary>9. 월 300 이후 확장 5가지</summary>
+      <ol>
+        <li>SNS 계정 추가 운영 → 트래픽 파이프라인 확장.</li>
+        <li>유튜브 쇼핑 제휴: 구독 1만/쇼츠 1천만뷰 시 수수료 <b>6.7~7%</b>로 상승.</li>
+        <li>위탁판매/구매대행 병행 (스마트스토어, 단 CS 부담).</li>
+        <li>1인 광고 대행: 조회수 나오면 업체 제안·공동구매.</li>
+        <li>단일 브랜드 런칭: 반응 좋은 제품에 집중해 자기 브랜드 스토어.</li>
+      </ol>
+    </details>
+
+    <div class="card" style="border-color:var(--accent)">
+      💡 <b>결론</b>: 환상 ✕. 트래픽 본질 이해 + 벤치마킹 + 스토리텔링으로 <b>꾸준히</b>(하루 2~3h, 주말 필수) 생산해야 수익화 가능.
+    </div>
+  </section>
+
+  <!-- ================= SCORE ================= -->
+  <section class="tab" id="score">
+    <h2>🎯 상품 선정 스코어카드</h2>
+    <p class="muted" style="margin-top:-6px">아이템을 기준별로 점수화해서 "올릴 가치"를 판단합니다.</p>
+
+    <div class="card">
+      <div class="grid g2">
+        <div><label>상품명 / 메모</label><input id="s-name" placeholder="예: 목 지압 마사지기"></div>
+        <div><label>예상 판매가 (원)</label><input id="s-price" type="number" placeholder="19900"></div>
+      </div>
+      <hr>
+      <div class="grid g2">
+        <div><label>문제 해결력 (얼마나 확실히 불편을 해결? 1~5)</label>
+          <input id="s-problem" type="range" min="1" max="5" value="3" oninput="sVal('problem')"><span class="muted" id="v-problem">3</span></div>
+        <div><label>바이럴/신기함 (시선 끄는 재미 요소? 1~5)</label>
+          <input id="s-viral" type="range" min="1" max="5" value="3" oninput="sVal('viral')"><span class="muted" id="v-viral">3</span></div>
+        <div><label>스토리텔링 가능성 (공감 훅 만들기 쉬움? 1~5)</label>
+          <input id="s-story" type="range" min="1" max="5" value="3" oninput="sVal('story')"><span class="muted" id="v-story">3</span></div>
+        <div><label>소싱 난이도 (영상 구하기 쉬움? 1=어려움 5=쉬움)</label>
+          <input id="s-source" type="range" min="1" max="5" value="3" oninput="sVal('source')"><span class="muted" id="v-source">3</span></div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="act" onclick="addItem()">+ 추가</button>
+        <span class="muted">총점 20점 만점 · <b class="tag-ok">15↑ 강추</b> / <b class="tag-warn">10~14 보류</b> / <b class="tag-bad">~9 패스</b></span>
+      </div>
+    </div>
+
+    <div id="items"></div>
+  </section>
+
+  <!-- ================= OSMU ================= -->
+  <section class="tab" id="osmu">
+    <h2>📤 OSMU 배포 트래커</h2>
+    <p class="muted" style="margin-top:-6px">영상 하나당 5개 플랫폼 배포 상태를 체크. 하나 만들면 다 뿌리는 게 핵심.</p>
+
+    <div class="card">
+      <label>영상 제목 / 아이템</label>
+      <div class="row">
+        <input id="o-title" placeholder="예: 자취생 필수템 3종" style="flex:1;min-width:200px">
+        <button class="act" onclick="addVideo()">+ 영상 추가</button>
+      </div>
+    </div>
+
+    <div id="videos"></div>
+  </section>
+
+  <!-- ================= FTC ================= -->
+  <section class="tab" id="ftc">
+    <h2>⚖️ 공정위 문구 생성기</h2>
+    <p class="muted" style="margin-top:-6px">링크가 노출되는 모든 곳에 필수. 위치별로 맞춰 복사하세요.</p>
+
+    <div class="card">
+      <label>배치 위치</label>
+      <select id="f-place" onchange="renderFtc()">
+        <option value="video">영상 내 표기 (가장 안전)</option>
+        <option value="caption">게시글 본문 맨 앞</option>
+        <option value="comment">스레드/페북 댓글</option>
+        <option value="link">인포크링크 상단</option>
+      </select>
+      <div style="margin-top:10px">
+        <label>스타일</label>
+        <div class="row" id="f-style">
+          <label class="plat on" data-s="std">표준</label>
+          <label class="plat" data-s="short">짧게</label>
+          <label class="plat" data-s="emoji">이모지</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <label>생성된 문구 (클릭하면 복사)</label>
+      <div class="copybox" id="f-out" onclick="copyText(this.innerText)"></div>
+      <div class="muted" style="font-size:12px;margin-top:8px">💡 표준 문구를 영상 내에 직접 넣는 것이 경고·계정정지를 피하는 가장 확실한 방법입니다.</div>
+    </div>
+  </section>
+
+  <!-- ================= CALC ================= -->
+  <section class="tab" id="calc">
+    <h2>💰 정산 계산기</h2>
+    <p class="muted" style="margin-top:-6px">판매액 → 수익 → 입금일(익익월 15일)을 자동 계산합니다.</p>
+
+    <div class="card">
+      <div class="grid g2">
+        <div><label>판매 발생 월</label><input id="c-month" type="month"></div>
+        <div><label>판매액 합계 (원)</label><input id="c-sales" type="number" placeholder="500000"></div>
+        <div><label>수수료율</label>
+          <select id="c-rate">
+            <option value="3">쿠팡 파트너스 기본 3%</option>
+            <option value="6.7">유튜브 쇼핑 제휴 6.7%</option>
+            <option value="7">유튜브 쇼핑 제휴 7%</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:flex-end"><button class="act" onclick="addSale()" style="width:100%">+ 기록 추가</button></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="grid g2">
+        <div><label>기록된 총 수익</label><div class="stat ok" id="c-total">₩0</div></div>
+        <div><label>이번 달(<span id="c-thismon"></span>) 입금 예정</label><div class="stat accent" id="c-thismonth">₩0</div></div>
+      </div>
+      <hr>
+      <table><thead><tr><th>판매월</th><th>판매액</th><th>율</th><th>수익</th><th>입금일</th><th></th></tr></thead>
+        <tbody id="c-rows"></tbody></table>
+    </div>
+  </section>
+
+  <div class="foot">
+    데이터는 이 브라우저에만 저장됩니다 · <a href="#" onclick="exportData();return false">백업 내보내기</a> ·
+    <a href="#" onclick="document.getElementById('imp').click();return false">가져오기</a>
+    <input type="file" id="imp" accept="application/json" style="display:none" onchange="importData(event)">
+  </div>
+</main>
+
+<div class="toast" id="toast">복사됨!</div>
+
+<script>
+/* ---------------- storage ---------------- */
+const DB={
+  items:[], videos:[], sales:[],
+  daily:{date:'',checks:{}}
+};
+function load(){ try{ Object.assign(DB, JSON.parse(localStorage.cp||'{}')); }catch(e){} }
+function save(){ localStorage.cp=JSON.stringify(DB); }
+load();
+
+/* ---------------- nav ---------------- */
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); document.getElementById(b.dataset.t).classList.add('active');
+  window.scrollTo(0,0);
+});
+
+/* ---------------- toast + copy ---------------- */
+let tT;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),1400);}
+function copyText(txt){navigator.clipboard.writeText(txt).then(()=>toast('복사됨!'),()=>toast('복사 실패'));}
+function won(n){return '₩'+Math.round(n).toLocaleString('ko-KR');}
+
+/* ---------------- daily routine ---------------- */
+const DAILY=[
+  '해외 소스(더우인/샤오홍슈)에서 아이템 영상 리서치',
+  '알리프라이스/틱비디오로 영상 다운로드',
+  '캡컷 편집(중국어 제거·AI더빙·자막·품질보정)',
+  '훅+스토리 대본 작성',
+  '5개 플랫폼 OSMU 동시 배포',
+  '공정위 문구 + 인포크링크 확인',
+  '벤치마킹 계정 좋아요/저장(알고리즘 학습)'
+];
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+function renderDaily(){
+  if(DB.daily.date!==todayStr()){DB.daily={date:todayStr(),checks:{}};save();}
+  const el=document.getElementById('daily');el.innerHTML='';
+  let done=0;
+  DAILY.forEach((t,i)=>{
+    const on=!!DB.daily.checks[i]; if(on)done++;
+    const d=document.createElement('div');d.className='check'+(on?' done':'');
+    d.innerHTML=`<input type="checkbox" ${on?'checked':''}><label>${t}</label>`;
+    d.querySelector('input').onchange=e=>{DB.daily.checks[i]=e.target.checked;save();renderDaily();};
+    el.appendChild(d);
+  });
+  document.getElementById('daily-bar').style.width=Math.round(done/DAILY.length*100)+'%';
+}
+
+/* ---------------- score card ---------------- */
+function sVal(k){document.getElementById('v-'+k).textContent=document.getElementById('s-'+k).value;}
+function addItem(){
+  const name=document.getElementById('s-name').value.trim();
+  if(!name){toast('상품명을 입력하세요');return;}
+  const g=id=>+document.getElementById('s-'+id).value;
+  const it={id:Date.now(),name,price:+document.getElementById('s-price').value||0,
+    problem:g('problem'),viral:g('viral'),story:g('story'),source:g('source')};
+  it.total=it.problem+it.viral+it.story+it.source;
+  DB.items.unshift(it);save();
+  document.getElementById('s-name').value='';document.getElementById('s-price').value='';
+  renderItems();toast('추가됨 · '+it.total+'점');
+}
+function delItem(id){DB.items=DB.items.filter(x=>x.id!==id);save();renderItems();}
+function hookIdeas(it){
+  const ideas=[];
+  if(it.problem>=4)ideas.push(`"${it.name} 없이 살던 시절로 돌아갈 수 없음" (문제 공감형)`);
+  if(it.viral>=4)ideas.push(`"이게 ${it.price?won(it.price):'이 가격'}이라고? 직접 써봤습니다" (반전/신기함)`);
+  if(it.story>=4)ideas.push(`"○○ 때문에 고민이었는데 이걸로 해결했어요" (스토리텔링)`);
+  if(!ideas.length)ideas.push('점수가 낮은 항목이 많아요. 훅을 잡기 어려울 수 있습니다.');
+  return ideas;
+}
+function renderItems(){
+  const el=document.getElementById('items');el.innerHTML='';
+  if(!DB.items.length){el.innerHTML='<p class="muted">아직 등록한 상품이 없습니다.</p>';return;}
+  DB.items.forEach(it=>{
+    let cls='tag-bad',verdict='패스';
+    if(it.total>=15){cls='tag-ok';verdict='강추 ✅';}
+    else if(it.total>=10){cls='tag-warn';verdict='보류 ⚠️';}
+    const c=document.createElement('div');c.className='item-card';
+    c.innerHTML=`
+      <div class="row" style="justify-content:space-between">
+        <b>${it.name}</b>
+        <span><span class="score ${cls}">${it.total}/20 · ${verdict}</span> &nbsp;<span class="del" onclick="delItem(${it.id})">삭제</span></span>
+      </div>
+      <div class="muted" style="font-size:12.5px;margin:6px 0">
+        문제해결 ${it.problem} · 바이럴 ${it.viral} · 스토리 ${it.story} · 소싱 ${it.source} ${it.price?'· 가격 '+won(it.price):''}
+      </div>
+      <div class="pill" style="display:block;padding:8px 10px;line-height:1.7">
+        💬 훅 아이디어<br>${hookIdeas(it).map(x=>'· '+x).join('<br>')}
+      </div>`;
+    el.appendChild(c);
+  });
+}
+
+/* ---------------- OSMU tracker ---------------- */
+const PLATS=['릴스','쇼츠','틱톡','페북','스레드'];
+function addVideo(){
+  const t=document.getElementById('o-title').value.trim();
+  if(!t){toast('영상 제목을 입력하세요');return;}
+  DB.videos.unshift({id:Date.now(),title:t,plats:{}});save();
+  document.getElementById('o-title').value='';renderVideos();
+}
+function delVideo(id){DB.videos=DB.videos.filter(v=>v.id!==id);save();renderVideos();updateHome();}
+function togglePlat(vid,p){const v=DB.videos.find(x=>x.id===vid);v.plats[p]=!v.plats[p];save();renderVideos();updateHome();}
+function renderVideos(){
+  const el=document.getElementById('videos');el.innerHTML='';
+  if(!DB.videos.length){el.innerHTML='<p class="muted">등록한 영상이 없습니다.</p>';return;}
+  DB.videos.forEach(v=>{
+    const done=PLATS.filter(p=>v.plats[p]).length;
+    const c=document.createElement('div');c.className='item-card';
+    c.innerHTML=`<div class="row" style="justify-content:space-between">
+        <b>${v.title}</b>
+        <span><span class="pill">${done}/5 배포</span> &nbsp;<span class="del" onclick="delVideo(${v.id})">삭제</span></span>
+      </div>
+      <div class="row" style="margin-top:8px">
+        ${PLATS.map(p=>`<span class="plat ${v.plats[p]?'on':''}" onclick="togglePlat(${v.id},'${p}')">${v.plats[p]?'✔':'○'} ${p}</span>`).join('')}
+      </div>`;
+    el.appendChild(c);
+  });
+}
+
+/* ---------------- FTC ---------------- */
+const FTC={
+  std:'이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.',
+  short:'쿠팡 파트너스 활동으로 일정 수수료를 제공받습니다.',
+  emoji:'💡 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.'
+};
+let ftcStyle='std';
+document.querySelectorAll('#f-style label').forEach(l=>l.onclick=()=>{
+  document.querySelectorAll('#f-style label').forEach(x=>x.classList.remove('on'));
+  l.classList.add('on');ftcStyle=l.dataset.s;renderFtc();
+});
+function renderFtc(){
+  const place=document.getElementById('f-place').value;
+  let base=FTC[ftcStyle],out=base;
+  if(place==='caption')out=base+'\n\n(본문 맨 위에 배치)';
+  else if(place==='comment')out=base+'\n\n👉 링크는 프로필 인포크링크에서!';
+  else if(place==='link')out='['+base+']';
+  document.getElementById('f-out').innerText=out;
+}
+
+/* ---------------- calc ---------------- */
+function payoutDate(ym){ // ym = 'YYYY-MM' -> 익익월 15일
+  const [y,m]=ym.split('-').map(Number);
+  let mm=m+2,yy=y; if(mm>12){mm-=12;yy++;}
+  return yy+'-'+String(mm).padStart(2,'0')+'-15';
+}
+function thisMonthKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function addSale(){
+  const month=document.getElementById('c-month').value;
+  const sales=+document.getElementById('c-sales').value;
+  const rate=+document.getElementById('c-rate').value;
+  if(!month||!sales){toast('판매월과 판매액을 입력하세요');return;}
+  DB.sales.unshift({id:Date.now(),month,sales,rate,rev:sales*rate/100,pay:payoutDate(month)});
+  save();document.getElementById('c-sales').value='';renderSales();updateHome();
+}
+function delSale(id){DB.sales=DB.sales.filter(s=>s.id!==id);save();renderSales();updateHome();}
+function renderSales(){
+  const rows=document.getElementById('c-rows');rows.innerHTML='';
+  let total=0,thisMon=0;const tmk=thisMonthKey();
+  DB.sales.forEach(s=>{
+    total+=s.rev;
+    if(s.pay.slice(0,7)===tmk)thisMon+=s.rev;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${s.month}</td><td>${won(s.sales)}</td><td>${s.rate}%</td>
+      <td class="tag-ok">${won(s.rev)}</td><td>${s.pay}</td>
+      <td><span class="del" onclick="delSale(${s.id})">×</span></td>`;
+    rows.appendChild(tr);
+  });
+  document.getElementById('c-total').textContent=won(total);
+  document.getElementById('c-thismonth').textContent=won(thisMon);
+  document.getElementById('c-thismon').textContent=tmk;
+}
+
+/* ---------------- home summary ---------------- */
+function updateHome(){
+  const tmk=thisMonthKey();
+  let rev=DB.sales.filter(s=>s.pay.slice(0,7)===tmk).reduce((a,s)=>a+s.rev,0);
+  document.getElementById('h-rev').textContent=won(rev);
+  const open=DB.videos.filter(v=>PLATS.filter(p=>v.plats[p]).length<5).length;
+  document.getElementById('h-videos').textContent=open;
+}
+
+/* ---------------- export / import ---------------- */
+function exportData(){
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='coupang-partner-backup.json';a.click();toast('백업 저장됨');
+}
+function importData(e){
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{Object.assign(DB,JSON.parse(r.result));save();initAll();toast('가져오기 완료');}catch(x){toast('파일 오류');}};
+  r.readAsText(f);
+}
+
+/* ---------------- init ---------------- */
+function initAll(){renderDaily();renderItems();renderVideos();renderFtc();renderSales();updateHome();
+  if(!document.getElementById('c-month').value)document.getElementById('c-month').value=thisMonthKey();}
+initAll();
+</script>
+</body>
+</html>
