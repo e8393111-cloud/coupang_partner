@@ -42,10 +42,19 @@ def wrap(draw, text, font, maxw):
 def make_png(text, path):
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    # 상단 바(불투명) — 원본 "81% 할인" 배너 + 워터마크 가림
-    d.rectangle([0, 0, W, 225], fill=(12, 14, 20, 255))
-    # 하단 바(불투명) — 원본 자막 완전 가림
-    d.rectangle([0, BAR_Y0, W, BAR_Y1], fill=(12, 14, 20, 255))
+    # 상단 바(불투명, 끝까지) — 원본 배너/워터마크·색띠 가림 + 공정위 문구 상시 노출
+    TOP = 300
+    d.rectangle([0, 0, W, TOP], fill=(12, 14, 20, 255))
+    disc = "쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다"
+    dfont = ImageFont.truetype(FONT, 36)
+    dlines = wrap(d, disc, dfont, W - 70)
+    dlh = 46
+    dy = (TOP - dlh * len(dlines)) // 2
+    for i, ln in enumerate(dlines):
+        tw = d.textlength(ln, font=dfont)
+        d.text(((W - tw) / 2, dy + i * dlh), ln, font=dfont, fill=(205, 208, 215, 255))
+    # 하단 바(불투명, 화면 끝까지) — 원본 자막·색띠 완전 가림
+    d.rectangle([0, BAR_Y0, W, H], fill=(12, 14, 20, 255))
     font = ImageFont.truetype(FONT, 60)
     lines = wrap(d, text, font, W - 120)
     lh = 76
