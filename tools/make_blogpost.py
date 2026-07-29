@@ -376,6 +376,7 @@ def main():
         "headtohead": build_headtohead(items),
         "table_note": build_table_note(d.get("platform_facts") or {}, items),
         "coupang_items": build_items(items, "coupang"),
+        "toss_note": (f'<p class="tossnote">{d["toss_note"]}</p>' if d.get("toss_note") else ""),
         "toss_items": build_items(items, "toss"),
         "criteria": CRITERIA,
         "faq": build_faq(),
