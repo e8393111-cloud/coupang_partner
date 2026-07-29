@@ -1,122 +1,58 @@
 {
-  "category": "강아지 고양이 자동급식기",
-  "checked_at": "",
-  "_주의": "danawa_price 는 시세 참고용. 글에 싣는 가격은 쿠팡·토스 실제 페이지 기준이어야 한다.",
+  "category": "자동급식기",
+  "checked_at": "2026-07-29",
+  "_출처": "쿠팡 검색결과 화면(2026-07-29 사용자 캡처)에서 읽은 값. 토스쇼핑은 미확인.",
+  "_주의": "검색 목록에 안 보이는 사양(정전 대비·습식 가능·세척 방식·소음)은 추측하지 않고 비워 뒀다. 상세페이지 확인 후 채울 것.",
   "items": [
     {
-      "name": "와이파이 제어 저소음 설계 대용량 반려동물 자동 급식기 강아지 고양이 겸용",
-      "brand": "와이파이",
+      "name": "파우시 강아지 고양이 자동급식기 3L 화이트",
+      "brand": "파우시",
       "model": "",
-      "danawa_price": 29410,
-      "coupang": null,
+      "coupang": { "price": 34920, "list_price": 58000, "rocket": true, "rocket_type": "판매자로켓", "reviews": 1098, "rating": 4.5, "url": "" },
       "toss": null,
-      "spec": {
-        "capacity_l": null,
-        "wet_food": false,
-        "power": "",
-        "blackout_backup": false,
-        "app": false,
-        "camera": false,
-        "washable": "",
-        "noise_db": null
-      },
-      "note": "용량 확인 필요 · 전원 방식 확인 필요",
-      "links": {
-        "coupang": "",
-        "toss": ""
-      }
+      "spec": { "capacity_l": 3, "wet_food": false, "power": "", "blackout_backup": false, "app": false, "camera": false, "washable": "", "noise_db": null },
+      "note": "가성비 구간. 리뷰 1,098개로 신뢰도 확보. 모델명 미표기 → 토스에서 대조할 때 용량·색상으로 확인 필요",
+      "links": { "coupang": "", "toss": "" }
     },
     {
-      "name": "페페 자동급식기 SF-300",
-      "brand": "페페",
-      "model": "SF-300",
-      "danawa_price": 86770,
-      "coupang": null,
+      "name": "디클펫 반려동물 자동급식기 AT-310 4L 화이트+불투명",
+      "brand": "디클펫",
+      "model": "AT-310",
+      "coupang": { "price": 47300, "list_price": 223000, "rocket": true, "rocket_type": "로켓배송", "reviews": 2253, "rating": 4.8, "url": "" },
       "toss": null,
-      "spec": {
-        "capacity_l": null,
-        "wet_food": false,
-        "power": "",
-        "blackout_backup": false,
-        "app": true,
-        "camera": false,
-        "washable": "분리세척",
-        "noise_db": null
-      },
-      "note": "용량 확인 필요 · 전원 방식 확인 필요 · 다나와 표기: 자동급식기, 급여횟수: 6회, 재질: ABS, 크기: 32x32x8.3cm",
-      "links": {
-        "coupang": "",
-        "toss": ""
-      }
+      "spec": { "capacity_l": 4, "wet_food": false, "power": "", "blackout_backup": false, "app": false, "camera": false, "washable": "", "noise_db": null },
+      "note": "리뷰 2,253개로 이 카테고리 최다. 로켓배송 + 쿠팡추천 배지. 모델명이 명확해 대조가 쉽다",
+      "links": { "coupang": "", "toss": "" }
     },
     {
-      "name": "샤오미 자동급식기 XWPF01MG (3.6L)",
-      "brand": "샤오미",
-      "model": "XWPF01MG",
-      "danawa_price": 111584,
-      "coupang": null,
+      "name": "페블펫 와이파이 앱연동 대용량 3.5L 스마트 자동급식기 IPF-W100",
+      "brand": "페블펫",
+      "model": "IPF-W100",
+      "coupang": { "price": 51900, "list_price": 139000, "rocket": true, "rocket_type": "판매자로켓", "reviews": 648, "rating": 4.8, "url": "" },
       "toss": null,
-      "spec": {
-        "capacity_l": 3.6,
-        "wet_food": false,
-        "power": "",
-        "blackout_backup": false,
-        "app": true,
-        "camera": false,
-        "washable": "",
-        "noise_db": null
-      },
-      "note": "전원 방식 확인 필요 · 다나와 표기: 강아지·고양이 겸용, 자동급식기, 음성 녹음, 타이머",
-      "links": {
-        "coupang": "",
-        "toss": ""
-      }
+      "spec": { "capacity_l": 3.5, "wet_food": false, "power": "", "blackout_backup": false, "app": true, "camera": false, "washable": "", "noise_db": null },
+      "note": "와이파이 앱 연동. 모델명 명확. 리뷰 648개",
+      "links": { "coupang": "", "toss": "" }
     },
     {
-      "name": "고양이 스마트앱 자동 급식기 1P 애견 원격제어 식사",
-      "brand": "고양이",
+      "name": "Mochae 자동 급식기 대용량 스마트 스테인리스 식기 4.5L",
+      "brand": "Mochae",
       "model": "",
-      "danawa_price": 119600,
-      "coupang": null,
+      "coupang": { "price": 86650, "list_price": 144330, "rocket": false, "rocket_type": "", "reviews": 2, "rating": 5.0, "url": "" },
       "toss": null,
-      "spec": {
-        "capacity_l": null,
-        "wet_food": false,
-        "power": "",
-        "blackout_backup": false,
-        "app": false,
-        "camera": false,
-        "washable": "",
-        "noise_db": null
-      },
-      "note": "용량 확인 필요 · 전원 방식 확인 필요",
-      "links": {
-        "coupang": "",
-        "toss": ""
-      }
+      "spec": { "capacity_l": 4.5, "wet_food": false, "power": "", "blackout_backup": false, "app": false, "camera": false, "washable": "스테인리스 식기", "noise_db": null },
+      "note": "쿠팡 랭킹 상위 노출이지만 리뷰가 2개뿐 — 글에 이 사실을 반드시 명시할 것. 스테인리스 식기가 차별점",
+      "links": { "coupang": "", "toss": "" }
     },
     {
-      "name": "[해외] 자동급식기 고양이 강아지 도그니스 3.6L 화이트 + 1L자동정수기",
-      "brand": "[해외]",
+      "name": "헬로미펫 반려동물 방습 앱연동 펫캠 자동급식기 2구타입 7L",
+      "brand": "헬로미펫",
       "model": "",
-      "danawa_price": 153500,
-      "coupang": null,
+      "coupang": { "price": 148000, "list_price": 190000, "rocket": false, "rocket_type": "", "reviews": 6, "rating": 5.0, "url": "" },
       "toss": null,
-      "spec": {
-        "capacity_l": null,
-        "wet_food": false,
-        "power": "",
-        "blackout_backup": false,
-        "app": false,
-        "camera": false,
-        "washable": "",
-        "noise_db": null
-      },
-      "note": "용량 확인 필요 · 전원 방식 확인 필요",
-      "links": {
-        "coupang": "",
-        "toss": ""
-      }
+      "spec": { "capacity_l": 7, "wet_food": false, "power": "", "blackout_backup": false, "app": true, "camera": true, "washable": "", "noise_db": null },
+      "note": "프리미엄 구간. 카메라 + 2구 급여 + 방습. 무료반품. 다만 리뷰 6개로 적음 — 글에 명시할 것",
+      "links": { "coupang": "", "toss": "" }
     }
   ]
 }
