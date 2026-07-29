@@ -328,6 +328,24 @@ def build_items(items, platform):
     return "\n".join(render_item(i) for i in rows) or "<p>해당 쇼핑몰에서 고른 상품이 없습니다.</p>"
 
 
+def build_toss_block(items, d):
+    """토스에 본 목록감이 없으면 그 사실을 섹션으로 밝힌다.
+
+    "해당 쇼핑몰에서 고른 상품이 없습니다" 한 줄로 넘기면 성의가 없어 보이고,
+    검증 안 된 제품을 억지로 채우면 글이 스스로 세운 기준을 어긴다.
+    없는 이유를 쓰는 게 셋 중 제일 정직하고 제일 읽을 만하다.
+    """
+    rows = by_platform(items, "toss")
+    if rows:
+        note = f'<p class="tossnote">{d["toss_note"]}</p>' if d.get("toss_note") else ""
+        return ('<h2>토스쇼핑에서 살 만한 것</h2>' + note
+                + "\n".join(render_item(i) for i in rows))
+    skip = d.get("toss_skip")
+    if not skip:
+        return ""
+    return f'<h2>토스쇼핑은 이번에 뺐습니다</h2><p class="tossnote">{skip}</p>'
+
+
 def build_semi(items, note):
     rows = semi_items(items)
     if not rows:
@@ -395,8 +413,7 @@ def main():
         "headtohead": build_headtohead(items),
         "table_note": build_table_note(d.get("platform_facts") or {}, items),
         "coupang_items": build_items(items, "coupang"),
-        "toss_note": (f'<p class="tossnote">{d["toss_note"]}</p>' if d.get("toss_note") else ""),
-        "toss_items": build_items(items, "toss"),
+        "toss_block": build_toss_block(items, d),
         "semi": build_semi(items, d.get("semi_note", "")),
         "criteria": CRITERIA,
         "faq": build_faq(),
