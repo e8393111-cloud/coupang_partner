@@ -3,8 +3,13 @@
 > 마지막 업데이트: 2026-07-29 · 다른 세션에서 이 파일 읽고 그대로 이어가면 됨.
 
 ## 0. 한 줄 요약
-쿠팡 파트너스 **숏폼(릴스/쇼츠/틱톡) 반자동 수익화** 프로젝트. 첫 상품(**UV 모기퇴치기**)으로 완성 영상 + 상세페이지까지 제작 완료. 파이프라인 검증됨.
-2026-07-29: 1회성 스크립트를 **설정(JSON) 기반 파이프라인**으로 정리 → 새 상품은 `products/<id>.json` 하나만 채우면 됨.
+**트랙이 둘이다.**
+1. **숏폼 트랙** — 쿠팡 파트너스 릴스/쇼츠/틱톡. 첫 상품(UV 모기퇴치기) 완성 영상 + 상세페이지까지 제작 완료.
+2. **블로그 트랙** — 블로그스팟 「어디사」(반려동물 가전 가격비교). 2026-07-29 개설, 필수 페이지 3개 발행 완료,
+   **첫 글 초안 완성 (발행 대기 — 제휴 링크 3개 남음)**.
+
+두 트랙 모두 **설정(JSON) 하나 채우면 결과물이 나오는** 파이프라인으로 정리돼 있다.
+전략·근거는 `PLAN.md`, 실행 방법은 이 파일.
 
 ## 0-1. ⚠️ 브랜치 상태 (먼저 읽을 것)
 - `claude/coupang-partners-monetization-v92w7y` 와 `claude/coupang-partners-monetization-3xx5n7` **두 브랜치는 내용이 같다**(2026-07-29 미러링). 어느 쪽 raw/Pages URL 을 써도 동일.
@@ -61,33 +66,41 @@
 
 ## 4. repo 구조
 ```
-index.html                     # 수익화 대시보드(별개 툴, PWA)
-manifest.json
-HANDOFF.md                     # ← 이 파일 (실행 파이프라인 현황)
-PLAN.md                        # ★확장 계획: 블로그 리스티클 + 토스쇼핑 병행 + 해외 검토
-VIDEO_PROJECT_모기퇴치기.md     # 초기 AI 클립 6개 링크 + 캡컷 조립안(참고용 기록)
+HANDOFF.md                     # ← 이 파일 (실행 방법)
+PLAN.md                        # 전략·근거·의사결정 기록
+index.html / manifest.json     # 수익화 대시보드(별개 툴, PWA)
+
+─── 숏폼 트랙 ───────────────────────────────
 products/
-  _template.json               # ★새 상품 시작점 (복사해서 값만 채움)
-  mosquito.json                # ★모기퇴치기 전체 설정(소스·자막·상세페이지·캡션)
+  _template.json               # 새 상품 시작점
+  mosquito.json                # 모기퇴치기 전체 설정
 tools/
   prep_source.py               # ① 소스 크롭/트림/이어붙이기
-  render_short.py              # ② VO 합성 + 공정위 상단바 + 자막 번인 (최종 렌더러)
+  render_short.py              # ② VO 합성 + 공정위 상단바 + 자막 번인
   make_landing.py              # ③ 상세페이지 생성
-  landing_template.html        #    └ 상세페이지 템플릿(디자인은 여기서 수정)
-  make_post.py                 # ④ 플랫폼별 업로드 캡션 키트 생성
+  landing_template.html        #    └ 상세페이지 템플릿
+  make_post.py                 # ④ 업로드 캡션 키트
   plumbing_test.py             # ffmpeg+한글자막 배관 테스트
-assets/
-  mirra_cleaned.mp4            # 정리된 소스(15.03s)
-  mirra_final.mp4              # ★최종 영상(홈쇼핑 VO+자막싱크+공정위, 16.60s)
-  mosquito-lamp-bedside.jpg    # 실제 제품 사진(사용자 업로드)
-  mosquito-lamp-detail.jpg     # 쿠팡 상세 스크린샷(UI 있음)
-  test_render.mp4              # ffmpeg 배관 테스트 결과
-vo.mp3                         # 최종 VO(홈쇼핑 톤, 사용자가 업로드한 것)
-p/mosquito.html                # 상세페이지(자동 생성물 — 직접 고치지 말 것)
-posts/mosquito.md              # 업로드 캡션 키트(자동 생성물)
+assets/  vo.mp3  p/mosquito.html  posts/mosquito.md
+
+─── 블로그 트랙 ─────────────────────────────
+posts_data/
+  feeder.json                  # ★자동급식기 글 데이터(상품·후기·링크·배너)
+  _sample.json                 # 스키마 예시
+tools/
+  make_blogpost.py             # ★글 생성기 (문구·표·논리)
+  blogpost_template.html       #    └ 레이아웃·CSS (디자인은 여기서)
+  make_preview.py              # 발행 전 미리보기 (폰트 인라인)
+  danawa_specs.py              # 다나와에서 후보·모델명·사양 수집
+blog/
+  README.md                    # 블로그 운영 메모
+  collect_prompt.md            # 브라우저 클로드용 상품 수집 프롬프트
+  pages/about|privacy|contact.html   # 필수 페이지 3종 (발행 완료)
+  posts/자동급식기.html          # ★첫 글 (생성물)
+assets/fonts/sub-*.woff2       # Pretendard 서브셋 (미리보기용, OFL 1.1)
 ```
-> `p/*.html`, `posts/*.md`, `assets/*final*.mp4` 는 **생성물**이다. 고칠 땐 `products/<id>.json` 또는 `tools/landing_template.html` 을 고치고 다시 생성할 것.
-> (2026-07-29에 1회성 스크립트 `resub.py`·`mux_vo.py`·`mirra_postproc.py` 는 위 도구들로 대체되어 삭제. 필요하면 git 히스토리에 있음.)
+> `blog/posts/*.html`, `p/*.html`, `posts/*.md`, `assets/*final*.mp4` 는 **생성물**이다.
+> 고칠 땐 `posts_data/` · `products/` 의 JSON 이나 `tools/*template*` 을 고치고 다시 생성할 것.
 
 ## 5. 완성물 URL
 - **최종 영상**: `https://raw.githubusercontent.com/e8393111-cloud/coupang_partner/claude/coupang-partners-monetization-v92w7y/assets/mirra_final.mp4`
@@ -133,15 +146,46 @@ python3 tools/render_short.py products/<id>.json --auto-caps   # 무음 기준 �
 - 바 위치·폰트 크기 등은 JSON에서 덮어쓰기 가능(`top_bar_h`, `bottom_bar_y`, `caption_size` …)
 - 검증: 새 렌더러로 다시 뽑은 `mirra_final.mp4` 가 기존 파일과 **바이트 단위 동일**(1,578,679 bytes / 16.60s)
 
+## 6-2. 블로그 파이프라인
+
+```
+[상품 후보·모델명·사양]   ← 나 (tools/danawa_specs.py) 또는 사용자 캡처
+        ↓
+[쿠팡·토스 실제 가격·후기·링크]  ← 사용자 (내 환경에서 두 사이트 모두 403)
+        ↓  캡처를 채팅에 올리면 내가 읽어서 JSON 으로 정리
+posts_data/<id>.json
+        ↓
+python3 tools/make_blogpost.py posts_data/<id>.json   # 블로거용 HTML
+python3 tools/make_preview.py  posts_data/<id>.json   # 발행 전 미리보기
+        ↓
+blog/posts/<id>.html 을 블로거 "HTML 보기"에 붙여넣기 → 발행
+```
+
+**필수 페이지(소개·개인정보처리방침·연락처)는 발행 완료.**
+블로거는 페이지에 커스텀 퍼머링크가 없어 **영문 제목으로 먼저 게시해 URL 을 고정한 뒤
+제목만 한글로 바꾸는** 우회를 썼다 (자세히는 `blog/README.md`).
+
+### 첫 글 현황 — 자동급식기
+- 상품 **쿠팡 2 + 토스 2**. 본문 약 4,900자. 구조·디자인 확정(PLAN 1-6, 1-6-1).
+- 파우시는 상품평 캡처를 받아 **실제 후기 기반 장단점**이 들어가 있다.
+- 쿠팡 파트너스 **상품 배너(iframe)** 로 제품 이미지 해결 — 가격이 자동 갱신된다.
+- **남은 것**: 페블펫 상품평 캡처 1개 / 제휴 링크 3개(페블펫·디토펫·신일전자) / 배너 3개(선택)
+
 ## 7. 지금 바로 할 일 (TODO)
-1. **[사용자] GitHub Pages 켜기**: Settings→Pages→Source "Deploy from a branch"→ **`claude/coupang-partners-monetization-v92w7y`** (또는 `...-3xx5n7`, 둘 다 같음) /root → Save.
-2. **[사용자→나] 쿠파스 딥링크**: 링크만 주면 `python3 tools/make_landing.py products/mosquito.json --deeplink "<링크>"` 로 한 방에 반영. 지금은 딥링크가 안 박혀서 **구매 버튼이 비활성** 상태(잘못된 링크로 유입되지 않게 일부러 막아둠).
-3. **[확인] 가격/할인**: 상세페이지 89,000→26,000 표시가 실제 쿠팡과 맞는지. 다르면 `products/mosquito.json` 의 `landing.price` / `list_price` / `sticky_cta` 만 고치고 재생성. (나는 쿠팡 접근이 막혀 확인 불가)
-4. **[사용자] 링크 세팅**: 인포크링크(or 상세페이지 URL)를 인스타/틱톡 바이오에. **틱톡은 비즈니스 계정 전환**해야 바이오 링크 생김.
-5. **[사용자] 업로드**: `assets/mirra_final.mp4` + `posts/mosquito.md` 의 캡션 복붙. 틱톡은 앱에서 트렌딩 사운드 얹기.
-6. **[다음] 반응 데이터 보고** 훅/상품 조정 → 잘 되면 전체 흐름 Skill로 고정.
-7. **[계획] 블로그·토스쇼핑 확장** → `PLAN.md` 참고. 사용자 GO 사인 전까지 구현 대기.
-8. **[다음] 2번째 상품**: `products/_template.json` 복사해서 시작. footage/VO만 사용자가 주면 나머지는 자동.
+
+**블로그 트랙 — 첫 글 발행까지**
+1. **[사용자] 페블펫 IPF-W100 상품평 캡처** → 실제 후기 기반 장단점으로 교체
+2. **[사용자] 제휴 링크 3개** — 페블펫(쿠팡 딥링크) / 디토펫·신일전자(**토스 "쉐어링크 공유하기"**)
+   ⚠️ 토스는 일반 "공유하기"로 만든 링크는 **수익 0원**이다
+3. **[선택] 쿠팡 파트너스 상품 배너 3개** — 이미지까지 넣으려면
+4. **[나] 반영 후 발행** — 링크 받으면 바로
+5. **[다음] 블로거 테마** — 본문은 정리됐지만 헤더·사이드바는 아직 기본 테마
+
+**숏폼 트랙**
+6. **[사용자] GitHub Pages 켜기**: Settings→Pages→Deploy from a branch→ `...-v92w7y` /root
+7. **[사용자→나] 쿠파스 딥링크** → `make_landing.py --deeplink "<링크>"` 로 반영
+8. **[확인] 가격/할인** 89,000→26,000 이 실제와 맞는지 (나는 쿠팡 접근 불가)
+9. **[사용자] 업로드**: `assets/mirra_final.mp4` + `posts/mosquito.md` 캡션
 
 ## 8. 연결된 MCP (이 프로젝트에서 씀)
 - **higgsfield**: generate_image/video/audio(TTS), models_explore, list_voices, media_import_url(공개 URL만), job_display. (업로드는 egress로 막힘)
@@ -154,3 +198,12 @@ python3 tools/render_short.py products/<id>.json --auto-caps   # 무음 기준 �
 3. `prep_source.py` → `render_short.py --probe` 로 타이밍 확인 → `captions` 손보고 다시 `render_short.py`
 4. `make_landing.py`, `make_post.py` 실행 후 push
 5. 딥링크 받으면 `make_landing.py --deeplink "<링크>"` 로 갱신
+
+## 10. 새 글 쓰는 법 (블로그, 요약)
+1. 상품 후보를 정한다. **대분류가 아니라 「디토펫 반려동물 자동급식기」처럼 상품을 특정**해서
+   사용자에게 검색 목록으로 준다 (사용자 요청, 2026-07-29).
+2. 사용자가 쿠팡·토스 화면을 캡처 → 내가 읽어 `posts_data/<id>.json` 작성
+   - 검색 목록에 없는 사양(정전 대비·습식·세척·소음)은 **추측하지 말고 비워 둔다**
+   - 상품평 캡처를 받으면 `pros`/`cons`/`review_insight` 에 실제 근거를 넣는다
+3. 제휴 링크를 `link` 에, 파트너스 배너를 `banner` 에 넣는다 (없으면 버튼이 자동 비활성)
+4. `make_blogpost.py` → `make_preview.py` → 확인 → 블로거에 붙여넣기
