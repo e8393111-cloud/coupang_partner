@@ -46,7 +46,12 @@ def net(item):
 
 
 def by_platform(items, key):
-    return [i for i in items if i.get("platform") == key]
+    """반자동(중력식)은 목적이 달라 본 목록에서 빼고 별도 섹션으로 다룬다."""
+    return [i for i in items if i.get("platform") == key and i.get("product_type") != "semi"]
+
+
+def semi_items(items):
+    return [i for i in items if i.get("product_type") == "semi"]
 
 
 def src_tag(platform):
@@ -80,7 +85,8 @@ def build_toppick(d, items):
 
 # ---------- 결론 ----------
 
-def build_tldr(items):
+def build_tldr(all_items):
+    items = [i for i in all_items if i.get("product_type") != "semi"]
     """추천 근거는 데이터에 있는 것만 쓴다.
 
     가격만 보고 뽑으면 20원 차이로 리뷰 1,098건짜리를 제치고 2건짜리가 올라온다.
@@ -128,7 +134,8 @@ def build_tldr(items):
 
 # ---------- 표 ----------
 
-def build_table(items):
+def build_table(all_items):
+    items = [i for i in all_items if i.get("product_type") != "semi"]
     head = ('<table><thead><tr><th>제품</th><th>판매처</th><th>가격</th>'
             '<th>적립</th><th>적립 후</th><th>후기</th><th>용량</th></tr></thead><tbody>')
     rows = []
@@ -234,88 +241,100 @@ def build_table_note(facts, items):
 
 # ---------- 제품 ----------
 
-def build_items(items, platform):
-    label, cls = SHOP[platform]
-    out = []
-    for i in by_platform(items, platform):
-        sp = i.get("spec") or {}
-        meta = " · ".join(x for x in [i.get("brand"), i.get("model")] if x) or "모델명 미표기"
+def render_item(i):
+    """제품 카드 하나. 본 목록과 반자동 섹션이 같은 렌더러를 쓴다."""
+    label, cls = SHOP[i["platform"]]
+    sp = i.get("spec") or {}
+    meta = " · ".join(x for x in [i.get("brand"), i.get("model")] if x) or "모델명 미표기"
 
-        specs = []
-        if sp.get("capacity_l"):
-            specs.append(f'용량 {sp["capacity_l"]}L')
+    specs = []
+    if sp.get("capacity_l"):
+        specs.append(f'용량 {sp["capacity_l"]}L')
+    if sp.get("app"):
+        specs.append("앱 연동")
+    if sp.get("camera"):
+        specs.append("카메라")
+    if sp.get("wet_food"):
+        specs.append("습식 가능")
+    if sp.get("power"):
+        specs.append(esc(sp["power"]))
+    if sp.get("food_size_mm"):
+        specs.append(f'사료 {esc(sp["food_size_mm"])}')
+    if sp.get("washable"):
+        specs.append(esc(sp["washable"]))
+    specs.append(esc(i.get("delivery", "배송 조건 표기 없음")))
+
+    # 후기를 확인한 제품은 사람이 정리한 장단점을 쓴다.
+    # 자동 문구는 "확인이 안 됐다"는 말뿐이라 진짜 장단점이 아니다.
+    pros = list(i.get("pros") or [])
+    cons = list(i.get("cons") or [])
+    if not (pros or cons):
+        if (i.get("reviews") or 0) >= 500:
+            pros.append(f'후기 {int(i["reviews"]):,}건 · 평점 {i.get("rating")} — 검증이 충분합니다')
+        elif i.get("reviews"):
+            cons.append(f'후기가 {int(i["reviews"])}건뿐이라 판단할 근거가 얇습니다')
+        else:
+            cons.append("후기 수가 표기되지 않아 검증이 어렵습니다")
         if sp.get("app"):
-            specs.append("앱 연동")
+            pros.append("밖에서 급여 시간·양을 바꿀 수 있습니다")
         if sp.get("camera"):
-            specs.append("카메라")
-        if sp.get("wet_food"):
-            specs.append("습식 가능")
-        if sp.get("power"):
-            specs.append(esc(sp["power"]))
-        if sp.get("food_size_mm"):
-            specs.append(f'사료 {esc(sp["food_size_mm"])}')
-        if sp.get("washable"):
-            specs.append(esc(sp["washable"]))
-        specs.append(esc(i.get("delivery", "배송 조건 표기 없음")))
+            pros.append("먹는 모습을 확인할 수 있습니다")
+        if not sp.get("capacity_l"):
+            cons.append("목록에 용량 표기가 없어 상세페이지 확인이 필요합니다")
+        # 정전 대비는 build_blackout 이 한 곳에 정리하므로 카드마다 반복하지 않는다
 
-        # 후기를 확인한 제품은 사람이 정리한 장단점을 쓴다.
-        # 자동 문구는 "확인이 안 됐다"는 말뿐이라 진짜 장단점이 아니다.
-        pros = list(i.get("pros") or [])
-        cons = list(i.get("cons") or [])
-        if not (pros or cons):
-            if (i.get("reviews") or 0) >= 500:
-                pros.append(f'후기 {int(i["reviews"]):,}건 · 평점 {i.get("rating")} — 검증이 충분합니다')
-            elif i.get("reviews"):
-                cons.append(f'후기가 {int(i["reviews"])}건뿐이라 판단할 근거가 얇습니다')
-            else:
-                cons.append("후기 수가 표기되지 않아 검증이 어렵습니다")
-            if sp.get("app"):
-                pros.append("밖에서 급여 시간·양을 바꿀 수 있습니다")
-            if sp.get("camera"):
-                pros.append("먹는 모습을 확인할 수 있습니다")
-            if not sp.get("capacity_l"):
-                cons.append("목록에 용량 표기가 없어 상세페이지 확인이 필요합니다")
-            # 정전 대비는 build_blackout 이 한 곳에 정리하므로 카드마다 반복하지 않는다
+    pc = '<div class="pc">'
+    pc += ('<div class="pcbox good"><div class="pclabel">좋은 점</div><ul>'
+           + "".join(f"<li>{p}</li>" for p in pros) + "</ul></div>") if pros else ""
+    pc += ('<div class="pcbox bad"><div class="pclabel">아쉬운 점</div><ul>'
+           + "".join(f"<li>{c}</li>" for c in cons) + "</ul></div>") if cons else ""
+    pc += "</div>"
 
-        pc = '<div class="pc">'
-        pc += ('<div class="pcbox good"><div class="pclabel">좋은 점</div><ul>'
-               + "".join(f"<li>{p}</li>" for p in pros) + "</ul></div>") if pros else ""
-        pc += ('<div class="pcbox bad"><div class="pclabel">아쉬운 점</div><ul>'
-               + "".join(f"<li>{c}</li>" for c in cons) + "</ul></div>") if cons else ""
-        pc += "</div>"
+    quote = (f'<div class="quote"><span class="qh">후기를 보면</span>{i["review_insight"]}</div>'
+             if i.get("review_insight") else "")
+    reason = (f'<div class="reason"><b>이럴 때 이 제품</b> {i["buy_reason"]}</div>'
+              if i.get("buy_reason") else "")
+    aside = f'<p class="aside">{i["note"]}</p>' if i.get("note") else ""
+    # 배너는 파트너스 공식 위젯 코드를 그대로 넣는다(이미지·가격·링크 포함).
+    # 상품 이미지를 직접 퍼오는 것과 달리 정책상 허용되는 방식이다.
+    banner = f'<div class="banner">{i["banner"]}</div>' if i.get("banner") else ""
 
-        quote = (f'<div class="quote"><span class="qh">후기를 보면</span>{i["review_insight"]}</div>'
-                 if i.get("review_insight") else "")
-        reason = (f'<div class="reason"><b>이럴 때 이 제품</b> {i["buy_reason"]}</div>'
-                  if i.get("buy_reason") else "")
-        aside = f'<p class="aside">{i["note"]}</p>' if i.get("note") else ""
-        # 배너는 파트너스 공식 위젯 코드를 그대로 넣는다(이미지·가격·링크 포함).
-        # 상품 이미지를 직접 퍼오는 것과 달리 정책상 허용되는 방식이다.
-        banner = f'<div class="banner">{i["banner"]}</div>' if i.get("banner") else ""
+    url = (i.get("link") or "").strip()
+    buy = (f'<a class="buy {cls}" href="{esc(url)}" target="_blank" rel="noopener nofollow sponsored">'
+           f'{label}에서 보기</a>'
+           if url else f'<span class="buy off">{label} 링크 준비 중</span>')
 
-        url = (i.get("link") or "").strip()
-        buy = (f'<a class="buy {cls}" href="{esc(url)}" target="_blank" rel="noopener nofollow sponsored">'
-               f'{label}에서 보기</a>'
-               if url else f'<span class="buy off">{label} 링크 준비 중</span>')
+    price = f'<p class="iprice">{won(i.get("price"))}'
+    if i.get("list_price"):
+        price += f'<s>{won(i["list_price"])}</s>'
+    price += "</p>"
+    rate = ""
+    if i.get("points") and i.get("price"):
+        rate = f' ({round(i["points"] / i["price"] * 100):.0f}%)'
+    pts = (f'<p class="ipt">적립 {won(i.get("points"))}{rate} · 실질 부담 {won(net(i))}</p>'
+           if i.get("points") else "")
 
-        price = f'<p class="iprice">{won(i.get("price"))}'
-        if i.get("list_price"):
-            price += f'<s>{won(i["list_price"])}</s>'
-        price += "</p>"
-        rate = ""
-        if i.get("points") and i.get("price"):
-            rate = f' ({round(i["points"] / i["price"] * 100):.0f}%)'
-        pts = (f'<p class="ipt">적립 {won(i.get("points"))}{rate} · 실질 부담 {won(net(i))}</p>'
-               if i.get("points") else "")
-
-        out.append(f"""<div class="item">
+    return (f"""<div class="item">
 <h3>{esc(i["name"])}</h3>
 <p class="imeta">{esc(meta)}</p>
 <div class="ihead">{banner}<div class="iinfo">{price}{pts}
 <p class="ispec">{" · ".join(specs)}</p></div></div>
 {pc}{quote}{reason}{aside}{buy}
 </div>""")
-    return "\n".join(out) or "<p>해당 쇼핑몰에서 고른 상품이 없습니다.</p>"
+
+
+def build_items(items, platform):
+    rows = by_platform(items, platform)
+    return "\n".join(render_item(i) for i in rows) or "<p>해당 쇼핑몰에서 고른 상품이 없습니다.</p>"
+
+
+def build_semi(items, note):
+    rows = semi_items(items)
+    if not rows:
+        return ""
+    body = "".join(render_item(i) for i in rows)
+    head = f'<p class="seminote">{note}</p>' if note else ""
+    return f'<h2>참고 — 타이머가 없는 반자동</h2>{head}{body}'
 
 
 CRITERIA = """<ul class="guide">
@@ -378,6 +397,7 @@ def main():
         "coupang_items": build_items(items, "coupang"),
         "toss_note": (f'<p class="tossnote">{d["toss_note"]}</p>' if d.get("toss_note") else ""),
         "toss_items": build_items(items, "toss"),
+        "semi": build_semi(items, d.get("semi_note", "")),
         "criteria": CRITERIA,
         "faq": build_faq(),
     }
