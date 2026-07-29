@@ -7,9 +7,8 @@
 2026-07-29: 1회성 스크립트를 **설정(JSON) 기반 파이프라인**으로 정리 → 새 상품은 `products/<id>.json` 하나만 채우면 됨.
 
 ## 0-1. ⚠️ 브랜치 상태 (먼저 읽을 것)
-- 이 세션의 작업 브랜치: **`claude/coupang-partners-monetization-3xx5n7`** ← 최신
-- 이전 브랜치 `claude/coupang-partners-monetization-v92w7y` 는 2026-07-28 시점에서 멈춤 (파일은 그대로 남아 있음)
-- **raw/Pages URL 은 브랜치 이름이 들어가므로**, 최신 파일을 보려면 URL 의 브랜치 부분을 `3xx5n7` 로 바꿀 것. GitHub Pages 를 이미 v92w7y 로 켰다면 Settings→Pages 에서 소스 브랜치도 바꿔야 최신 상세페이지가 뜬다.
+- `claude/coupang-partners-monetization-v92w7y` 와 `claude/coupang-partners-monetization-3xx5n7` **두 브랜치는 내용이 같다**(2026-07-29 미러링). 어느 쪽 raw/Pages URL 을 써도 동일.
+- 앞으로도 커밋할 때마다 **두 브랜치에 같이 push** 할 것 (기존에 공유한 v92w7y URL 이 계속 살아 있어야 함).
 - (별개 실험 브랜치 `claude/kupas-monetization-7gk3tl` 에 파이썬 에이전트 파이프라인이 따로 있음. 이 핸드오프와는 무관.)
 
 ---
@@ -70,8 +69,8 @@ posts/mosquito.md              # 업로드 캡션 키트(자동 생성물)
 > `p/*.html`, `posts/*.md`, `assets/*final*.mp4` 는 **생성물**이다. 고칠 땐 `products/<id>.json` 또는 `tools/landing_template.html` 을 고치고 다시 생성할 것.
 > (2026-07-29에 1회성 스크립트 `resub.py`·`mux_vo.py`·`mirra_postproc.py` 는 위 도구들로 대체되어 삭제. 필요하면 git 히스토리에 있음.)
 
-## 5. 완성물 URL (브랜치 `3xx5n7` 기준)
-- **최종 영상**: `https://raw.githubusercontent.com/e8393111-cloud/coupang_partner/claude/coupang-partners-monetization-3xx5n7/assets/mirra_final.mp4`
+## 5. 완성물 URL
+- **최종 영상**: `https://raw.githubusercontent.com/e8393111-cloud/coupang_partner/claude/coupang-partners-monetization-v92w7y/assets/mirra_final.mp4`
 - **상세페이지**(Pages 켜지면): `https://e8393111-cloud.github.io/coupang_partner/p/mosquito.html`
 - 대시보드 아티팩트: `https://claude.ai/code/artifact/d6464cf6-1dfb-4b75-b94a-7081359c59e3`
 
@@ -115,7 +114,7 @@ python3 tools/render_short.py products/<id>.json --auto-caps   # 무음 기준 �
 - 검증: 새 렌더러로 다시 뽑은 `mirra_final.mp4` 가 기존 파일과 **바이트 단위 동일**(1,578,679 bytes / 16.60s)
 
 ## 7. 지금 바로 할 일 (TODO)
-1. **[사용자] GitHub Pages 켜기**: Settings→Pages→Source "Deploy from a branch"→ **`claude/coupang-partners-monetization-3xx5n7`** /root → Save.
+1. **[사용자] GitHub Pages 켜기**: Settings→Pages→Source "Deploy from a branch"→ **`claude/coupang-partners-monetization-v92w7y`** (또는 `...-3xx5n7`, 둘 다 같음) /root → Save.
 2. **[사용자→나] 쿠파스 딥링크**: 링크만 주면 `python3 tools/make_landing.py products/mosquito.json --deeplink "<링크>"` 로 한 방에 반영. 지금은 딥링크가 안 박혀서 **구매 버튼이 비활성** 상태(잘못된 링크로 유입되지 않게 일부러 막아둠).
 3. **[확인] 가격/할인**: 상세페이지 89,000→26,000 표시가 실제 쿠팡과 맞는지. 다르면 `products/mosquito.json` 의 `landing.price` / `list_price` / `sticky_cta` 만 고치고 재생성. (나는 쿠팡 접근이 막혀 확인 불가)
 4. **[사용자] 링크 세팅**: 인포크링크(or 상세페이지 URL)를 인스타/틱톡 바이오에. **틱톡은 비즈니스 계정 전환**해야 바이오 링크 생김.
