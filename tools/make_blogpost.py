@@ -207,8 +207,8 @@ def build_blackout(items):
     if not yes:
         return ""
     names = ", ".join(i["name"].split()[0] for i in yes)
-    return (f'<div class="tip"><b>정전·정전 대비</b>는 여기서 갈립니다. '
-            f'이번 4개 중 코드가 빠지거나 정전돼도 급여가 이어지는 건 '
+    return (f'<div class="tip"><b>정전 대비</b>는 여기서 갈립니다. '
+            f'이번 {len(items)}개 중 코드가 빠지거나 정전돼도 급여가 이어지는 건 '
             f'<b>{names}</b>(건전지 겸용)뿐입니다. 나머지는 어댑터 전용이거나 판매 목록에 표기가 없어, '
             f'오래 집을 비우는 집이라면 상세페이지에서 배터리 지원을 꼭 확인하세요.</div>')
 
