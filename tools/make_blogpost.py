@@ -162,32 +162,44 @@ def build_items(items, platform):
             specs.append("카메라")
         if sp.get("wet_food"):
             specs.append("습식 가능")
+        if sp.get("power"):
+            specs.append(esc(sp["power"]))
+        if sp.get("food_size_mm"):
+            specs.append(f'사료 {esc(sp["food_size_mm"])}')
         if sp.get("washable"):
             specs.append(esc(sp["washable"]))
         specs.append(esc(i.get("delivery", "배송 조건 표기 없음")))
 
-        pros, cons = [], []
-        if (i.get("reviews") or 0) >= 500:
-            pros.append(f'리뷰 {int(i["reviews"]):,}건 · 평점 {i.get("rating")} — 검증이 충분합니다')
-        elif i.get("reviews"):
-            cons.append(f'리뷰가 {int(i["reviews"])}건뿐이라 판단할 근거가 얇습니다')
-        else:
-            cons.append("리뷰 수가 표기되지 않아 검증이 어렵습니다")
-        if sp.get("app"):
-            pros.append("밖에서 급여 시간·양을 바꿀 수 있습니다")
-        if sp.get("camera"):
-            pros.append("먹는 모습을 확인할 수 있습니다")
-        if not sp.get("capacity_l"):
-            cons.append("목록에 용량 표기가 없어 상세페이지 확인이 필요합니다")
-        if not sp.get("blackout_backup"):
-            cons.append("정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요")
+        # 상품평을 확인한 제품은 사람이 정리한 장단점을 그대로 쓴다.
+        # 자동 생성 문구는 "확인이 안 됐다"는 말뿐이라 진짜 장단점이 아니다.
+        pros = list(i.get("pros") or [])
+        cons = list(i.get("cons") or [])
+        has_manual = bool(pros or cons)
+
+        if not has_manual:
+            if (i.get("reviews") or 0) >= 500:
+                pros.append(f'리뷰 {int(i["reviews"]):,}건 · 평점 {i.get("rating")} — 검증이 충분합니다')
+            elif i.get("reviews"):
+                cons.append(f'리뷰가 {int(i["reviews"])}건뿐이라 판단할 근거가 얇습니다')
+            else:
+                cons.append("리뷰 수가 표기되지 않아 검증이 어렵습니다")
+            if sp.get("app"):
+                pros.append("밖에서 급여 시간·양을 바꿀 수 있습니다")
+            if sp.get("camera"):
+                pros.append("먹는 모습을 확인할 수 있습니다")
+            if not sp.get("capacity_l"):
+                cons.append("목록에 용량 표기가 없어 상세페이지 확인이 필요합니다")
+            if not sp.get("blackout_backup"):
+                cons.append("정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요")
 
 
         url = (i.get("link") or "").strip()
         btn = (f'<a class="btn {cls}" href="{esc(url)}" target="_blank" rel="noopener nofollow sponsored">{label}에서 보기</a>'
                if url else f'<span class="btn off">{label} 링크 준비 중</span>')
 
-        note_html = (f'<div class="who">ℹ️ {esc(i["note"])}</div>' if i.get("note") else "")
+        insight_html = (f'<div class="insight"><b>리뷰를 보면</b> {i["review_insight"]}</div>'
+                        if i.get("review_insight") else "")
+        note_html = (f'<div class="who">ℹ️ {i["note"]}</div>' if i.get("note") else "")
 
         ptxt = f'<p class="price">{won(i.get("price"))}'
         if i.get("list_price"):
@@ -203,6 +215,7 @@ def build_items(items, platform):
 <p>{" · ".join(specs)}</p>
 <ul class="pro">{"".join(f"<li>{p}</li>" for p in pros)}</ul>
 <ul class="con">{"".join(f"<li>{c}</li>" for c in cons)}</ul>
+{insight_html}
 {note_html}
 {btn}
 </div>""")
