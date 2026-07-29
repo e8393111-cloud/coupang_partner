@@ -1,198 +1,229 @@
 <!-- 자동 생성: tools/make_blogpost.py · 직접 고치지 말고 JSON/템플릿을 고칠 것 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css">
 <style>
-.eds{line-height:1.75;word-break:keep-all;font-size:16px}
-.eds .disc{background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;padding:12px 14px;font-size:13.5px;color:#4c1d95;margin:0 0 20px}
-.eds .asof{color:#6b7280;font-size:13px;margin:0 0 22px}
-.eds h2{font-size:22px;font-weight:800;margin:34px 0 14px;padding-bottom:8px;border-bottom:2px solid #ede9fe}
-.eds h3{font-size:18px;font-weight:700;margin:24px 0 6px}
-.eds .tldr{background:#faf5ff;border-left:4px solid #8b5cf6;border-radius:0 10px 10px 0;padding:16px 18px;margin:0 0 22px}
-.eds .tldr p{margin:6px 0}
-.eds .tldr b{color:#6d28d9}
-.eds .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 10px}
-.eds table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
-.eds th,.eds td{border:1px solid #e5e7eb;padding:9px 10px;text-align:center}
-.eds th{background:#f9fafb;font-weight:700;white-space:nowrap}
-.eds td.name{text-align:left;font-weight:600;min-width:170px}
-.eds .tag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:5px;white-space:nowrap}
-.eds .tag.c{background:#eef2ff;color:#3730a3}
-.eds .tag.t{background:#e8f2ff;color:#1d4ed8}
-.eds .card{border:1px solid #e5e7eb;border-radius:12px;padding:18px;margin:0 0 18px}
-.eds .head{display:flex;gap:16px;align-items:flex-start;margin:0 0 10px}
+/* 색은 '판매처'에만 쓴다. 나머지는 전부 무채색 — 색이 장식이 아니라 데이터가 되도록. */
+.eds{
+  /* 딥 그린을 지면색으로, 앰버를 포인트로. 판매처(쿠팡/토스)는 그 둘과 겹치지 않는 색이라
+     같은 화면에 있어도 '브랜드 색'과 '데이터 색'이 헷갈리지 않는다. */
+  --ink:#12291f; --body:#3a4642; --mut:#6f807a;
+  --brand:#1a6b4a; --brand-dk:#12291f; --wash:#f1f7f3; --wash2:#e4efe9;
+  --amber:#b8791f; --amber-wash:#fdf6e9;
+  --rule:#d7e3dd; --rule2:#eaf1ed;
+  --cou:#d1344a; --toss:#1b64da;
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;
+  color:var(--body); font-size:17px; line-height:1.8; word-break:keep-all;
+  letter-spacing:-0.011em;
+}
+.eds *{box-sizing:border-box}
+.eds b,.eds strong{font-weight:600;color:var(--ink)}
+
+.eds .disc{font-size:13px;line-height:1.65;color:var(--brand);background:var(--wash);
+  border-left:3px solid var(--brand);padding:12px 15px;margin:0 0 26px}
+.eds .asof{font-size:13.5px;color:var(--mut);margin:0 0 34px}
+
+.eds h2{font-size:15px;font-weight:700;color:var(--brand);letter-spacing:.02em;
+  margin:56px 0 20px;padding-bottom:9px;border-bottom:2px solid var(--brand)}
+.eds h3{font-size:21px;font-weight:700;color:var(--ink);letter-spacing:-0.022em;margin:0 0 3px;line-height:1.4}
+
+/* 결론 — 카드가 아니라 정의 목록처럼 */
+.eds .lede{margin:0}
+.eds .lede .row{display:grid;grid-template-columns:132px 1fr;gap:14px;
+  padding:13px 0;border-bottom:1px solid var(--rule2)}
+.eds .lede .k{font-size:14px;font-weight:700;color:var(--brand);padding-top:2px}
+.eds .lede .v{font-size:16.5px;color:var(--ink);line-height:1.65}
+.eds .lede .v em{font-style:normal;color:var(--mut);font-size:14.5px}
+.eds .caveat{font-size:13.5px;color:var(--mut);line-height:1.7;margin:14px 0 0}
+
+/* 표 — 세로선 없음, 숫자 우측정렬 */
+.eds .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 12px}
+.eds table{border-collapse:collapse;width:100%;min-width:560px;font-size:14.5px}
+.eds thead th{font-size:12.5px;font-weight:700;color:var(--brand);
+  text-align:right;padding:0 0 9px;border-bottom:1.5px solid var(--brand);white-space:nowrap}
+.eds thead th:first-child{text-align:left}
+.eds tbody td{padding:12px 0;border-bottom:1px solid var(--rule2);text-align:right;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.eds tbody td:first-child{text-align:left;white-space:normal;padding-right:16px;min-width:180px;color:var(--ink)}
+.eds tbody td+td{padding-left:14px}
+.eds .num{font-weight:600;color:var(--ink)}
+.eds .dim{color:var(--mut)}
+
+/* 판매처 = 유일한 색 */
+.eds .src{font-size:12.5px;font-weight:700;white-space:nowrap}
+.eds .src.c{color:var(--cou)} .eds .src.t{color:var(--toss)}
+.eds .src::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;
+  margin-right:5px;vertical-align:1px;background:currentColor}
+
+/* 맞대결 — 이 글의 하이라이트 */
+.eds .vs{background:var(--wash);border-top:3px solid var(--brand);padding:4px 20px;margin:0 0 16px;border-radius:0 0 3px 3px}
+.eds .vsgrid{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch}
+.eds .vscol{padding:18px 16px}
+.eds .vscol:first-child{padding-left:0}
+.eds .vsgrid{align-items:center}
+.eds .vscol:last-child{padding-right:0;text-align:right}
+.eds .vsmid{display:flex;align-items:center;justify-content:center;padding:0 14px;
+  font-size:12px;font-weight:700;color:var(--brand);
+  border-left:1px solid var(--wash2);border-right:1px solid var(--wash2)}
+.eds .vsname{font-size:15px;font-weight:600;color:var(--ink);line-height:1.45;margin:6px 0 10px}
+.eds .vsbig{font-size:27px;font-weight:700;color:var(--brand-dk);letter-spacing:-0.03em;font-variant-numeric:tabular-nums}
+.eds .vssub{font-size:13.5px;color:var(--mut);margin-top:4px;line-height:1.6;font-variant-numeric:tabular-nums}
+.eds .vsverdict{font-size:16.5px;line-height:1.78;margin:0}
+
+/* 제품 — 카드 없이 규칙선으로 구분 */
+.eds .item{border-top:1px solid var(--rule);padding:26px 0 6px}
+.eds .item:first-of-type{border-top:2px solid var(--brand)}
+.eds .ihead{display:flex;gap:20px;align-items:flex-start;margin:0 0 18px}
 .eds .banner{flex:0 0 120px;line-height:0}
 .eds .banner iframe{border:0;max-width:100%}
-.eds .headinfo{flex:1 1 auto;min-width:0}
-.eds .spec{font-size:14.5px;color:#374151;margin:8px 0 0}
-@media (max-width:480px){ .eds .head{flex-direction:column;align-items:center;text-align:center} .eds .headinfo{width:100%;text-align:left} }
-.eds .meta{color:#6b7280;font-size:13.5px;margin:2px 0 10px}
-.eds .price{font-size:20px;font-weight:800;margin:0 0 2px}
-.eds .price s{color:#9ca3af;font-size:14px;font-weight:400;margin-left:6px}
-.eds .pt{color:#059669;font-size:13.5px;margin:0 0 10px}
-.eds ul{padding-left:20px;margin:8px 0}
-.eds li{margin:4px 0}
-.eds .pro li::marker{content:"+ ";color:#16a34a;font-weight:800}
-.eds .con li::marker{content:"− ";color:#dc2626;font-weight:800}
-.eds .insight{background:#f0f9ff;border-left:3px solid #0284c7;border-radius:0 8px 8px 0;padding:11px 13px;margin:12px 0 0;font-size:14.5px;color:#0c4a6e}
-.eds .who{background:#f9fafb;border-radius:8px;padding:10px 12px;margin:12px 0 0;font-size:14.5px}
-.eds .btn{display:block;margin:14px 0 0;padding:13px;border-radius:9px;text-decoration:none;font-weight:700;text-align:center;font-size:15px}
-.eds .btn.c{background:#e11d48;color:#fff}
-.eds .btn.t{background:#3182f6;color:#fff}
-.eds .btn.off{background:#e5e7eb;color:#9ca3af}
-.eds .faq{border-top:1px solid #e5e7eb;padding:14px 0}
-.eds .faq b{display:block;margin-bottom:5px}
-.eds .foot{margin-top:32px;padding-top:16px;border-top:1px solid #e5e7eb;color:#6b7280;font-size:13px}
+.eds .iinfo{flex:1 1 auto;min-width:0}
+.eds .imeta{font-size:13px;color:var(--mut);margin:0 0 9px}
+.eds .iprice{font-size:29px;font-weight:700;color:var(--ink);letter-spacing:-0.03em;
+  font-variant-numeric:tabular-nums;line-height:1.2;margin:0}
+.eds .iprice s{font-size:15px;font-weight:400;color:var(--mut);margin-left:9px;letter-spacing:0}
+.eds .ipt{font-size:14px;color:var(--mut);margin:5px 0 0;font-variant-numeric:tabular-nums}
+.eds .ispec{font-size:14.5px;color:var(--body);margin:12px 0 0;line-height:1.7}
+
+.eds .pc{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;margin:0}
+
+.eds .pclabel{font-size:12.5px;font-weight:700;margin:12px 0 6px}
+.eds .pcbox.good .pclabel{color:var(--brand)} .eds .pcbox.bad .pclabel{color:var(--amber)}
+.eds .pcbox.good{border-top:2px solid var(--brand)} .eds .pcbox.bad{border-top:2px solid var(--amber)}
+.eds .pc ul{margin:0;padding-left:17px}
+.eds .pc li{margin:7px 0;font-size:15px;line-height:1.7}
+.eds .pc li::marker{color:var(--mut)}
+
+.eds .quote{border-left:3px solid var(--amber);background:var(--amber-wash);padding:13px 16px;margin:20px 0 0;
+  font-size:15.5px;line-height:1.75;color:var(--body)}
+.eds .quote .qh{display:block;font-size:12.5px;font-weight:700;color:var(--amber);margin-bottom:5px}
+.eds .aside{font-size:14.5px;line-height:1.75;color:var(--mut);margin:18px 0 0;
+  padding-top:14px;border-top:1px solid var(--rule2)}
+
+.eds .buy{display:block;margin:22px 0 0;padding:15px;text-align:center;text-decoration:none;
+  font-size:15.5px;font-weight:700;border:1.5px solid currentColor;border-radius:2px}
+.eds .buy.c{color:var(--cou)} .eds .buy.t{color:var(--toss)}
+.eds .buy.c:hover{background:var(--cou);color:#fff}
+.eds .buy.t:hover{background:var(--toss);color:#fff}
+.eds .buy.off{color:var(--mut);border-color:var(--rule);border-style:dashed}
+.eds .buy:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+.eds .guide{margin:0;padding-left:18px}
+.eds .guide li{margin:14px 0;font-size:16px;line-height:1.78}
+.eds .guide li::marker{color:var(--brand)}
+.eds .qa{border-top:1px solid var(--rule);padding:16px 0}
+.eds .qa .q{display:block;font-size:16px;font-weight:600;color:var(--brand-dk);margin-bottom:5px}
+.eds .qa .a{font-size:15.5px;line-height:1.75}
+.eds .foot{margin-top:52px;padding-top:18px;border-top:2px solid var(--brand);
+  color:var(--mut);font-size:13px;line-height:1.75}
+.eds .foot a{color:var(--mut)}
+
+@media (max-width:600px){
+  .eds{font-size:16px}
+  .eds .lede .row{grid-template-columns:1fr;gap:2px;padding:11px 0}
+  .eds .pc{grid-template-columns:1fr}
+  .eds .pcbox+.pcbox{border-top:1px solid var(--rule2)}
+  .eds .ihead{flex-direction:column;gap:14px}
+  .eds .iprice{font-size:26px}
+  .eds .vsgrid{grid-template-columns:1fr}
+  .eds .vscol{padding:16px 0}
+  .eds .vscol:last-child{text-align:left;border-top:1px solid var(--rule)}
+  .eds .vsmid{display:none}
+}
 </style>
 
 <div class="eds">
 
-<div class="disc">이 포스팅은 쿠팡 파트너스 및 토스쇼핑 쉐어링크 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
+<p class="disc">이 포스팅은 쿠팡 파트너스 및 토스쇼핑 쉐어링크 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
 
-<p class="asof">📅 가격 확인: <b>2026년 7월 29일</b> · 쇼핑몰 가격은 수시로 바뀌니 <b>구매 직전 실제 페이지에서 다시 확인</b>해 주세요.</p>
+<p class="asof">가격 확인 <b>2026년 7월 29일</b> · 쇼핑몰 가격은 수시로 바뀝니다. 구매 직전 실제 페이지에서 다시 확인해 주세요.</p>
 
 <h2>결론부터</h2>
-<div class="tldr">
-<p>· <b>실패를 피하고 싶다면</b> → 디클펫 반려동물 자동급식기 AT-310 4L (쿠팡 47,300원, 리뷰 2,253건)</p>
-<p>· <b>예산을 아끼고 싶다면</b> → 파우시 강아지 고양이 자동급식기 3L 화이트 (쿠팡 34,920원, 리뷰 1,098건)</p>
-<p>· <b>앱 연동이 필요하다면</b> → 페블펫 와이파이 앱연동 스마트 자동급식기 IPF-W100 3.5L (쿠팡 51,900원)</p>
-<p style="margin-top:12px;color:#6b7280;font-size:14px">※ 가장 비싼 제품이 기능이 가장 많은 것은 아닙니다. 판매 목록에 사양이 표기되지 않은 제품이 많아, 확인된 것만 적었습니다.</p>
-</div>
+<div class="lede"><div class="row"><div class="k">실패를 피하려면</div><div class="v">파우시 강아지 고양이 자동급식기 3L 화이트<br><em><span class="src c">쿠팡</span> · 34,920원 · 후기 1,098건</em></div></div><div class="row"><div class="k">앱 연동이 필요하면</div><div class="v">페블펫 와이파이 앱연동 스마트 자동급식기 IPF-W100 3.5L<br><em><span class="src c">쿠팡</span> · 51,900원</em></div></div><div class="row"><div class="k">예산이 넉넉하면</div><div class="v">신일전자 퍼비 자동급식기 SIP-PFD3 계열<br><em><span class="src t">토스쇼핑</span> · 99,000원</em></div></div></div><p class="caveat">가장 비싼 제품이 기능이 가장 많은 것은 아닙니다. 판매 목록에 사양이 표기되지 않은 제품이 많아, 확인된 항목만 적었습니다.</p>
 
 <h2>한눈에 비교</h2>
 <div class="scroll">
-<table><thead><tr><th>제품</th><th>판매처</th><th>가격</th><th>적립</th><th>적립 후</th><th>리뷰</th><th>용량</th></tr></thead><tbody><tr><td class="name">디토펫 반려동물 자동급식기 화이트 4L</td><td><span class="tag t">토스쇼핑</span></td><td><b>34,900원</b></td><td>2,443원</td><td>32,457원</td><td>2</td><td>4L</td></tr><tr><td class="name">파우시 강아지 고양이 자동급식기 3L 화이트</td><td><span class="tag c">쿠팡</span></td><td><b>34,920원</b></td><td>1,746원</td><td>33,174원</td><td>1,098</td><td>3L</td></tr><tr><td class="name">디클펫 반려동물 자동급식기 AT-330</td><td><span class="tag t">토스쇼핑</span></td><td><b>42,900원</b></td><td>3,003원</td><td>39,897원</td><td>—</td><td>—</td></tr><tr><td class="name">디클펫 반려동물 자동급식기 AT-310 4L</td><td><span class="tag c">쿠팡</span></td><td><b>47,300원</b></td><td>2,360원</td><td>44,940원</td><td>2,253</td><td>4L</td></tr><tr><td class="name">페블펫 와이파이 앱연동 스마트 자동급식기 IPF-W100 3.5L</td><td><span class="tag c">쿠팡</span></td><td><b>51,900원</b></td><td>2,595원</td><td>49,305원</td><td>648</td><td>3.5L</td></tr><tr><td class="name">신일전자 퍼비 자동급식기 SIP-PFD3 계열</td><td><span class="tag t">토스쇼핑</span></td><td><b>99,000원</b></td><td>6,930원</td><td>92,070원</td><td>—</td><td>—</td></tr></tbody></table>
+<table><thead><tr><th>제품</th><th>판매처</th><th>가격</th><th>적립</th><th>적립 후</th><th>후기</th><th>용량</th></tr></thead><tbody><tr><td>디토펫 반려동물 자동급식기 화이트 4L</td><td><span class="src t">토스쇼핑</span></td><td class="num">34,900원</td><td class="dim">2,443원</td><td class="num">32,457원</td><td class="dim">2건</td><td class="dim">4L</td></tr><tr><td>파우시 강아지 고양이 자동급식기 3L 화이트</td><td><span class="src c">쿠팡</span></td><td class="num">34,920원</td><td class="dim">1,746원</td><td class="num">33,174원</td><td class="dim">1,098건</td><td class="dim">3L</td></tr><tr><td>페블펫 와이파이 앱연동 스마트 자동급식기 IPF-W100 3.5L</td><td><span class="src c">쿠팡</span></td><td class="num">51,900원</td><td class="dim">2,595원</td><td class="num">49,305원</td><td class="dim">648건</td><td class="dim">3.5L</td></tr><tr><td>신일전자 퍼비 자동급식기 SIP-PFD3 계열</td><td><span class="src t">토스쇼핑</span></td><td class="num">99,000원</td><td class="dim">6,930원</td><td class="num">92,070원</td><td class="dim">—</td><td class="dim">—</td></tr></tbody></table>
 </div>
+
+<h2>거의 같은 값, 다른 선택</h2><div class="vs"><div class="vsgrid"><div class="vscol"><span class="src c">쿠팡</span><div class="vsname">파우시 강아지 고양이 자동급식기 3L 화이트</div><div class="vsbig">33,174원</div><div class="vssub">표시가 34,920원 − 적립 1,746원<br>후기 1,098건</div></div><div class="vsmid">vs</div><div class="vscol"><span class="src t">토스쇼핑</span><div class="vsname">디토펫 반려동물 자동급식기 화이트 4L</div><div class="vsbig">32,457원</div><div class="vssub">표시가 34,900원 − 적립 2,443원<br>후기 2건</div></div></div></div><p class="vsverdict">표시가는 <b>20원</b> 차이인데, 적립까지 넣으면 <b>토스쇼핑이 717원 저렴</b>해집니다. 후기는 <b>1,098건 대 2건</b>입니다. 717원을 아끼려고 검증이 덜 된 쪽을 고를 것인가 — 이 글에서 가장 현실적인 선택입니다. 처음 쓰시는 거라면 후기가 두꺼운 쪽을, 이미 어떤 제품인지 아신다면 적립이 붙는 쪽을 권합니다.</p>
 
 <h2>쿠팡과 토스쇼핑, 어디서 사는 게 나을까</h2>
 <p>같은 제품이 양쪽에 다 올라오는 경우는 생각보다 드뭅니다. 판매자가 다르기 때문인데,
-그래서 "어느 쪽이 싸다"보다 <b>"어느 쪽에서 사는 게 나은가"</b>를 보는 게 실질적입니다.
-직접 확인해 보니 차이가 분명한 지점이 세 군데 있었습니다.</p>
+그래서 "어느 쪽이 싸다"보다 <b>어느 쪽에서 사는 게 나은가</b>를 보는 편이 실질적입니다.
+직접 확인해 보니 차이가 분명한 지점이 셋 있었습니다.</p>
 
-<div class="scroll"><table><thead><tr><th></th><th>적립률</th><th>리뷰</th><th>배송</th></tr></thead><tbody>
-<tr><td class="name"><span class="tag c">쿠팡</span></td><td><b>5.0%</b></td>
-    <td>많음 (수백~수천 건)</td><td>로켓배송 시 내일 도착</td></tr>
-<tr><td class="name"><span class="tag t">토스쇼핑</span></td><td><b>7.0%</b></td>
-    <td>적음 (관찰 범위 1~12건)</td><td>내일출발 표기 상품은 2~3일</td></tr>
+<div class="scroll"><table><thead><tr><th></th><th>적립률</th><th>후기</th><th>배송</th></tr></thead><tbody>
+<tr><td><span class="src c">쿠팡</span></td><td class="num">5.0%</td>
+    <td class="dim">많음 (수백~수천 건)</td><td class="dim">로켓배송 시 내일 도착</td></tr>
+<tr><td><span class="src t">토스쇼핑</span></td><td class="num">7.0%</td>
+    <td class="dim">적음 (관찰 범위 1~12건)</td><td class="dim">내일출발 표기 상품은 2~3일</td></tr>
 </tbody></table></div>
 
-<h3>① 적립은 토스가 2.0%p 높습니다</h3>
-<p>확인한 상품 전부에서 <b>토스는 7.0%, 쿠팡은 5.0%</b>로 일정했습니다.
-10만 원짜리를 산다면 7,000원과 5,000원, 2,000원 차이입니다.</p>
-<p>그래서 계산이 이렇게 됩니다 — <b>토스 표시가가 쿠팡보다 2.0% 이내로 비싸다면, 적립까지 따졌을 때 토스가 이깁니다.</b>
-반대로 그보다 더 비싸면 적립으로 못 메웁니다. 위 표의 '적립 후' 열이 그 계산을 해둔 것입니다.</p>
-<p style="color:#6b7280;font-size:14px">※ 양쪽 모두 "최대" 적립 표기라 카드·회원 조건에 따라 실제 금액은 달라질 수 있습니다.</p>
+<h3>적립은 토스가 2.0%p 높습니다</h3>
+<p>확인한 상품 전부에서 <b>토스 7.0%, 쿠팡 5.0%</b>로 일정했습니다.
+10만 원짜리라면 7,000원과 5,000원, 2,000원 차이입니다.
+그래서 계산이 이렇게 됩니다 — <b>토스 표시가가 쿠팡보다 2.0% 이내로 비싸다면 적립까지 따졌을 때 토스가 이깁니다.</b>
+그보다 더 비싸면 적립으로 메워지지 않습니다. 위 표의 '적립 후' 열이 그 계산을 해둔 것입니다.</p>
+<p class="caveat">양쪽 모두 "최대" 적립 표기라 카드·회원 조건에 따라 실제 금액은 달라질 수 있습니다.</p>
 
-<h3>② 리뷰는 쿠팡이 압도적입니다</h3>
-<p>같은 키워드로 양쪽을 훑어보니, 쿠팡은 리뷰가 <b>2,253건</b>까지 쌓인 제품이 있는 반면
-토스에서 가장 많은 것도 <b>12건</b>이었습니다. 토스쇼핑이 아직 새 서비스라 거래가 덜 쌓인 것으로 보입니다.</p>
-<p>자동급식기처럼 <b>고장 나면 반려동물이 굶는</b> 제품에서 리뷰 수는 그냥 숫자가 아닙니다.
-처음 사시는 거라면 리뷰가 두꺼운 쪽이 안전합니다.</p>
+<h3>후기는 쿠팡이 압도적입니다</h3>
+<p>같은 키워드로 양쪽을 훑어보니 쿠팡은 후기가 <b>2,253건</b>까지 쌓인 제품이 있는 반면,
+토스에서 가장 많은 것도 <b>12건</b>이었습니다. 토스쇼핑이 아직 새 서비스라 거래가 덜 쌓인 것으로 보입니다.
+자동급식기처럼 <b>고장 나면 반려동물이 굶는</b> 제품에서 후기 수는 그냥 숫자가 아닙니다.</p>
 
-<h3>③ 급하면 쿠팡입니다</h3>
+<h3>급하면 쿠팡입니다</h3>
 <p>로켓배송은 오늘 주문하면 내일 옵니다. 토스는 "내일출발" 표기여도 실제 도착은 2~3일 뒤입니다.
 사료가 오늘 떨어졌다면 몇 천 원보다 하루가 큽니다.</p>
 
-<div class="who"><b>정리하면</b> — 처음 사거나 급하면 <b>쿠팡</b>, 살 물건을 이미 정했고 며칠 여유가 있다면 적립이 붙는 <b>토스쇼핑</b>이 유리합니다.</div>
-
 <h2>쿠팡에서 살 만한 것</h2>
-<div class="card">
+<div class="item">
 <h3>파우시 강아지 고양이 자동급식기 3L 화이트</h3>
-<p class="meta">파우시</p>
-<div class="head">
-<div class="banner"><iframe src="https://coupa.ng/coppaa" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe></div>
-<div class="headinfo"><p class="price">34,920원<s>58,000원</s></p><p class="pt">적립 1,746원 → 실질 33,174원</p><p class="spec">용량 3L · 어댑터(유선) + D사이즈 건전지 3개(무선) · 사료 지름 5~12mm · 사료통 분리 · 청소 용이(리뷰 다수) · 판매자로켓 · 내일 도착</p></div>
+<p class="imeta">파우시</p>
+<div class="ihead"><div class="banner"><iframe src="https://coupa.ng/coppaa" width="120" height="240" frameborder="0" scrolling="no" referrerpolicy="unsafe-url" browsingtopics></iframe></div><div class="iinfo"><p class="iprice">34,920원<s>58,000원</s></p><p class="ipt">적립 1,746원 · 실질 33,174원</p>
+<p class="ispec">용량 3L · 어댑터(유선) + D사이즈 건전지 3개(무선) · 사료 지름 5~12mm · 사료통 분리 · 청소 용이(리뷰 다수) · 판매자로켓 · 내일 도착</p></div></div>
+<div class="pc"><div class="pcbox good"><div class="pclabel">좋은 점</div><ul><li>유선·무선 겸용입니다. D사이즈 건전지를 넣으면 정전이나 코드가 빠져도 급여가 이어집니다</li><li>급여 시각 자체는 정확하다는 평가가 일관됩니다</li><li>목소리를 녹음해 밥 줄 때 들려줄 수 있습니다</li><li>뚜껑 안쪽에 제습제를 넣는 칸이 있고, 바닥에 미끄럼 방지 패드가 있습니다</li><li>사료량을 볼 수 있는 투명 라인이 있어 남은 양을 확인하기 쉽습니다</li></ul></div><div class="pcbox bad"><div class="pclabel">아쉬운 점</div><ul><li><b>배출량이 일정하지 않다는 지적이 가장 많습니다.</b> 설정한 그램 수와 ±10~20g 차이가 나거나, 날에 따라 편차가 크다는 후기가 반복됩니다. 정량 급여가 중요하다면 걸림돌이 됩니다</li><li><b>사료 크기를 반드시 재보고 사셔야 합니다.</b> 지름 5~12mm 기준인데, 이보다 작으면 회전부에 껴서 배출이 멈추거나 오류가 난다는 후기가 있습니다</li><li><b>가볍고 낮아 뚜껑이 열릴 수 있습니다.</b> 힘세고 식탐 있는 아이가 밀고 다니다 뚜껑을 열어 과식했다는 사례가 있고, 뚜껑 지지대가 부러졌다는 후기도 있습니다</li><li>녹음 재생 음량은 조절되지 않습니다</li></ul></div></div><div class="quote"><span class="qh">후기를 보면</span>1,098건을 훑어보면 <b>시간은 정확한데 양이 정확하지 않다</b>는 평이 반복됩니다. '제때 나오기만 하면 된다'는 용도라면 값을 하고, '정확히 몇 그램'이 중요하다면 다른 제품을 보시는 게 낫습니다.</div><p class="aside">이 제품은 한 차례 리뉴얼됐습니다. 구형은 스테인리스 그릇에 회색 본체였고, 현재 판매 중인 신형은 흰색에 사료량 확인 라인이 들어갔습니다. <b>스테인리스 그릇 연마제 관련 불만은 구형 후기일 가능성이 높으니</b> 후기를 보실 때 작성 시점을 함께 보세요. 토스쇼핑에도 '파우시 F14 3L'이 39,000원에 있는데, 쿠팡 쪽에 모델명 표기가 없어 같은 제품이라 단정하지는 않겠습니다.</p><a class="buy c" href="https://link.coupang.com/a/fMv0AERDGe" target="_blank" rel="noopener nofollow sponsored">쿠팡에서 보기</a>
 </div>
-<ul class="pro"><li>유선·무선 겸용입니다. D사이즈 건전지를 넣으면 정전이나 코드가 빠져도 급여가 이어집니다</li><li>급여 시각 자체는 정확하다는 평가가 일관됩니다</li><li>목소리를 녹음해 밥 줄 때 들려줄 수 있습니다</li><li>뚜껑 안쪽에 제습제를 넣는 칸이 있고, 바닥에 미끄럼 방지 패드가 있습니다</li><li>사료량을 볼 수 있는 투명 라인이 있어 남은 양을 확인하기 쉽습니다</li></ul>
-<ul class="con"><li><b>배출량이 일정하지 않다는 지적이 가장 많습니다.</b> 설정한 그램 수와 ±10~20g 차이가 나거나, 날에 따라 편차가 크다는 후기가 반복됩니다. 정량 급여가 중요하다면 걸림돌이 됩니다</li><li><b>사료 크기를 반드시 재보고 사셔야 합니다.</b> 지름 5~12mm 기준인데, 이보다 작으면 회전부에 껴서 배출이 멈추거나 오류가 난다는 후기가 있습니다</li><li><b>가볍고 낮아 뚜껑이 열릴 수 있습니다.</b> 힘세고 식탐 있는 아이가 밀고 다니다 뚜껑을 열어 과식했다는 사례가 있고, 뚜껑 지지대가 부러졌다는 후기도 있습니다</li><li>녹음 재생 음량은 조절되지 않습니다</li></ul>
-<div class="insight"><b>리뷰를 보면</b> 1,098건을 훑어보면 <b>시간은 정확한데 양이 정확하지 않다</b>는 평이 반복됩니다. '제때 나오기만 하면 된다'는 용도라면 값을 하고, '정확히 몇 그램'이 중요하다면 다른 제품을 보시는 게 낫습니다.</div>
-<div class="who">ℹ️ 이 제품은 한 차례 리뉴얼됐습니다. 구형은 스테인리스 그릇에 회색 본체였고, 현재 판매 중인 신형은 흰색에 사료량 확인 라인이 들어갔습니다. <b>스테인리스 그릇 연마제 관련 불만은 구형 후기일 가능성이 높으니</b> 후기를 보실 때 작성 시점을 함께 보세요. 토스쇼핑에도 '파우시 F14 3L'이 39,000원에 있는데, 쿠팡 쪽에 모델명 표기가 없어 같은 제품이라 단정하지는 않겠습니다.</div>
-<a class="btn c" href="https://link.coupang.com/a/fMv0AERDGe" target="_blank" rel="noopener nofollow sponsored">쿠팡에서 보기</a>
-</div>
-<div class="card">
-<h3>디클펫 반려동물 자동급식기 AT-310 4L</h3>
-<p class="meta">디클펫 · AT-310</p>
-<div class="head">
-
-<div class="headinfo"><p class="price">47,300원<s>223,000원</s></p><p class="pt">적립 2,360원 → 실질 44,940원</p><p class="spec">용량 4L · 로켓배송 · 내일 도착</p></div>
-</div>
-<ul class="pro"><li>리뷰 2,253건 · 평점 4.8 — 검증이 충분합니다</li></ul>
-<ul class="con"><li>정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요</li></ul>
-
-<div class="who">ℹ️ 이번에 살펴본 자동급식기 중 리뷰가 가장 많았습니다. 쿠팡추천 배지도 붙어 있습니다.</div>
-<span class="btn off">쿠팡 링크 준비 중</span>
-</div>
-<div class="card">
+<div class="item">
 <h3>페블펫 와이파이 앱연동 스마트 자동급식기 IPF-W100 3.5L</h3>
-<p class="meta">페블펫 · IPF-W100</p>
-<div class="head">
-
-<div class="headinfo"><p class="price">51,900원<s>139,000원</s></p><p class="pt">적립 2,595원 → 실질 49,305원</p><p class="spec">용량 3.5L · 앱 연동 · 판매자로켓 · 내일 도착</p></div>
-</div>
-<ul class="pro"><li>리뷰 648건 · 평점 4.8 — 검증이 충분합니다</li><li>밖에서 급여 시간·양을 바꿀 수 있습니다</li></ul>
-<ul class="con"><li>정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요</li></ul>
-
-<div class="who">ℹ️ 5만 원대에서 와이파이 앱 연동이 되는 몇 안 되는 선택지입니다.</div>
-<span class="btn off">쿠팡 링크 준비 중</span>
+<p class="imeta">페블펫 · IPF-W100</p>
+<div class="ihead"><div class="iinfo"><p class="iprice">51,900원<s>139,000원</s></p><p class="ipt">적립 2,595원 · 실질 49,305원</p>
+<p class="ispec">용량 3.5L · 앱 연동 · 판매자로켓 · 내일 도착</p></div></div>
+<div class="pc"><div class="pcbox good"><div class="pclabel">좋은 점</div><ul><li>후기 648건 · 평점 4.8 — 검증이 충분합니다</li><li>밖에서 급여 시간·양을 바꿀 수 있습니다</li></ul></div><div class="pcbox bad"><div class="pclabel">아쉬운 점</div><ul><li>정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요</li></ul></div></div><p class="aside">5만 원대에서 와이파이 앱 연동이 되는 몇 안 되는 선택지입니다.</p><span class="buy off">쿠팡 링크 준비 중</span>
 </div>
 
 <h2>토스쇼핑에서 살 만한 것</h2>
-<div class="card">
+<div class="item">
 <h3>디토펫 반려동물 자동급식기 화이트 4L</h3>
-<p class="meta">디토펫</p>
-<div class="head">
-
-<div class="headinfo"><p class="price">34,900원</p><p class="pt">적립 2,443원 → 실질 32,457원</p><p class="spec">용량 4L · 내일출발 · 모레 도착 예정</p></div>
+<p class="imeta">디토펫</p>
+<div class="ihead"><div class="iinfo"><p class="iprice">34,900원</p><p class="ipt">적립 2,443원 · 실질 32,457원</p>
+<p class="ispec">용량 4L · 내일출발 · 모레 도착 예정</p></div></div>
+<div class="pc"><div class="pcbox bad"><div class="pclabel">아쉬운 점</div><ul><li>후기가 2건뿐이라 판단할 근거가 얇습니다</li><li>정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요</li></ul></div></div><p class="aside">토스쇼핑 최저가 구간에서 4L을 챙길 수 있습니다. 다만 리뷰가 2건뿐이라 판단 근거는 얇습니다.</p><span class="buy off">토스쇼핑 링크 준비 중</span>
 </div>
-<ul class="pro"></ul>
-<ul class="con"><li>리뷰가 2건뿐이라 판단할 근거가 얇습니다</li><li>정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요</li></ul>
-
-<div class="who">ℹ️ 토스쇼핑 최저가 구간에서 4L을 챙길 수 있습니다. 다만 리뷰가 2건뿐이라 판단 근거는 얇습니다.</div>
-<span class="btn off">토스쇼핑 링크 준비 중</span>
-</div>
-<div class="card">
-<h3>디클펫 반려동물 자동급식기 AT-330</h3>
-<p class="meta">디클펫 · AT-330</p>
-<div class="head">
-
-<div class="headinfo"><p class="price">42,900원</p><p class="pt">적립 3,003원 → 실질 39,897원</p><p class="spec">표기 없음</p></div>
-</div>
-<ul class="pro"></ul>
-<ul class="con"><li>리뷰 수가 표기되지 않아 검증이 어렵습니다</li><li>목록에 용량 표기가 없어 상세페이지 확인이 필요합니다</li><li>정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요</li></ul>
-
-<div class="who">ℹ️ 쿠팡에 있는 AT-310과 같은 브랜드지만 다른 모델입니다. 두 모델의 사양 차이는 각 상세페이지에서 확인하셔야 합니다.</div>
-<span class="btn off">토스쇼핑 링크 준비 중</span>
-</div>
-<div class="card">
+<div class="item">
 <h3>신일전자 퍼비 자동급식기 SIP-PFD3 계열</h3>
-<p class="meta">신일전자 · SIP-PFD3(일부 표기)</p>
-<div class="head">
-
-<div class="headinfo"><p class="price">99,000원</p><p class="pt">적립 6,930원 → 실질 92,070원</p><p class="spec">내일출발 · 모레 도착 예정</p></div>
-</div>
-<ul class="pro"></ul>
-<ul class="con"><li>리뷰 수가 표기되지 않아 검증이 어렵습니다</li><li>목록에 용량 표기가 없어 상세페이지 확인이 필요합니다</li><li>정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요</li></ul>
-
-<div class="who">ℹ️ 국내 가전 브랜드 제품이라 A/S 접근성을 중요하게 보신다면 후보가 됩니다. 다만 판매 목록에서 모델명이 잘려 있어, 구매 전 상세페이지에서 정확한 모델을 확인해 주세요.</div>
-<span class="btn off">토스쇼핑 링크 준비 중</span>
+<p class="imeta">신일전자 · SIP-PFD3(일부 표기)</p>
+<div class="ihead"><div class="iinfo"><p class="iprice">99,000원</p><p class="ipt">적립 6,930원 · 실질 92,070원</p>
+<p class="ispec">내일출발 · 모레 도착 예정</p></div></div>
+<div class="pc"><div class="pcbox bad"><div class="pclabel">아쉬운 점</div><ul><li>후기 수가 표기되지 않아 검증이 어렵습니다</li><li>목록에 용량 표기가 없어 상세페이지 확인이 필요합니다</li><li>정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요</li></ul></div></div><p class="aside">국내 가전 브랜드 제품이라 A/S 접근성을 중요하게 보신다면 후보가 됩니다. 다만 판매 목록에서 모델명이 잘려 있어, 구매 전 상세페이지에서 정확한 모델을 확인해 주세요.</p><span class="buy off">토스쇼핑 링크 준비 중</span>
 </div>
 
 <h2>고를 때 볼 것</h2>
-<ul>
-<li><b>정전 대비</b> — 여기서 갈립니다. 어댑터 전용이면 코드가 빠지거나 정전됐을 때 급여가 멈춥니다. 하루 종일 집을 비운다면 배터리를 함께 쓰는 제품을 보세요. <b>판매 목록에는 거의 표기되지 않으니 상세페이지에서 직접 확인해야 합니다.</b></li>
-<li><b>세척</b> — 사료 통로에 기름과 가루가 낍니다. 분리해서 씻을 수 있는지가 6개월 뒤 만족도를 가릅니다. 통째로 못 씻는 제품은 결국 안 쓰게 됩니다.</li>
-<li><b>사료 알갱이 크기</b> — 크면 통로에 걸립니다. 지금 주시는 사료와 제조사 권장 크기를 맞춰 보세요.</li>
-<li><b>습식 여부</b> — 대부분 건사료 전용입니다. 습식을 주신다면 애초에 다른 제품군을 찾으셔야 합니다.</li>
-<li><b>용량</b> — 클수록 좋은 게 아닙니다. 사료는 개봉하면 산패됩니다. <b>2~3주에 다 먹을 양</b>이 적당합니다.</li>
-<li><b>소음</b> — 배출 모터 소리에 예민한 아이들이 있습니다. 표기값이 있으면 참고하되 체감은 환경에 따라 다릅니다.</li>
+<ul class="guide">
+<li><b>정전 대비</b> — 여기서 갈립니다. 어댑터 전용이면 코드가 빠지거나 정전됐을 때 급여가 멈춥니다. 하루 종일 집을 비운다면 배터리를 함께 쓰는 제품을 보세요. 판매 목록에는 거의 표기되지 않으니 상세페이지에서 직접 확인해야 합니다.</li>
+<li><b>사료 알갱이 크기</b> — 제품마다 허용 범위가 있습니다. 이보다 작으면 배출 회전부에 끼고, 크면 통로에 걸립니다. 지금 주시는 사료를 자로 재보고 범위와 맞춰 보세요. 후기에서 가장 많이 터지는 문제입니다.</li>
+<li><b>배출량 정확도</b> — 시간은 대체로 정확하지만 양은 제품마다 편차가 있습니다. 정량 급여가 필요한 아이라면 이 항목의 후기를 먼저 읽어보시는 게 좋습니다.</li>
+<li><b>무게와 높이</b> — 가벼우면 힘센 아이가 밀거나 엎을 수 있습니다. 뚜껑이 쉽게 열리는 구조라면 과식 사고로 이어집니다.</li>
+<li><b>세척</b> — 사료 통로에 기름과 가루가 낍니다. 분리해서 씻을 수 있는지가 반년 뒤 만족도를 가릅니다.</li>
+<li><b>용량</b> — 클수록 좋은 게 아닙니다. 사료는 개봉하면 산패됩니다. 2~3주에 다 먹을 양이 적당합니다.</li>
 </ul>
 
 <h2>자주 묻는 질문</h2>
-<div class="faq"><b>Q. 자동급식기, 정말 필요한가요?</b>출퇴근이 불규칙하거나 집을 오래 비우는 날이 있다면 값을 합니다. 매일 같은 시간에 계신다면 굳이 필요하지 않습니다.</div>
-<div class="faq"><b>Q. 정전되면 사료가 안 나오나요?</b>어댑터 전용 제품은 그렇습니다. 배터리를 함께 쓰는 제품은 정전 중에도 예약 급여가 유지됩니다. 다만 이 정보는 판매 목록에 잘 안 나오니 상세페이지에서 확인하셔야 합니다.</div>
-<div class="faq"><b>Q. 습식 사료도 넣을 수 있나요?</b>대부분 건사료 전용입니다. 습식은 통로에 들러붙고 상하기 때문에 습식 전용 급여기를 따로 찾으셔야 합니다.</div>
-<div class="faq"><b>Q. 쿠팡과 토스쇼핑 중 어디가 싼가요?</b>같은 제품이 양쪽에 다 있는 경우가 드물어 단순 비교가 어렵습니다. 다만 적립률은 토스가 7%, 쿠팡이 5%로 일정했습니다. 표시가 차이가 2% 이내라면 적립까지 따져 토스가 유리합니다.</div>
-<div class="faq"><b>Q. 리뷰가 적은 제품은 피해야 하나요?</b>무조건 그렇진 않지만, 자동급식기는 고장 나면 반려동물이 굶는 제품입니다. 처음 사시는 거라면 리뷰가 두꺼운 쪽을 권합니다.</div>
+<div class="qa"><span class="q">자동급식기, 정말 필요한가요?</span><span class="a">출퇴근이 불규칙하거나 집을 오래 비우는 날이 있다면 값을 합니다. 매일 같은 시간에 계신다면 굳이 필요하지 않습니다.</span></div>
+<div class="qa"><span class="q">정전되면 사료가 안 나오나요?</span><span class="a">어댑터 전용 제품은 그렇습니다. 배터리를 함께 쓰는 제품은 정전 중에도 예약 급여가 유지됩니다. 다만 이 정보는 판매 목록에 잘 안 나오니 상세페이지에서 확인하셔야 합니다.</span></div>
+<div class="qa"><span class="q">설정한 양이 정확히 나오나요?</span><span class="a">제품마다 다르고, 편차가 있다는 후기가 흔합니다. 사료 알갱이 크기가 제품 허용 범위를 벗어나면 특히 심해집니다. 정량이 중요하다면 구매 전 해당 항목의 후기를 꼭 읽어보세요.</span></div>
+<div class="qa"><span class="q">습식 사료도 넣을 수 있나요?</span><span class="a">대부분 건사료 전용입니다. 습식은 통로에 들러붙고 상하기 때문에 습식 전용 급여기를 따로 찾으셔야 합니다.</span></div>
+<div class="qa"><span class="q">쿠팡과 토스쇼핑 중 어디가 싼가요?</span><span class="a">같은 제품이 양쪽에 다 있는 경우가 드물어 단순 비교가 어렵습니다. 다만 적립률은 토스 7%, 쿠팡 5%로 일정했습니다. 표시가 차이가 2% 이내라면 적립까지 따져 토스가 유리합니다.</span></div>
 
 <div class="foot">
-이 글은 제품을 직접 사용해 본 후기가 아니라, <b>각 쇼핑몰에 공개된 가격·사양 정보를 정리한 비교 가이드</b>입니다.
+이 글은 제품을 직접 사용해 본 후기가 아니라, 각 쇼핑몰에 공개된 가격·사양 정보와 구매자 후기를 정리한 비교 가이드입니다.
 써 봐야 알 수 있는 부분(실제 소음, 내구성)은 다루지 않았고, 사양은 판매 페이지 표기를 옮긴 것이며 글쓴이가 검증한 것이 아닙니다.
 가격·적립·배송 조건은 확인 시점 기준이며 변동될 수 있습니다.
 정보가 실제와 다르면 <a href="/p/contact.html">연락처</a>로 알려주시면 확인해 고치겠습니다.

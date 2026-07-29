@@ -9,6 +9,7 @@
     python3 tools/make_preview.py posts_data/feeder.json
 """
 import argparse
+import base64
 import html
 import json
 import os
@@ -88,6 +89,23 @@ def main():
     post_path = os.path.join(ROOT, "blog", "posts", f'{d.get("category","post")}.html')
     with open(post_path, encoding="utf-8") as f:
         post = f.read()
+
+    # 미리보기는 외부 CDN 을 차단하므로 웹폰트가 안 뜬다. 실제 블로거에서는 CDN 링크로 뜨지만,
+    # 미리보기에서 폰트가 시스템 폰트로 떨어지면 디자인 판단이 불가능하다.
+    # → 글에 실제로 쓰인 글자만 남긴 서브셋을 data URI 로 심는다(각 44KB).
+    faces, sub_dir = [], os.path.join(ROOT, "assets", "fonts")
+    for wname, weight in (("Regular", 400), ("SemiBold", 600), ("Bold", 700)):
+        fp = os.path.join(sub_dir, f"sub-{wname}.woff2")
+        if os.path.exists(fp):
+            with open(fp, "rb") as fh:
+                b64 = base64.b64encode(fh.read()).decode()
+            faces.append("@font-face{font-family:'Pretendard';font-style:normal;font-weight:%d;"
+                         "font-display:swap;src:url(data:font/woff2;base64,%s) format('woff2')}"
+                         % (weight, b64))
+    if faces:
+        post = post.replace(
+            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css">',
+            "<style>" + "".join(faces) + "</style>")
 
     # 미리보기(아티팩트)는 외부 호스트를 차단하므로 파트너스 iframe 이 빈 칸으로 뜬다.
     # 깨진 것처럼 보이지 않게 자리표시로 바꾼다 — 실제 블로거에서는 정상 렌더된다.

@@ -1,62 +1,149 @@
 <!-- 자동 생성: tools/make_blogpost.py · 직접 고치지 말고 JSON/템플릿을 고칠 것 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css">
 <style>
-.eds{line-height:1.75;word-break:keep-all;font-size:16px}
-.eds .disc{background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;padding:12px 14px;font-size:13.5px;color:#4c1d95;margin:0 0 20px}
-.eds .asof{color:#6b7280;font-size:13px;margin:0 0 22px}
-.eds h2{font-size:22px;font-weight:800;margin:34px 0 14px;padding-bottom:8px;border-bottom:2px solid #ede9fe}
-.eds h3{font-size:18px;font-weight:700;margin:24px 0 6px}
-.eds .tldr{background:#faf5ff;border-left:4px solid #8b5cf6;border-radius:0 10px 10px 0;padding:16px 18px;margin:0 0 22px}
-.eds .tldr p{margin:6px 0}
-.eds .tldr b{color:#6d28d9}
-.eds .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 10px}
-.eds table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
-.eds th,.eds td{border:1px solid #e5e7eb;padding:9px 10px;text-align:center}
-.eds th{background:#f9fafb;font-weight:700;white-space:nowrap}
-.eds td.name{text-align:left;font-weight:600;min-width:170px}
-.eds .tag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 7px;border-radius:5px;white-space:nowrap}
-.eds .tag.c{background:#eef2ff;color:#3730a3}
-.eds .tag.t{background:#e8f2ff;color:#1d4ed8}
-.eds .card{border:1px solid #e5e7eb;border-radius:12px;padding:18px;margin:0 0 18px}
-.eds .head{display:flex;gap:16px;align-items:flex-start;margin:0 0 10px}
+/* 색은 '판매처'에만 쓴다. 나머지는 전부 무채색 — 색이 장식이 아니라 데이터가 되도록. */
+.eds{
+  /* 딥 그린을 지면색으로, 앰버를 포인트로. 판매처(쿠팡/토스)는 그 둘과 겹치지 않는 색이라
+     같은 화면에 있어도 '브랜드 색'과 '데이터 색'이 헷갈리지 않는다. */
+  --ink:#12291f; --body:#3a4642; --mut:#6f807a;
+  --brand:#1a6b4a; --brand-dk:#12291f; --wash:#f1f7f3; --wash2:#e4efe9;
+  --amber:#b8791f; --amber-wash:#fdf6e9;
+  --rule:#d7e3dd; --rule2:#eaf1ed;
+  --cou:#d1344a; --toss:#1b64da;
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;
+  color:var(--body); font-size:17px; line-height:1.8; word-break:keep-all;
+  letter-spacing:-0.011em;
+}
+.eds *{box-sizing:border-box}
+.eds b,.eds strong{font-weight:600;color:var(--ink)}
+
+.eds .disc{font-size:13px;line-height:1.65;color:var(--brand);background:var(--wash);
+  border-left:3px solid var(--brand);padding:12px 15px;margin:0 0 26px}
+.eds .asof{font-size:13.5px;color:var(--mut);margin:0 0 34px}
+
+.eds h2{font-size:15px;font-weight:700;color:var(--brand);letter-spacing:.02em;
+  margin:56px 0 20px;padding-bottom:9px;border-bottom:2px solid var(--brand)}
+.eds h3{font-size:21px;font-weight:700;color:var(--ink);letter-spacing:-0.022em;margin:0 0 3px;line-height:1.4}
+
+/* 결론 — 카드가 아니라 정의 목록처럼 */
+.eds .lede{margin:0}
+.eds .lede .row{display:grid;grid-template-columns:132px 1fr;gap:14px;
+  padding:13px 0;border-bottom:1px solid var(--rule2)}
+.eds .lede .k{font-size:14px;font-weight:700;color:var(--brand);padding-top:2px}
+.eds .lede .v{font-size:16.5px;color:var(--ink);line-height:1.65}
+.eds .lede .v em{font-style:normal;color:var(--mut);font-size:14.5px}
+.eds .caveat{font-size:13.5px;color:var(--mut);line-height:1.7;margin:14px 0 0}
+
+/* 표 — 세로선 없음, 숫자 우측정렬 */
+.eds .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 12px}
+.eds table{border-collapse:collapse;width:100%;min-width:560px;font-size:14.5px}
+.eds thead th{font-size:12.5px;font-weight:700;color:var(--brand);
+  text-align:right;padding:0 0 9px;border-bottom:1.5px solid var(--brand);white-space:nowrap}
+.eds thead th:first-child{text-align:left}
+.eds tbody td{padding:12px 0;border-bottom:1px solid var(--rule2);text-align:right;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.eds tbody td:first-child{text-align:left;white-space:normal;padding-right:16px;min-width:180px;color:var(--ink)}
+.eds tbody td+td{padding-left:14px}
+.eds .num{font-weight:600;color:var(--ink)}
+.eds .dim{color:var(--mut)}
+
+/* 판매처 = 유일한 색 */
+.eds .src{font-size:12.5px;font-weight:700;white-space:nowrap}
+.eds .src.c{color:var(--cou)} .eds .src.t{color:var(--toss)}
+.eds .src::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;
+  margin-right:5px;vertical-align:1px;background:currentColor}
+
+/* 맞대결 — 이 글의 하이라이트 */
+.eds .vs{background:var(--wash);border-top:3px solid var(--brand);padding:4px 20px;margin:0 0 16px;border-radius:0 0 3px 3px}
+.eds .vsgrid{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch}
+.eds .vscol{padding:18px 16px}
+.eds .vscol:first-child{padding-left:0}
+.eds .vsgrid{align-items:center}
+.eds .vscol:last-child{padding-right:0;text-align:right}
+.eds .vsmid{display:flex;align-items:center;justify-content:center;padding:0 14px;
+  font-size:12px;font-weight:700;color:var(--brand);
+  border-left:1px solid var(--wash2);border-right:1px solid var(--wash2)}
+.eds .vsname{font-size:15px;font-weight:600;color:var(--ink);line-height:1.45;margin:6px 0 10px}
+.eds .vsbig{font-size:27px;font-weight:700;color:var(--brand-dk);letter-spacing:-0.03em;font-variant-numeric:tabular-nums}
+.eds .vssub{font-size:13.5px;color:var(--mut);margin-top:4px;line-height:1.6;font-variant-numeric:tabular-nums}
+.eds .vsverdict{font-size:16.5px;line-height:1.78;margin:0}
+
+/* 제품 — 카드 없이 규칙선으로 구분 */
+.eds .item{border-top:1px solid var(--rule);padding:26px 0 6px}
+.eds .item:first-of-type{border-top:2px solid var(--brand)}
+.eds .ihead{display:flex;gap:20px;align-items:flex-start;margin:0 0 18px}
 .eds .banner{flex:0 0 120px;line-height:0}
 .eds .banner iframe{border:0;max-width:100%}
-.eds .headinfo{flex:1 1 auto;min-width:0}
-.eds .spec{font-size:14.5px;color:#374151;margin:8px 0 0}
-@media (max-width:480px){ .eds .head{flex-direction:column;align-items:center;text-align:center} .eds .headinfo{width:100%;text-align:left} }
-.eds .meta{color:#6b7280;font-size:13.5px;margin:2px 0 10px}
-.eds .price{font-size:20px;font-weight:800;margin:0 0 2px}
-.eds .price s{color:#9ca3af;font-size:14px;font-weight:400;margin-left:6px}
-.eds .pt{color:#059669;font-size:13.5px;margin:0 0 10px}
-.eds ul{padding-left:20px;margin:8px 0}
-.eds li{margin:4px 0}
-.eds .pro li::marker{content:"+ ";color:#16a34a;font-weight:800}
-.eds .con li::marker{content:"− ";color:#dc2626;font-weight:800}
-.eds .insight{background:#f0f9ff;border-left:3px solid #0284c7;border-radius:0 8px 8px 0;padding:11px 13px;margin:12px 0 0;font-size:14.5px;color:#0c4a6e}
-.eds .who{background:#f9fafb;border-radius:8px;padding:10px 12px;margin:12px 0 0;font-size:14.5px}
-.eds .btn{display:block;margin:14px 0 0;padding:13px;border-radius:9px;text-decoration:none;font-weight:700;text-align:center;font-size:15px}
-.eds .btn.c{background:#e11d48;color:#fff}
-.eds .btn.t{background:#3182f6;color:#fff}
-.eds .btn.off{background:#e5e7eb;color:#9ca3af}
-.eds .faq{border-top:1px solid #e5e7eb;padding:14px 0}
-.eds .faq b{display:block;margin-bottom:5px}
-.eds .foot{margin-top:32px;padding-top:16px;border-top:1px solid #e5e7eb;color:#6b7280;font-size:13px}
+.eds .iinfo{flex:1 1 auto;min-width:0}
+.eds .imeta{font-size:13px;color:var(--mut);margin:0 0 9px}
+.eds .iprice{font-size:29px;font-weight:700;color:var(--ink);letter-spacing:-0.03em;
+  font-variant-numeric:tabular-nums;line-height:1.2;margin:0}
+.eds .iprice s{font-size:15px;font-weight:400;color:var(--mut);margin-left:9px;letter-spacing:0}
+.eds .ipt{font-size:14px;color:var(--mut);margin:5px 0 0;font-variant-numeric:tabular-nums}
+.eds .ispec{font-size:14.5px;color:var(--body);margin:12px 0 0;line-height:1.7}
+
+.eds .pc{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;margin:0}
+
+.eds .pclabel{font-size:12.5px;font-weight:700;margin:12px 0 6px}
+.eds .pcbox.good .pclabel{color:var(--brand)} .eds .pcbox.bad .pclabel{color:var(--amber)}
+.eds .pcbox.good{border-top:2px solid var(--brand)} .eds .pcbox.bad{border-top:2px solid var(--amber)}
+.eds .pc ul{margin:0;padding-left:17px}
+.eds .pc li{margin:7px 0;font-size:15px;line-height:1.7}
+.eds .pc li::marker{color:var(--mut)}
+
+.eds .quote{border-left:3px solid var(--amber);background:var(--amber-wash);padding:13px 16px;margin:20px 0 0;
+  font-size:15.5px;line-height:1.75;color:var(--body)}
+.eds .quote .qh{display:block;font-size:12.5px;font-weight:700;color:var(--amber);margin-bottom:5px}
+.eds .aside{font-size:14.5px;line-height:1.75;color:var(--mut);margin:18px 0 0;
+  padding-top:14px;border-top:1px solid var(--rule2)}
+
+.eds .buy{display:block;margin:22px 0 0;padding:15px;text-align:center;text-decoration:none;
+  font-size:15.5px;font-weight:700;border:1.5px solid currentColor;border-radius:2px}
+.eds .buy.c{color:var(--cou)} .eds .buy.t{color:var(--toss)}
+.eds .buy.c:hover{background:var(--cou);color:#fff}
+.eds .buy.t:hover{background:var(--toss);color:#fff}
+.eds .buy.off{color:var(--mut);border-color:var(--rule);border-style:dashed}
+.eds .buy:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+.eds .guide{margin:0;padding-left:18px}
+.eds .guide li{margin:14px 0;font-size:16px;line-height:1.78}
+.eds .guide li::marker{color:var(--brand)}
+.eds .qa{border-top:1px solid var(--rule);padding:16px 0}
+.eds .qa .q{display:block;font-size:16px;font-weight:600;color:var(--brand-dk);margin-bottom:5px}
+.eds .qa .a{font-size:15.5px;line-height:1.75}
+.eds .foot{margin-top:52px;padding-top:18px;border-top:2px solid var(--brand);
+  color:var(--mut);font-size:13px;line-height:1.75}
+.eds .foot a{color:var(--mut)}
+
+@media (max-width:600px){
+  .eds{font-size:16px}
+  .eds .lede .row{grid-template-columns:1fr;gap:2px;padding:11px 0}
+  .eds .pc{grid-template-columns:1fr}
+  .eds .pcbox+.pcbox{border-top:1px solid var(--rule2)}
+  .eds .ihead{flex-direction:column;gap:14px}
+  .eds .iprice{font-size:26px}
+  .eds .vsgrid{grid-template-columns:1fr}
+  .eds .vscol{padding:16px 0}
+  .eds .vscol:last-child{text-align:left;border-top:1px solid var(--rule)}
+  .eds .vsmid{display:none}
+}
 </style>
 
 <div class="eds">
 
-<div class="disc">이 포스팅은 쿠팡 파트너스 및 토스쇼핑 쉐어링크 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
+<p class="disc">이 포스팅은 쿠팡 파트너스 및 토스쇼핑 쉐어링크 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
 
-<p class="asof">📅 가격 확인: <b>{{checked_at}}</b> · 쇼핑몰 가격은 수시로 바뀌니 <b>구매 직전 실제 페이지에서 다시 확인</b>해 주세요.</p>
+<p class="asof">가격 확인 <b>{{checked_at}}</b> · 쇼핑몰 가격은 수시로 바뀝니다. 구매 직전 실제 페이지에서 다시 확인해 주세요.</p>
 
 <h2>결론부터</h2>
-<div class="tldr">
 {{tldr}}
-</div>
 
 <h2>한눈에 비교</h2>
 <div class="scroll">
 {{table}}
 </div>
+
+{{headtohead}}
 
 <h2>쿠팡과 토스쇼핑, 어디서 사는 게 나을까</h2>
 {{platform_compare}}
@@ -74,7 +161,7 @@
 {{faq}}
 
 <div class="foot">
-이 글은 제품을 직접 사용해 본 후기가 아니라, <b>각 쇼핑몰에 공개된 가격·사양 정보를 정리한 비교 가이드</b>입니다.
+이 글은 제품을 직접 사용해 본 후기가 아니라, 각 쇼핑몰에 공개된 가격·사양 정보와 구매자 후기를 정리한 비교 가이드입니다.
 써 봐야 알 수 있는 부분(실제 소음, 내구성)은 다루지 않았고, 사양은 판매 페이지 표기를 옮긴 것이며 글쓴이가 검증한 것이 아닙니다.
 가격·적립·배송 조건은 확인 시점 기준이며 변동될 수 있습니다.
 정보가 실제와 다르면 <a href="/p/contact.html">연락처</a>로 알려주시면 확인해 고치겠습니다.

@@ -7,11 +7,17 @@ posts_data/<id>.json → 블로거 "HTML 보기"에 붙여넣을 HTML.
     python3 tools/make_blogpost.py posts_data/feeder.json
 
 설계 근거 (PLAN.md 1-5-1, 1-5-3)
-- 당초 "같은 모델 가격비교"로 잡았으나 쿠팡·토스에 겹치는 모델이 거의 없어
-  **"쇼핑몰별로 살 만한 것"** 으로 전환했다. 같은 모델인 척하는 게 최악이다.
-- 가격은 매일 바뀌고 자동 수집이 불가능하다. 그래서 금액은 확인 날짜와 함께 적되
-  글의 본체는 **"어떤 상황이면 어디가 유리한가"** 로 짠다. 가격이 변해도 글이 안 죽는다.
-- 효능·성능은 단정하지 않는다. 판매 페이지 표기 인용만.
+- "같은 모델 가격비교"는 쿠팡·토스에 겹치는 모델이 거의 없어 성립하지 않았다.
+  **"쇼핑몰별로 살 만한 것"** 으로 간다. 같은 모델인 척하는 게 최악이다.
+- 가격은 매일 바뀌고 자동 수집이 불가능하다. 금액은 확인 날짜와 함께 적되
+  글의 본체는 **"어떤 상황이면 어디가 유리한가"** 로 짠다.
+- 효능·성능은 단정하지 않는다. 판매 페이지 표기와 구매자 후기 인용만.
+
+디자인 원칙 (2026-07-29 전면 개편)
+- **딥 그린을 지면색, 앰버를 포인트로.** 판매처(쿠팡 빨강·토스 파랑)는 그 둘과 겹치지 않아
+  같은 화면에서 "브랜드 색"과 "데이터 색"이 헷갈리지 않는다.
+- 카드·둥근 모서리·이모지를 쓰지 않는다. 구분선과 여백, 타이포 위계로 구조를 만든다.
+- 숫자는 tabular-nums 로 자릿수를 맞추고 우측 정렬한다.
 
 link 가 비어 있으면 버튼은 자동으로 비활성 처리된다 — 잘못된 유입 방지.
 """
@@ -43,7 +49,12 @@ def by_platform(items, key):
     return [i for i in items if i.get("platform") == key]
 
 
-# ---------- 조각 ----------
+def src_tag(platform):
+    label, cls = SHOP[platform]
+    return f'<span class="src {cls}">{label}</span>'
+
+
+# ---------- 결론 ----------
 
 def build_tldr(items):
     """추천 근거는 데이터에 있는 것만 쓴다.
@@ -53,98 +64,150 @@ def build_tldr(items):
     """
     ok = [i for i in items if i.get("price")]
     if not ok:
-        return "<p>가격 정보를 확인하지 못했습니다.</p>"
-    out = []
+        return '<p>가격 정보를 확인하지 못했습니다.</p>'
+    rows, used = [], set()
 
-    # 1) 실패 회피 = 리뷰가 가장 두터운 것
+    def row(k, it, extra=""):
+        used.add(it["name"])
+        rows.append(
+            f'<div class="row"><div class="k">{k}</div>'
+            f'<div class="v">{esc(it["name"])}<br>'
+            f'<em>{src_tag(it["platform"])} · {won(it["price"])}{extra}</em></div></div>')
+
     safe = max(ok, key=lambda x: x.get("reviews") or 0)
     if safe.get("reviews"):
-        out.append(f'<p>· <b>실패를 피하고 싶다면</b> → {esc(safe["name"])} '
-                   f'({SHOP[safe["platform"]][0]} {won(safe["price"])}, 리뷰 {int(safe["reviews"]):,}건)</p>')
+        row("실패를 피하려면", safe, f' · 후기 {int(safe["reviews"]):,}건')
 
-    # 2) 가성비 = 최저가. 단 최저가와 5% 이내로 붙은 후보 중 리뷰가 두터운 쪽을 고른다
     lowest = min(i["price"] for i in ok)
     near = [i for i in ok if i["price"] <= lowest * 1.05]
     cheap = max(near, key=lambda x: x.get("reviews") or 0)
-    if cheap["name"] != safe["name"]:
-        tail = f', 리뷰 {int(cheap["reviews"]):,}건' if cheap.get("reviews") else ""
-        out.append(f'<p>· <b>예산을 아끼고 싶다면</b> → {esc(cheap["name"])} '
-                   f'({SHOP[cheap["platform"]][0]} {won(cheap["price"])}{tail})</p>')
+    if cheap["name"] not in used:
+        tail = f' · 후기 {int(cheap["reviews"]):,}건' if cheap.get("reviews") else ""
+        row("가장 저렴한 쪽", cheap, tail)
 
-    # 3) 기능 = spec 에 실제로 확인된 것이 있는 제품만
     featured = [i for i in ok if (i.get("spec") or {}).get("app") or (i.get("spec") or {}).get("camera")]
     if featured:
         f = max(featured, key=lambda x: x["price"])
-        feats = [n for n, k in (("앱 연동", "app"), ("카메라", "camera")) if f["spec"].get(k)]
-        out.append(f'<p>· <b>{"·".join(feats)}이 필요하다면</b> → {esc(f["name"])} '
-                   f'({SHOP[f["platform"]][0]} {won(f["price"])})</p>')
+        if f["name"] not in used:
+            feats = [n for n, k in (("앱 연동", "app"), ("카메라", "camera")) if f["spec"].get(k)]
+            row(f'{"·".join(feats)}이 필요하면', f)
 
-    out.append('<p style="margin-top:12px;color:#6b7280;font-size:14px">'
-               '※ 가장 비싼 제품이 기능이 가장 많은 것은 아닙니다. '
-               '판매 목록에 사양이 표기되지 않은 제품이 많아, 확인된 것만 적었습니다.</p>')
-    return "\n".join(out)
+    rest = [i for i in ok if i["name"] not in used]
+    if rest:
+        r = max(rest, key=lambda x: x["price"])
+        row("예산이 넉넉하면", r)
 
+    return ('<div class="lede">' + "".join(rows) + '</div>'
+            '<p class="caveat">가장 비싼 제품이 기능이 가장 많은 것은 아닙니다. '
+            '판매 목록에 사양이 표기되지 않은 제품이 많아, 확인된 항목만 적었습니다.</p>')
+
+
+# ---------- 표 ----------
 
 def build_table(items):
-    head = ("<table><thead><tr><th>제품</th><th>판매처</th><th>가격</th>"
-            "<th>적립</th><th>적립 후</th><th>리뷰</th><th>용량</th></tr></thead><tbody>")
+    head = ('<table><thead><tr><th>제품</th><th>판매처</th><th>가격</th>'
+            '<th>적립</th><th>적립 후</th><th>후기</th><th>용량</th></tr></thead><tbody>')
     rows = []
     for i in sorted(items, key=lambda x: x.get("price") or 0):
-        label, cls = SHOP[i["platform"]]
-        rv = f'{int(i["reviews"]):,}' if i.get("reviews") else "—"
+        rv = f'{int(i["reviews"]):,}건' if i.get("reviews") else "—"
         cap = f'{i["spec"]["capacity_l"]}L' if (i.get("spec") or {}).get("capacity_l") else "—"
         rows.append(
-            f'<tr><td class="name">{esc(i["name"])}</td>'
-            f'<td><span class="tag {cls}">{label}</span></td>'
-            f'<td><b>{won(i.get("price"))}</b></td>'
-            f'<td>{won(i.get("points"))}</td>'
-            f'<td>{won(net(i))}</td>'
-            f'<td>{rv}</td><td>{cap}</td></tr>'
-        )
+            f'<tr><td>{esc(i["name"])}</td>'
+            f'<td>{src_tag(i["platform"])}</td>'
+            f'<td class="num">{won(i.get("price"))}</td>'
+            f'<td class="dim">{won(i.get("points"))}</td>'
+            f'<td class="num">{won(net(i))}</td>'
+            f'<td class="dim">{rv}</td><td class="dim">{cap}</td></tr>')
     return head + "".join(rows) + "</tbody></table>"
 
+
+# ---------- 맞대결 ----------
+
+def build_headtohead(items):
+    """양쪽에서 가격이 거의 같은 두 제품이 있으면 그 대결을 전면에 세운다.
+
+    적립률 차이를 추상적으로 설명하는 것보다, 거의 같은 값의 두 제품을 나란히 두고
+    "적립까지 따지면 뒤집히는데 후기 수는 이만큼 차이난다"를 보여주는 편이 훨씬 잘 읽힌다.
+    데이터가 그렇게 나올 때만 넣는다.
+    """
+    c = [i for i in by_platform(items, "coupang") if i.get("price")]
+    t = [i for i in by_platform(items, "toss") if i.get("price")]
+    if not c or not t:
+        return ""
+    a, b = min(c, key=lambda x: x["price"]), min(t, key=lambda x: x["price"])
+    gap = abs(a["price"] - b["price"])
+    if gap > min(a["price"], b["price"]) * 0.05:
+        return ""
+
+    na, nb = net(a), net(b)
+    winner, diff = (a, nb - na) if na < nb else (b, na - nb)
+    ar = int(a.get("reviews") or 0)
+    br = int(b.get("reviews") or 0)
+
+    def col(it, align_end=False):
+        rv = f'후기 {int(it["reviews"]):,}건' if it.get("reviews") else "후기 표기 없음"
+        return (f'<div class="vscol">{src_tag(it["platform"])}'
+                f'<div class="vsname">{esc(it["name"])}</div>'
+                f'<div class="vsbig">{won(net(it))}</div>'
+                f'<div class="vssub">표시가 {won(it["price"])} − 적립 {won(it.get("points"))}<br>{rv}</div></div>')
+
+    if ar and br:
+        ratio = f'후기는 <b>{max(ar, br):,}건 대 {min(ar, br):,}건</b>입니다. '
+    else:
+        ratio = ""
+
+    verdict = (f'표시가는 <b>{won(gap)}</b> 차이인데, 적립까지 넣으면 '
+               f'<b>{SHOP[winner["platform"]][0]}이 {won(diff)} 저렴</b>해집니다. '
+               f'{ratio}'
+               f'{won(diff)}을 아끼려고 검증이 덜 된 쪽을 고를 것인가 — '
+               f'이 글에서 가장 현실적인 선택입니다. '
+               f'처음 쓰시는 거라면 후기가 두꺼운 쪽을, 이미 어떤 제품인지 아신다면 적립이 붙는 쪽을 권합니다.')
+
+    return ('<h2>거의 같은 값, 다른 선택</h2>'
+            '<div class="vs"><div class="vsgrid">'
+            + col(a) + '<div class="vsmid">vs</div>' + col(b) +
+            '</div></div>'
+            f'<p class="vsverdict">{verdict}</p>')
+
+
+# ---------- 플랫폼 비교 ----------
 
 def build_platform_compare(facts, items):
     c, t = facts.get("coupang", {}), facts.get("toss", {})
     cp, tp = c.get("point_rate"), t.get("point_rate")
     gap = round(tp - cp, 1) if (cp is not None and tp is not None) else None
+    cmax = c.get("observed_max_reviews") or 0
+    tmax = t.get("observed_max_reviews") or 0
 
-    # 글에 실은 몇 개가 아니라 "실제로 둘러본 범위"의 최대값을 쓴다.
-    # 고른 상품 안에서만 세면 "토스는 최대 2건" 같은 사실과 다른 문장이 나온다.
-    cmax = c.get("observed_max_reviews") or max([i.get("reviews") or 0 for i in by_platform(items, "coupang")] or [0])
-    tmax = t.get("observed_max_reviews") or max([i.get("reviews") or 0 for i in by_platform(items, "toss")] or [0])
+    return f"""<p>같은 제품이 양쪽에 다 올라오는 경우는 생각보다 드뭅니다. 판매자가 다르기 때문인데,
+그래서 "어느 쪽이 싸다"보다 <b>어느 쪽에서 사는 게 나은가</b>를 보는 편이 실질적입니다.
+직접 확인해 보니 차이가 분명한 지점이 셋 있었습니다.</p>
 
-    body = f"""<p>같은 제품이 양쪽에 다 올라오는 경우는 생각보다 드뭅니다. 판매자가 다르기 때문인데,
-그래서 "어느 쪽이 싸다"보다 <b>"어느 쪽에서 사는 게 나은가"</b>를 보는 게 실질적입니다.
-직접 확인해 보니 차이가 분명한 지점이 세 군데 있었습니다.</p>
-
-<div class="scroll"><table><thead><tr><th></th><th>적립률</th><th>리뷰</th><th>배송</th></tr></thead><tbody>
-<tr><td class="name"><span class="tag c">쿠팡</span></td><td><b>{cp}%</b></td>
-    <td>{esc(c.get("review_depth", "—"))}</td><td>{esc(c.get("delivery", "—"))}</td></tr>
-<tr><td class="name"><span class="tag t">토스쇼핑</span></td><td><b>{tp}%</b></td>
-    <td>{esc(t.get("review_depth", "—"))}</td><td>{esc(t.get("delivery", "—"))}</td></tr>
+<div class="scroll"><table><thead><tr><th></th><th>적립률</th><th>후기</th><th>배송</th></tr></thead><tbody>
+<tr><td>{src_tag("coupang")}</td><td class="num">{cp}%</td>
+    <td class="dim">{esc(c.get("review_depth", "—"))}</td><td class="dim">{esc(c.get("delivery", "—"))}</td></tr>
+<tr><td>{src_tag("toss")}</td><td class="num">{tp}%</td>
+    <td class="dim">{esc(t.get("review_depth", "—"))}</td><td class="dim">{esc(t.get("delivery", "—"))}</td></tr>
 </tbody></table></div>
 
-<h3>① 적립은 토스가 {gap}%p 높습니다</h3>
-<p>확인한 상품 전부에서 <b>토스는 {tp}%, 쿠팡은 {cp}%</b>로 일정했습니다.
-10만 원짜리를 산다면 {int(100000*tp/100):,}원과 {int(100000*cp/100):,}원, {int(100000*gap/100):,}원 차이입니다.</p>
-<p>그래서 계산이 이렇게 됩니다 — <b>토스 표시가가 쿠팡보다 {gap}% 이내로 비싸다면, 적립까지 따졌을 때 토스가 이깁니다.</b>
-반대로 그보다 더 비싸면 적립으로 못 메웁니다. 위 표의 '적립 후' 열이 그 계산을 해둔 것입니다.</p>
-<p style="color:#6b7280;font-size:14px">※ 양쪽 모두 "최대" 적립 표기라 카드·회원 조건에 따라 실제 금액은 달라질 수 있습니다.</p>
+<h3>적립은 토스가 {gap}%p 높습니다</h3>
+<p>확인한 상품 전부에서 <b>토스 {tp}%, 쿠팡 {cp}%</b>로 일정했습니다.
+10만 원짜리라면 {int(100000 * tp / 100):,}원과 {int(100000 * cp / 100):,}원, {int(100000 * gap / 100):,}원 차이입니다.
+그래서 계산이 이렇게 됩니다 — <b>토스 표시가가 쿠팡보다 {gap}% 이내로 비싸다면 적립까지 따졌을 때 토스가 이깁니다.</b>
+그보다 더 비싸면 적립으로 메워지지 않습니다. 위 표의 '적립 후' 열이 그 계산을 해둔 것입니다.</p>
+<p class="caveat">양쪽 모두 "최대" 적립 표기라 카드·회원 조건에 따라 실제 금액은 달라질 수 있습니다.</p>
 
-<h3>② 리뷰는 쿠팡이 압도적입니다</h3>
-<p>같은 키워드로 양쪽을 훑어보니, 쿠팡은 리뷰가 <b>{cmax:,}건</b>까지 쌓인 제품이 있는 반면
-토스에서 가장 많은 것도 <b>{tmax}건</b>이었습니다. 토스쇼핑이 아직 새 서비스라 거래가 덜 쌓인 것으로 보입니다.</p>
-<p>자동급식기처럼 <b>고장 나면 반려동물이 굶는</b> 제품에서 리뷰 수는 그냥 숫자가 아닙니다.
-처음 사시는 거라면 리뷰가 두꺼운 쪽이 안전합니다.</p>
+<h3>후기는 쿠팡이 압도적입니다</h3>
+<p>같은 키워드로 양쪽을 훑어보니 쿠팡은 후기가 <b>{cmax:,}건</b>까지 쌓인 제품이 있는 반면,
+토스에서 가장 많은 것도 <b>{tmax}건</b>이었습니다. 토스쇼핑이 아직 새 서비스라 거래가 덜 쌓인 것으로 보입니다.
+자동급식기처럼 <b>고장 나면 반려동물이 굶는</b> 제품에서 후기 수는 그냥 숫자가 아닙니다.</p>
 
-<h3>③ 급하면 쿠팡입니다</h3>
+<h3>급하면 쿠팡입니다</h3>
 <p>로켓배송은 오늘 주문하면 내일 옵니다. 토스는 "내일출발" 표기여도 실제 도착은 2~3일 뒤입니다.
-사료가 오늘 떨어졌다면 몇 천 원보다 하루가 큽니다.</p>
+사료가 오늘 떨어졌다면 몇 천 원보다 하루가 큽니다.</p>"""
 
-<div class="who"><b>정리하면</b> — 처음 사거나 급하면 <b>쿠팡</b>, 살 물건을 이미 정했고 며칠 여유가 있다면 적립이 붙는 <b>토스쇼핑</b>이 유리합니다.</div>"""
-    return body
 
+# ---------- 제품 ----------
 
 def build_items(items, platform):
     label, cls = SHOP[platform]
@@ -170,19 +233,17 @@ def build_items(items, platform):
             specs.append(esc(sp["washable"]))
         specs.append(esc(i.get("delivery", "배송 조건 표기 없음")))
 
-        # 상품평을 확인한 제품은 사람이 정리한 장단점을 그대로 쓴다.
-        # 자동 생성 문구는 "확인이 안 됐다"는 말뿐이라 진짜 장단점이 아니다.
+        # 후기를 확인한 제품은 사람이 정리한 장단점을 쓴다.
+        # 자동 문구는 "확인이 안 됐다"는 말뿐이라 진짜 장단점이 아니다.
         pros = list(i.get("pros") or [])
         cons = list(i.get("cons") or [])
-        has_manual = bool(pros or cons)
-
-        if not has_manual:
+        if not (pros or cons):
             if (i.get("reviews") or 0) >= 500:
-                pros.append(f'리뷰 {int(i["reviews"]):,}건 · 평점 {i.get("rating")} — 검증이 충분합니다')
+                pros.append(f'후기 {int(i["reviews"]):,}건 · 평점 {i.get("rating")} — 검증이 충분합니다')
             elif i.get("reviews"):
-                cons.append(f'리뷰가 {int(i["reviews"])}건뿐이라 판단할 근거가 얇습니다')
+                cons.append(f'후기가 {int(i["reviews"])}건뿐이라 판단할 근거가 얇습니다')
             else:
-                cons.append("리뷰 수가 표기되지 않아 검증이 어렵습니다")
+                cons.append("후기 수가 표기되지 않아 검증이 어렵습니다")
             if sp.get("app"):
                 pros.append("밖에서 급여 시간·양을 바꿀 수 있습니다")
             if sp.get("camera"):
@@ -192,48 +253,49 @@ def build_items(items, platform):
             if not sp.get("blackout_backup"):
                 cons.append("정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요")
 
+        pc = '<div class="pc">'
+        pc += ('<div class="pcbox good"><div class="pclabel">좋은 점</div><ul>'
+               + "".join(f"<li>{p}</li>" for p in pros) + "</ul></div>") if pros else ""
+        pc += ('<div class="pcbox bad"><div class="pclabel">아쉬운 점</div><ul>'
+               + "".join(f"<li>{c}</li>" for c in cons) + "</ul></div>") if cons else ""
+        pc += "</div>"
+
+        quote = (f'<div class="quote"><span class="qh">후기를 보면</span>{i["review_insight"]}</div>'
+                 if i.get("review_insight") else "")
+        aside = f'<p class="aside">{i["note"]}</p>' if i.get("note") else ""
+        # 배너는 파트너스 공식 위젯 코드를 그대로 넣는다(이미지·가격·링크 포함).
+        # 상품 이미지를 직접 퍼오는 것과 달리 정책상 허용되는 방식이다.
+        banner = f'<div class="banner">{i["banner"]}</div>' if i.get("banner") else ""
 
         url = (i.get("link") or "").strip()
-        btn = (f'<a class="btn {cls}" href="{esc(url)}" target="_blank" rel="noopener nofollow sponsored">{label}에서 보기</a>'
-               if url else f'<span class="btn off">{label} 링크 준비 중</span>')
+        buy = (f'<a class="buy {cls}" href="{esc(url)}" target="_blank" rel="noopener nofollow sponsored">'
+               f'{label}에서 보기</a>'
+               if url else f'<span class="buy off">{label} 링크 준비 중</span>')
 
-        insight_html = (f'<div class="insight"><b>리뷰를 보면</b> {i["review_insight"]}</div>'
-                        if i.get("review_insight") else "")
-        note_html = (f'<div class="who">ℹ️ {i["note"]}</div>' if i.get("note") else "")
-        # 배너는 파트너스가 제공하는 공식 위젯 코드를 그대로 넣는다(이미지·가격·링크 포함).
-        # 상품 이미지를 직접 퍼오는 것과 달리 정책상 허용되는 방식이다.
-        banner_html = (f'<div class="banner">{i["banner"]}</div>' if i.get("banner") else "")
-
-        ptxt = f'<p class="price">{won(i.get("price"))}'
+        price = f'<p class="iprice">{won(i.get("price"))}'
         if i.get("list_price"):
-            ptxt += f'<s>{won(i["list_price"])}</s>'
-        ptxt += "</p>"
-        pt = (f'<p class="pt">적립 {won(i.get("points"))} → 실질 {won(net(i))}</p>'
-              if i.get("points") else "")
+            price += f'<s>{won(i["list_price"])}</s>'
+        price += "</p>"
+        pts = (f'<p class="ipt">적립 {won(i.get("points"))} · 실질 {won(net(i))}</p>'
+               if i.get("points") else "")
 
-        out.append(f"""<div class="card">
+        out.append(f"""<div class="item">
 <h3>{esc(i["name"])}</h3>
-<p class="meta">{esc(meta)}</p>
-<div class="head">
-{banner_html}
-<div class="headinfo">{ptxt}{pt}<p class="spec">{" · ".join(specs)}</p></div>
-</div>
-<ul class="pro">{"".join(f"<li>{p}</li>" for p in pros)}</ul>
-<ul class="con">{"".join(f"<li>{c}</li>" for c in cons)}</ul>
-{insight_html}
-{note_html}
-{btn}
+<p class="imeta">{esc(meta)}</p>
+<div class="ihead">{banner}<div class="iinfo">{price}{pts}
+<p class="ispec">{" · ".join(specs)}</p></div></div>
+{pc}{quote}{aside}{buy}
 </div>""")
     return "\n".join(out) or "<p>해당 쇼핑몰에서 고른 상품이 없습니다.</p>"
 
 
-CRITERIA = """<ul>
-<li><b>정전 대비</b> — 여기서 갈립니다. 어댑터 전용이면 코드가 빠지거나 정전됐을 때 급여가 멈춥니다. 하루 종일 집을 비운다면 배터리를 함께 쓰는 제품을 보세요. <b>판매 목록에는 거의 표기되지 않으니 상세페이지에서 직접 확인해야 합니다.</b></li>
-<li><b>세척</b> — 사료 통로에 기름과 가루가 낍니다. 분리해서 씻을 수 있는지가 6개월 뒤 만족도를 가릅니다. 통째로 못 씻는 제품은 결국 안 쓰게 됩니다.</li>
-<li><b>사료 알갱이 크기</b> — 크면 통로에 걸립니다. 지금 주시는 사료와 제조사 권장 크기를 맞춰 보세요.</li>
-<li><b>습식 여부</b> — 대부분 건사료 전용입니다. 습식을 주신다면 애초에 다른 제품군을 찾으셔야 합니다.</li>
-<li><b>용량</b> — 클수록 좋은 게 아닙니다. 사료는 개봉하면 산패됩니다. <b>2~3주에 다 먹을 양</b>이 적당합니다.</li>
-<li><b>소음</b> — 배출 모터 소리에 예민한 아이들이 있습니다. 표기값이 있으면 참고하되 체감은 환경에 따라 다릅니다.</li>
+CRITERIA = """<ul class="guide">
+<li><b>정전 대비</b> — 여기서 갈립니다. 어댑터 전용이면 코드가 빠지거나 정전됐을 때 급여가 멈춥니다. 하루 종일 집을 비운다면 배터리를 함께 쓰는 제품을 보세요. 판매 목록에는 거의 표기되지 않으니 상세페이지에서 직접 확인해야 합니다.</li>
+<li><b>사료 알갱이 크기</b> — 제품마다 허용 범위가 있습니다. 이보다 작으면 배출 회전부에 끼고, 크면 통로에 걸립니다. 지금 주시는 사료를 자로 재보고 범위와 맞춰 보세요. 후기에서 가장 많이 터지는 문제입니다.</li>
+<li><b>배출량 정확도</b> — 시간은 대체로 정확하지만 양은 제품마다 편차가 있습니다. 정량 급여가 필요한 아이라면 이 항목의 후기를 먼저 읽어보시는 게 좋습니다.</li>
+<li><b>무게와 높이</b> — 가벼우면 힘센 아이가 밀거나 엎을 수 있습니다. 뚜껑이 쉽게 열리는 구조라면 과식 사고로 이어집니다.</li>
+<li><b>세척</b> — 사료 통로에 기름과 가루가 낍니다. 분리해서 씻을 수 있는지가 반년 뒤 만족도를 가릅니다.</li>
+<li><b>용량</b> — 클수록 좋은 게 아닙니다. 사료는 개봉하면 산패됩니다. 2~3주에 다 먹을 양이 적당합니다.</li>
 </ul>"""
 
 FAQ = [
@@ -241,17 +303,18 @@ FAQ = [
      "출퇴근이 불규칙하거나 집을 오래 비우는 날이 있다면 값을 합니다. 매일 같은 시간에 계신다면 굳이 필요하지 않습니다."),
     ("정전되면 사료가 안 나오나요?",
      "어댑터 전용 제품은 그렇습니다. 배터리를 함께 쓰는 제품은 정전 중에도 예약 급여가 유지됩니다. 다만 이 정보는 판매 목록에 잘 안 나오니 상세페이지에서 확인하셔야 합니다."),
+    ("설정한 양이 정확히 나오나요?",
+     "제품마다 다르고, 편차가 있다는 후기가 흔합니다. 사료 알갱이 크기가 제품 허용 범위를 벗어나면 특히 심해집니다. 정량이 중요하다면 구매 전 해당 항목의 후기를 꼭 읽어보세요."),
     ("습식 사료도 넣을 수 있나요?",
      "대부분 건사료 전용입니다. 습식은 통로에 들러붙고 상하기 때문에 습식 전용 급여기를 따로 찾으셔야 합니다."),
     ("쿠팡과 토스쇼핑 중 어디가 싼가요?",
-     "같은 제품이 양쪽에 다 있는 경우가 드물어 단순 비교가 어렵습니다. 다만 적립률은 토스가 7%, 쿠팡이 5%로 일정했습니다. 표시가 차이가 2% 이내라면 적립까지 따져 토스가 유리합니다."),
-    ("리뷰가 적은 제품은 피해야 하나요?",
-     "무조건 그렇진 않지만, 자동급식기는 고장 나면 반려동물이 굶는 제품입니다. 처음 사시는 거라면 리뷰가 두꺼운 쪽을 권합니다."),
+     "같은 제품이 양쪽에 다 있는 경우가 드물어 단순 비교가 어렵습니다. 다만 적립률은 토스 7%, 쿠팡 5%로 일정했습니다. 표시가 차이가 2% 이내라면 적립까지 따져 토스가 유리합니다."),
 ]
 
 
 def build_faq():
-    return "\n".join(f'<div class="faq"><b>Q. {q}</b>{a}</div>' for q, a in FAQ)
+    return "\n".join(f'<div class="qa"><span class="q">{q}</span><span class="a">{a}</span></div>'
+                     for q, a in FAQ)
 
 
 def main():
@@ -274,6 +337,7 @@ def main():
         "checked_at": esc(d.get("checked_at", "")),
         "tldr": build_tldr(items),
         "table": build_table(items),
+        "headtohead": build_headtohead(items),
         "platform_compare": build_platform_compare(d.get("platform_facts") or {}, items),
         "coupang_items": build_items(items, "coupang"),
         "toss_items": build_items(items, "toss"),
@@ -293,10 +357,10 @@ def main():
         f.write(out_html)
 
     print(f'생성: {out} ({len(out_html):,}자)')
-    print(f'제목 후보: {d.get("title", "")}')
+    print(f'제목: {d.get("title", "")}')
     missing = [i["name"] for i in items if not (i.get("link") or "").strip()]
     if missing:
-        print(f"\n⚠️  제휴 링크 미입력 {len(missing)}개 → 버튼이 비활성 상태입니다:")
+        print(f"\n제휴 링크 미입력 {len(missing)}개 → 버튼 비활성:")
         for m in missing:
             print("   -", m)
 

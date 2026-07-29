@@ -1,6 +1,6 @@
 {
   "category": "자동급식기",
-  "title": "자동급식기 추천 6가지 — 쿠팡·토스쇼핑에서 살 만한 것 정리",
+  "title": "자동급식기 추천 4가지 — 쿠팡·토스쇼핑, 어디서 살까",
   "checked_at": "2026년 7월 29일",
   "_출처": "쿠팡·토스쇼핑 검색결과 화면(2026-07-29 사용자 캡처)에서 읽은 값.",
   "_앵글": "당초 '같은 모델 가격비교'로 잡았으나 양쪽에 겹치는 모델이 5개 중 1개뿐이라 성립하지 않았다. '쇼핑몰별로 살 만한 것'으로 전환(PLAN 1-5-3).",
@@ -66,30 +66,6 @@
     },
     {
       "platform": "coupang",
-      "name": "디클펫 반려동물 자동급식기 AT-310 4L",
-      "brand": "디클펫",
-      "model": "AT-310",
-      "price": 47300,
-      "list_price": 223000,
-      "points": 2360,
-      "delivery": "로켓배송 · 내일 도착",
-      "reviews": 2253,
-      "rating": 4.8,
-      "spec": {
-        "capacity_l": 4,
-        "wet_food": false,
-        "power": "",
-        "blackout_backup": false,
-        "app": false,
-        "camera": false,
-        "washable": "",
-        "noise_db": null
-      },
-      "note": "이번에 살펴본 자동급식기 중 리뷰가 가장 많았습니다. 쿠팡추천 배지도 붙어 있습니다.",
-      "link": ""
-    },
-    {
-      "platform": "coupang",
       "name": "페블펫 와이파이 앱연동 스마트 자동급식기 IPF-W100 3.5L",
       "brand": "페블펫",
       "model": "IPF-W100",
@@ -138,30 +114,6 @@
     },
     {
       "platform": "toss",
-      "name": "디클펫 반려동물 자동급식기 AT-330",
-      "brand": "디클펫",
-      "model": "AT-330",
-      "price": 42900,
-      "points": 3003,
-      "delivery": "표기 없음",
-      "reviews": null,
-      "rating": null,
-      "spec": {
-        "capacity_l": null,
-        "wet_food": false,
-        "power": "",
-        "blackout_backup": false,
-        "app": false,
-        "camera": false,
-        "washable": "",
-        "noise_db": null
-      },
-      "note": "쿠팡에 있는 AT-310과 같은 브랜드지만 다른 모델입니다. 두 모델의 사양 차이는 각 상세페이지에서 확인하셔야 합니다.",
-      "link": "",
-      "_할인율표기": "화면에는 할인율(%)만 있고 정가는 표기되지 않아 정가를 넣지 않는다"
-    },
-    {
-      "platform": "toss",
       "name": "신일전자 퍼비 자동급식기 SIP-PFD3 계열",
       "brand": "신일전자",
       "model": "SIP-PFD3(일부 표기)",
@@ -184,5 +136,6 @@
       "link": "",
       "_할인율표기": "화면에는 할인율(%)만 있고 정가는 표기되지 않아 정가를 넣지 않는다"
     }
-  ]
+  ],
+  "observed_note": "자동급식기 카테고리 전체를 훑고 그중 4개를 골랐습니다."
 }
