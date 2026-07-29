@@ -170,41 +170,30 @@ def build_headtohead(items):
             f'<p class="vsverdict">{verdict}</p>')
 
 
-# ---------- 플랫폼 비교 ----------
+# ---------- 표 아래 캡션 ----------
 
-def build_platform_compare(facts, items):
+def build_table_note(facts, items):
+    """플랫폼 차이를 별도 섹션으로 설명하지 않고 표 바로 밑에 붙인다.
+
+    독자는 비교하러 왔지 플랫폼 경제학 강의를 들으러 온 게 아니다.
+    같은 정보라도 "지금 표를 보고 있는 자리"에 있어야 판단에 쓰인다.
+    """
     c, t = facts.get("coupang", {}), facts.get("toss", {})
     cp, tp = c.get("point_rate"), t.get("point_rate")
-    gap = round(tp - cp, 1) if (cp is not None and tp is not None) else None
+    if cp is None or tp is None:
+        return ""
+    gap = round(tp - cp, 1)
     cmax = c.get("observed_max_reviews") or 0
     tmax = t.get("observed_max_reviews") or 0
 
-    return f"""<p>같은 제품이 양쪽에 다 올라오는 경우는 생각보다 드뭅니다. 판매자가 다르기 때문인데,
-그래서 "어느 쪽이 싸다"보다 <b>어느 쪽에서 사는 게 나은가</b>를 보는 편이 실질적입니다.
-직접 확인해 보니 차이가 분명한 지점이 셋 있었습니다.</p>
-
-<div class="scroll"><table><thead><tr><th></th><th>적립률</th><th>후기</th><th>배송</th></tr></thead><tbody>
-<tr><td>{src_tag("coupang")}</td><td class="num">{cp}%</td>
-    <td class="dim">{esc(c.get("review_depth", "—"))}</td><td class="dim">{esc(c.get("delivery", "—"))}</td></tr>
-<tr><td>{src_tag("toss")}</td><td class="num">{tp}%</td>
-    <td class="dim">{esc(t.get("review_depth", "—"))}</td><td class="dim">{esc(t.get("delivery", "—"))}</td></tr>
-</tbody></table></div>
-
-<h3>적립은 토스가 {gap}%p 높습니다</h3>
-<p>확인한 상품 전부에서 <b>토스 {tp}%, 쿠팡 {cp}%</b>로 일정했습니다.
-10만 원짜리라면 {int(100000 * tp / 100):,}원과 {int(100000 * cp / 100):,}원, {int(100000 * gap / 100):,}원 차이입니다.
-그래서 계산이 이렇게 됩니다 — <b>토스 표시가가 쿠팡보다 {gap}% 이내로 비싸다면 적립까지 따졌을 때 토스가 이깁니다.</b>
-그보다 더 비싸면 적립으로 메워지지 않습니다. 위 표의 '적립 후' 열이 그 계산을 해둔 것입니다.</p>
-<p class="caveat">양쪽 모두 "최대" 적립 표기라 카드·회원 조건에 따라 실제 금액은 달라질 수 있습니다.</p>
-
-<h3>후기는 쿠팡이 압도적입니다</h3>
-<p>같은 키워드로 양쪽을 훑어보니 쿠팡은 후기가 <b>{cmax:,}건</b>까지 쌓인 제품이 있는 반면,
-토스에서 가장 많은 것도 <b>{tmax}건</b>이었습니다. 토스쇼핑이 아직 새 서비스라 거래가 덜 쌓인 것으로 보입니다.
-자동급식기처럼 <b>고장 나면 반려동물이 굶는</b> 제품에서 후기 수는 그냥 숫자가 아닙니다.</p>
-
-<h3>급하면 쿠팡입니다</h3>
-<p>로켓배송은 오늘 주문하면 내일 옵니다. 토스는 "내일출발" 표기여도 실제 도착은 2~3일 뒤입니다.
-사료가 오늘 떨어졌다면 몇 천 원보다 하루가 큽니다.</p>"""
+    lines = [f'<b>적립</b> 토스 {tp}% · 쿠팡 {cp}%로 일정했습니다. '
+             f'표시가 차이가 {gap}% 이내면 적립까지 따져 토스가 유리합니다 — '
+             f"'적립 후' 열이 그 계산입니다."]
+    if cmax and tmax:
+        lines.append(f'<b>후기</b> 쿠팡은 {cmax:,}건까지 쌓인 제품이 있고, 토스는 가장 많은 것도 {tmax}건이었습니다.')
+    lines.append(f'<b>배송</b> {esc(c.get("delivery", "—"))} · 토스는 {esc(t.get("delivery", "—"))}.')
+    lines.append('적립은 양쪽 다 "최대" 표기라 카드·회원 조건에 따라 달라질 수 있습니다.')
+    return '<p class="tnote">' + "<br>".join(lines) + "</p>"
 
 
 # ---------- 제품 ----------
@@ -276,7 +265,10 @@ def build_items(items, platform):
         if i.get("list_price"):
             price += f'<s>{won(i["list_price"])}</s>'
         price += "</p>"
-        pts = (f'<p class="ipt">적립 {won(i.get("points"))} · 실질 {won(net(i))}</p>'
+        rate = ""
+        if i.get("points") and i.get("price"):
+            rate = f' ({round(i["points"] / i["price"] * 100):.0f}%)'
+        pts = (f'<p class="ipt">적립 {won(i.get("points"))}{rate} · 실질 부담 {won(net(i))}</p>'
                if i.get("points") else "")
 
         out.append(f"""<div class="item">
@@ -338,7 +330,7 @@ def main():
         "tldr": build_tldr(items),
         "table": build_table(items),
         "headtohead": build_headtohead(items),
-        "platform_compare": build_platform_compare(d.get("platform_facts") or {}, items),
+        "table_note": build_table_note(d.get("platform_facts") or {}, items),
         "coupang_items": build_items(items, "coupang"),
         "toss_items": build_items(items, "toss"),
         "criteria": CRITERIA,

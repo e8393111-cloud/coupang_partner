@@ -32,6 +32,9 @@
 .eds .lede .k{font-size:14px;font-weight:700;color:var(--brand);padding-top:2px}
 .eds .lede .v{font-size:16.5px;color:var(--ink);line-height:1.65}
 .eds .lede .v em{font-style:normal;color:var(--mut);font-size:14.5px}
+.eds .tnote{font-size:14px;line-height:1.95;color:var(--mut);margin:14px 0 0;
+  padding:14px 16px;background:var(--wash);border-left:3px solid var(--brand)}
+.eds .tnote b{color:var(--brand);font-weight:700;margin-right:3px}
 .eds .caveat{font-size:13.5px;color:var(--mut);line-height:1.7;margin:14px 0 0}
 
 /* 표 — 세로선 없음, 숫자 우측정렬 */
@@ -142,11 +145,9 @@
 <div class="scroll">
 {{table}}
 </div>
+{{table_note}}
 
 {{headtohead}}
-
-<h2>쿠팡과 토스쇼핑, 어디서 사는 게 나을까</h2>
-{{platform_compare}}
 
 <h2>쿠팡에서 살 만한 것</h2>
 {{coupang_items}}
