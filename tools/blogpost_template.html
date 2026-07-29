@@ -32,6 +32,18 @@
 .eds .lede .k{font-size:14px;font-weight:700;color:var(--brand);padding-top:2px}
 .eds .lede .v{font-size:16.5px;color:var(--ink);line-height:1.65}
 .eds .lede .v em{font-style:normal;color:var(--mut);font-size:14.5px}
+.eds .intro{font-size:17.5px;line-height:1.85;color:var(--body);margin:0 0 30px}
+.eds .pick{background:var(--wash);border-top:3px solid var(--brand);padding:20px 22px 22px;margin:0 0 34px}
+.eds .picklabel{font-size:12.5px;font-weight:700;color:var(--brand);margin:0 0 8px}
+.eds .pickname{font-size:22px;font-weight:700;color:var(--brand-dk);letter-spacing:-0.025em;line-height:1.4}
+.eds .picksub{font-size:14px;color:var(--mut);margin:6px 0 12px;font-variant-numeric:tabular-nums}
+.eds .pickwhy{font-size:16px;line-height:1.8;margin:0;color:var(--body)}
+.eds .tip{font-size:15.5px;line-height:1.8;background:var(--amber-wash);border-left:3px solid var(--amber);
+  padding:14px 16px;margin:0 0 22px}
+.eds .tip b{color:var(--amber)}
+.eds .reason{font-size:15.5px;line-height:1.78;background:var(--wash);border-left:3px solid var(--brand);
+  padding:13px 16px;margin:20px 0 0}
+.eds .reason b{color:var(--brand);margin-right:4px}
 .eds .tnote{font-size:14px;line-height:1.95;color:var(--mut);margin:14px 0 0;
   padding:14px 16px;background:var(--wash);border-left:3px solid var(--brand)}
 .eds .tnote b{color:var(--brand);font-weight:700;margin-right:3px}
@@ -138,7 +150,11 @@
 
 <p class="asof">가격 확인 <b>{{checked_at}}</b> · 쇼핑몰 가격은 수시로 바뀝니다. 구매 직전 실제 페이지에서 다시 확인해 주세요.</p>
 
-<h2>결론부터</h2>
+{{intro}}
+
+{{toppick}}
+
+<h2>조건이 분명하다면</h2>
 {{tldr}}
 
 <h2>한눈에 비교</h2>
@@ -156,6 +172,7 @@
 {{toss_items}}
 
 <h2>고를 때 볼 것</h2>
+{{blackout}}
 {{criteria}}
 
 <h2>자주 묻는 질문</h2>

@@ -54,6 +54,30 @@ def src_tag(platform):
     return f'<span class="src {cls}">{label}</span>'
 
 
+# ---------- 도입 · 대표 추천 ----------
+
+def build_intro(d):
+    """왜 이게 필요한지 한 문단. 검색자 절반은 '살까 말까' 단계다."""
+    txt = d.get("intro")
+    return f'<p class="intro">{txt}</p>' if txt else ""
+
+
+def build_toppick(d, items):
+    """고민하는 사람에게 딱 하나 밀어준다. 조건별 나열은 결정을 미루게 한다."""
+    tp = d.get("top_pick")
+    if not tp:
+        return ""
+    match = next((i for i in items if i["name"] == tp["name"]), None)
+    price = won(match.get("price")) if match else ""
+    plat = SHOP.get(tp.get("platform", ""), ("", ""))
+    tag = src_tag(tp["platform"]) if tp.get("platform") else ""
+    sub = f'{tag} · {price}' if price else tag
+    return (f'<div class="pick"><div class="picklabel">고민된다면, 이것</div>'
+            f'<div class="pickname">{esc(tp["name"])}</div>'
+            f'<div class="picksub">{sub}</div>'
+            f'<p class="pickwhy">{tp["why"]}</p></div>')
+
+
 # ---------- 결론 ----------
 
 def build_tldr(items):
@@ -170,6 +194,18 @@ def build_headtohead(items):
             f'<p class="vsverdict">{verdict}</p>')
 
 
+def build_blackout(items):
+    """정전 대비를 제품마다 반복하면 불안만 4번 심는다. 한 곳에 정리하면 정보가 된다."""
+    yes = [i for i in items if (i.get("spec") or {}).get("blackout_backup")]
+    if not yes:
+        return ""
+    names = ", ".join(i["name"].split()[0] for i in yes)
+    return (f'<div class="tip"><b>정전·정전 대비</b>는 여기서 갈립니다. '
+            f'이번 4개 중 코드가 빠지거나 정전돼도 급여가 이어지는 건 '
+            f'<b>{names}</b>(건전지 겸용)뿐입니다. 나머지는 어댑터 전용이거나 판매 목록에 표기가 없어, '
+            f'오래 집을 비우는 집이라면 상세페이지에서 배터리 지원을 꼭 확인하세요.</div>')
+
+
 # ---------- 표 아래 캡션 ----------
 
 def build_table_note(facts, items):
@@ -239,8 +275,7 @@ def build_items(items, platform):
                 pros.append("먹는 모습을 확인할 수 있습니다")
             if not sp.get("capacity_l"):
                 cons.append("목록에 용량 표기가 없어 상세페이지 확인이 필요합니다")
-            if not sp.get("blackout_backup"):
-                cons.append("정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요")
+            # 정전 대비는 build_blackout 이 한 곳에 정리하므로 카드마다 반복하지 않는다
 
         pc = '<div class="pc">'
         pc += ('<div class="pcbox good"><div class="pclabel">좋은 점</div><ul>'
@@ -251,6 +286,8 @@ def build_items(items, platform):
 
         quote = (f'<div class="quote"><span class="qh">후기를 보면</span>{i["review_insight"]}</div>'
                  if i.get("review_insight") else "")
+        reason = (f'<div class="reason"><b>이럴 때 이 제품</b> {i["buy_reason"]}</div>'
+                  if i.get("buy_reason") else "")
         aside = f'<p class="aside">{i["note"]}</p>' if i.get("note") else ""
         # 배너는 파트너스 공식 위젯 코드를 그대로 넣는다(이미지·가격·링크 포함).
         # 상품 이미지를 직접 퍼오는 것과 달리 정책상 허용되는 방식이다.
@@ -276,7 +313,7 @@ def build_items(items, platform):
 <p class="imeta">{esc(meta)}</p>
 <div class="ihead">{banner}<div class="iinfo">{price}{pts}
 <p class="ispec">{" · ".join(specs)}</p></div></div>
-{pc}{quote}{aside}{buy}
+{pc}{quote}{reason}{aside}{buy}
 </div>""")
     return "\n".join(out) or "<p>해당 쇼핑몰에서 고른 상품이 없습니다.</p>"
 
@@ -327,6 +364,9 @@ def main():
 
     tokens = {
         "checked_at": esc(d.get("checked_at", "")),
+        "intro": build_intro(d),
+        "toppick": build_toppick(d, items),
+        "blackout": build_blackout(items),
         "tldr": build_tldr(items),
         "table": build_table(items),
         "headtohead": build_headtohead(items),
