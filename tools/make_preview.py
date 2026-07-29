@@ -89,11 +89,24 @@ def main():
     with open(post_path, encoding="utf-8") as f:
         post = f.read()
 
+    # 미리보기(아티팩트)는 외부 호스트를 차단하므로 파트너스 iframe 이 빈 칸으로 뜬다.
+    # 깨진 것처럼 보이지 않게 자리표시로 바꾼다 — 실제 블로거에서는 정상 렌더된다.
+    n_banner = len(re.findall(r"<iframe[^>]*coupa\.ng[^>]*>\s*</iframe>", post))
+    post = re.sub(r"<iframe[^>]*coupa\.ng[^>]*>\s*</iframe>",
+                  '<div style="width:120px;height:240px;border:1px dashed #c7c2d8;border-radius:8px;'
+                  'display:flex;align-items:center;justify-content:center;text-align:center;'
+                  'font-size:11.5px;color:#8b84a3;line-height:1.5;padding:8px;box-sizing:border-box">'
+                  '쿠팡 파트너스<br>상품 배너<br><br>(미리보기에서는<br>외부 콘텐츠가<br>차단됩니다)</div>',
+                  post)
+
     items = d.get("items") or []
     linked = [i for i in items if (i.get("link") or "").strip()]
     missing = [i for i in items if not (i.get("link") or "").strip()]
 
     notes = []
+    if n_banner:
+        notes.append(f'  <div class="note"><b>파트너스 배너 {n_banner}개</b>는 미리보기에서 점선 상자로 표시됩니다. '
+                     f'미리보기 페이지가 외부 콘텐츠를 차단하기 때문이며, <b>실제 블로거에서는 상품 이미지가 정상 표시</b>됩니다.</div>')
     if linked:
         names = ", ".join(i["name"].split()[0] for i in linked)
         notes.append(f'  <div class="note ok"><b>활성 버튼 {len(linked)}개</b> — {html.escape(names)}. '

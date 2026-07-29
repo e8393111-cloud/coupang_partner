@@ -200,6 +200,9 @@ def build_items(items, platform):
         insight_html = (f'<div class="insight"><b>리뷰를 보면</b> {i["review_insight"]}</div>'
                         if i.get("review_insight") else "")
         note_html = (f'<div class="who">ℹ️ {i["note"]}</div>' if i.get("note") else "")
+        # 배너는 파트너스가 제공하는 공식 위젯 코드를 그대로 넣는다(이미지·가격·링크 포함).
+        # 상품 이미지를 직접 퍼오는 것과 달리 정책상 허용되는 방식이다.
+        banner_html = (f'<div class="banner">{i["banner"]}</div>' if i.get("banner") else "")
 
         ptxt = f'<p class="price">{won(i.get("price"))}'
         if i.get("list_price"):
@@ -211,8 +214,10 @@ def build_items(items, platform):
         out.append(f"""<div class="card">
 <h3>{esc(i["name"])}</h3>
 <p class="meta">{esc(meta)}</p>
-{ptxt}{pt}
-<p>{" · ".join(specs)}</p>
+<div class="head">
+{banner_html}
+<div class="headinfo">{ptxt}{pt}<p class="spec">{" · ".join(specs)}</p></div>
+</div>
 <ul class="pro">{"".join(f"<li>{p}</li>" for p in pros)}</ul>
 <ul class="con">{"".join(f"<li>{c}</li>" for c in cons)}</ul>
 {insight_html}
