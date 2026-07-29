@@ -1,0 +1,159 @@
+{
+  "id": "mosquito",
+  "name": "충전식 UV 모기퇴치기 (무드등 겸용)",
+  "model": "SWI-100",
+  "video": "assets/mirra_cleaned.mp4",
+  "vo": "vo.mp3",
+  "out": "assets/mirra_final.mp4",
+  "vo_atempo": 1.5,
+  "captions": [
+    {
+      "text": "여름철 모기 때문에 밤마다 스트레스…",
+      "start": 0.0,
+      "end": 2.95
+    },
+    {
+      "text": "이거 하나만 켜두면 돼요",
+      "start": 2.95,
+      "end": 4.75
+    },
+    {
+      "text": "모기가 불빛 따라 모여서 알아서 처리",
+      "start": 4.75,
+      "end": 8.1
+    },
+    {
+      "text": "집에서도 캠핑에서도 어디든 · 무선 충전식",
+      "start": 8.1,
+      "end": 11.35
+    },
+    {
+      "text": "26,000원 · 내일 로켓배송",
+      "start": 11.35,
+      "end": 14.74
+    },
+    {
+      "text": "프로필 링크에서 확인하세요",
+      "start": 14.74
+    }
+  ],
+  "landing": {
+    "out": "p/mosquito.html",
+    "deeplink": "COUPANG_DEEPLINK",
+    "title": "충전식 UV 모기퇴치기 (무드등 겸용) — 여름 필수템",
+    "og_title": "충전식 UV 모기퇴치기 · 무드등 겸용",
+    "og_desc": "구석에 두면 모기가 알아서 이쪽으로. 무선 충전식이라 거실·베란다·캠핑 어디든.",
+    "eyebrow": "여름 필수템 · 무선 충전식",
+    "h1": "구석에 두면 모기가<br>알아서 이쪽으로.",
+    "sub": "밤새 손바닥 치던 여름밤, 이제 이거 하나면 끝.<br>UV 무드등 겸용 전기 모기퇴치기",
+    "video_src": "../assets/mirra_final.mp4",
+    "price": "26,000원",
+    "list_price": "정가 89,000원",
+    "price_note": "· 로켓배송 · 가격/재고는 쿠팡에서 실시간 확인",
+    "pain_title": "여름밤, 이런 적 있으셨죠?",
+    "pains": [
+      "귓가에 \"앵—\" 소리에 잠이 확 깬다",
+      "불 켜고 손바닥 아프게 쳐도 못 잡는다",
+      "캠핑·차박 가면 다리·발목만 벌집이 된다",
+      "모기향은 냄새나고 연기 나서 찜찜하다"
+    ],
+    "how_title": "그래서, 이렇게 잡아요",
+    "steps": [
+      {
+        "h": "UV로 유인",
+        "p": "은은한 보라빛 UV가 모기를 사람 대신 이쪽으로 끌어모아요."
+      },
+      {
+        "h": "스파크로 처리",
+        "p": "가까이 오면 전기 스파크로 조용히 처리. 연기도 냄새도 없어요."
+      },
+      {
+        "h": "사람과 떨어뜨려 두기",
+        "p": "거실 구석·베란다·텐트 옆에 두면 알아서 일합니다."
+      }
+    ],
+    "use_title": "집에서도, 캠핑에서도",
+    "uses": [
+      {
+        "label": "🏕️ 감성 캠핑",
+        "img": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260724_015736_9c505798-4d8c-498e-a356-4727264328c7.png",
+        "fallback": "../assets/mosquito-lamp-bedside.jpg",
+        "alt": "캠핑 롤테이블"
+      },
+      {
+        "label": "🛋️ 거실 구석",
+        "img": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260724_033224_9b916548-03bd-4297-ac59-f46f723622df.png",
+        "fallback": "../assets/mosquito-lamp-bedside.jpg",
+        "alt": "거실 테이블"
+      },
+      {
+        "label": "🪟 베란다·발코니",
+        "img": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260724_033229_3356b1f6-ee86-4eb2-9314-58e06f83f2d0.png",
+        "fallback": "../assets/mosquito-lamp-bedside.jpg",
+        "alt": "베란다 걸이"
+      },
+      {
+        "label": "💜 무드등 겸용",
+        "img": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260724_024030_66d563c7-1cb2-4d49-a533-47ef5593e386.png",
+        "fallback": "../assets/mosquito-lamp-bedside.jpg",
+        "alt": "제품 클로즈업"
+      }
+    ],
+    "spec_title": "한눈에 보기",
+    "facts": [
+      {
+        "big": "무선 충전식",
+        "sm": "C타입 · 콘센트 필요 없음"
+      },
+      {
+        "big": "무드등 겸용",
+        "sm": "은은한 조명으로도"
+      },
+      {
+        "big": "연기·냄새 X",
+        "sm": "화학성분 없이 물리 방식"
+      },
+      {
+        "big": "걸이 스트랩",
+        "sm": "캠핑 랜턴처럼 걸이"
+      }
+    ],
+    "cta": "쿠팡에서 최저가 확인하기 →",
+    "cta_sub": "로켓배송 · 재고 소진 시 조기 마감",
+    "sticky_cta": "쿠팡에서 구매하기 · 26,000원 →"
+  },
+  "post": {
+    "hooks": [
+      "텐트에 모기 한 마리 들어온 순간, 오늘 밤 망했다",
+      "왜 모기가 나 대신 저 구석으로 몰려가지?",
+      "집에 모기 들어오면 잠 다 잤죠"
+    ],
+    "body": "캠핑·거실·베란다 어디든 구석에 두면 모기가 사람 대신 이쪽으로. 무선 충전식이라 콘센트도 필요 없어요.",
+    "cta": "👉 제품은 프로필 링크에서",
+    "hashtags": [
+      "#모기퇴치기",
+      "#포충기",
+      "#여름필수템",
+      "#캠핑용품",
+      "#자취템",
+      "#쿠팡추천"
+    ]
+  },
+  "prep": {
+    "_주석": "Mirra 초벌 원본은 repo에 없음(용량). 재생성하려면 원본을 footage/ 에 올리고 src 경로만 맞추면 됨",
+    "src": "footage/mirra_raw.mp4",
+    "crop": "1001:1780:39:140",
+    "fps": 30,
+    "segments": [
+      [
+        0.0,
+        3.0
+      ],
+      [
+        22.0,
+        12.0
+      ]
+    ],
+    "out": "assets/mirra_cleaned.mp4"
+  }
+}

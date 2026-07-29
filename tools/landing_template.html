@@ -4,10 +4,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>충전식 UV 모기퇴치기 (무드등 겸용) — 여름 필수템</title>
+<title>{{title}}</title>
 <meta name="theme-color" content="#0e0a1a">
-<meta property="og:title" content="충전식 UV 모기퇴치기 · 무드등 겸용">
-<meta property="og:description" content="구석에 두면 모기가 알아서 이쪽으로. 무선 충전식이라 거실·베란다·캠핑 어디든.">
+<meta property="og:title" content="{{og_title}}">
+<meta property="og:description" content="{{og_desc}}">
 <style>
   :root{
     --bg:#0e0a1a; --card:#171227; --card2:#1e1734; --line:#2b2342;
@@ -72,67 +72,56 @@
 
   <!-- 히어로 -->
   <div class="hero">
-    <div class="eyebrow">여름 필수템 · 무선 충전식</div>
-    <h1>구석에 두면 모기가<br>알아서 이쪽으로.</h1>
-    <p class="sub">밤새 손바닥 치던 여름밤, 이제 이거 하나면 끝.<br>UV 무드등 겸용 전기 모기퇴치기</p>
+    <div class="eyebrow">{{eyebrow}}</div>
+    <h1>{{h1}}</h1>
+    <p class="sub">{{sub}}</p>
 
     <div class="vidwrap">
-      <video src="../assets/mirra_final.mp4" muted autoplay loop playsinline controls></video>
+      <video src="{{video_src}}" muted autoplay loop playsinline controls></video>
     </div>
 
     <div class="price">
       <span class="off">특가</span>
-      <b>26,000원</b>
-      <s>정가 89,000원</s>
+      <b>{{price}}</b>
+      <s>{{list_price}}</s>
     </div>
-    <p class="note">· 로켓배송 · 가격/재고는 쿠팡에서 실시간 확인</p>
+    <p class="note">{{price_note}}</p>
   </div>
 
   <!-- 페인 -->
   <section>
-    <h2>여름밤, 이런 적 있으셨죠?</h2>
+    <h2>{{pain_title}}</h2>
     <ul class="pain">
-      <li>귓가에 &quot;앵—&quot; 소리에 잠이 확 깬다</li>
-      <li>불 켜고 손바닥 아프게 쳐도 못 잡는다</li>
-      <li>캠핑·차박 가면 다리·발목만 벌집이 된다</li>
-      <li>모기향은 냄새나고 연기 나서 찜찜하다</li>
+{{pains}}
     </ul>
   </section>
 
   <!-- 원리 -->
   <section style="padding-top:6px">
-    <h2>그래서, 이렇게 잡아요</h2>
+    <h2>{{how_title}}</h2>
     <div class="steps">
-      <div class="step"><div class="n">1</div><div><h3>UV로 유인</h3><p>은은한 보라빛 UV가 모기를 사람 대신 이쪽으로 끌어모아요.</p></div></div>
-      <div class="step"><div class="n">2</div><div><h3>스파크로 처리</h3><p>가까이 오면 전기 스파크로 조용히 처리. 연기도 냄새도 없어요.</p></div></div>
-      <div class="step"><div class="n">3</div><div><h3>사람과 떨어뜨려 두기</h3><p>거실 구석·베란다·텐트 옆에 두면 알아서 일합니다.</p></div></div>
+{{steps}}
     </div>
   </section>
 
   <!-- 사용처 -->
   <section style="padding-top:6px">
-    <h2>집에서도, 캠핑에서도</h2>
+    <h2>{{use_title}}</h2>
     <div class="cards">
-      <div class="uc"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260724_015736_9c505798-4d8c-498e-a356-4727264328c7.png" data-fallback="../assets/mosquito-lamp-bedside.jpg" alt="캠핑 롤테이블" loading="lazy"><div class="lb">🏕️ 감성 캠핑</div></div>
-      <div class="uc"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260724_033224_9b916548-03bd-4297-ac59-f46f723622df.png" data-fallback="../assets/mosquito-lamp-bedside.jpg" alt="거실 테이블" loading="lazy"><div class="lb">🛋️ 거실 구석</div></div>
-      <div class="uc"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260724_033229_3356b1f6-ee86-4eb2-9314-58e06f83f2d0.png" data-fallback="../assets/mosquito-lamp-bedside.jpg" alt="베란다 걸이" loading="lazy"><div class="lb">🪟 베란다·발코니</div></div>
-      <div class="uc"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260724_024030_66d563c7-1cb2-4d49-a533-47ef5593e386.png" data-fallback="../assets/mosquito-lamp-bedside.jpg" alt="제품 클로즈업" loading="lazy"><div class="lb">💜 무드등 겸용</div></div>
+{{uses}}
     </div>
   </section>
 
   <!-- 스펙 -->
   <section style="padding-top:6px">
-    <h2>한눈에 보기</h2>
+    <h2>{{spec_title}}</h2>
     <div class="facts">
-      <div class="fact"><div class="big">무선 충전식</div><div class="sm">C타입 · 콘센트 필요 없음</div></div>
-      <div class="fact"><div class="big">무드등 겸용</div><div class="sm">은은한 조명으로도</div></div>
-      <div class="fact"><div class="big">연기·냄새 X</div><div class="sm">화학성분 없이 물리 방식</div></div>
-      <div class="fact"><div class="big">걸이 스트랩</div><div class="sm">캠핑 랜턴처럼 걸이</div></div>
+{{facts}}
     </div>
     <div style="margin-top:20px">
-      <a class="ctabtn buy" href="COUPANG_DEEPLINK" target="_blank" rel="noopener nofollow">
-        쿠팡에서 최저가 확인하기 →
-        <small>로켓배송 · 재고 소진 시 조기 마감</small>
+      <a class="ctabtn buy" href="{{deeplink}}" target="_blank" rel="noopener nofollow">
+        {{cta}}
+        <small>{{cta_sub}}</small>
       </a>
     </div>
   </section>
@@ -145,8 +134,8 @@
 
 <!-- 하단 고정 구매 바 -->
 <div class="sticky"><div class="inner">
-  <a class="ctabtn buy" href="COUPANG_DEEPLINK" target="_blank" rel="noopener nofollow" style="font-size:17px;padding:15px">
-    쿠팡에서 구매하기 · 26,000원 →
+  <a class="ctabtn buy" href="{{deeplink}}" target="_blank" rel="noopener nofollow" style="font-size:17px;padding:15px">
+    {{sticky_cta}}
   </a>
 </div></div>
 
