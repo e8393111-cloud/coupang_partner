@@ -30,7 +30,9 @@
 - 자막 폰트에 **이모지 없음** → 영상 자막엔 이모지 쓰지 말 것 (캡션·상세페이지는 OK).
 
 ## 3. 환경 제약 (반드시 인지)
-- **egress 차단**: 쿠팡/구글/쇼핑몰/cloudfront **다운로드 불가**(403), higgsfield 스토리지 **업로드 불가**. WebFetch도 쿠팡 403.
+- **egress 차단**: 쿠팡/쇼핑몰/cloudfront **다운로드 불가**(403), higgsfield 스토리지 **업로드 불가**.
+- ✅ **단, `curl` 은 WebFetch 보다 많이 통과한다** (2026-07-29 확인): 네이버 블로그·티스토리·토스 문서 정상 수신. WebSearch 툴도 동작.
+  **쿠팡 본체(`www.coupang.com`)와 `shopping.toss.im` 은 curl 로도 403** → 가격·재고 확인은 여전히 사용자 몫.
 - **우회 = 공개 GitHub repo가 "파일 다리"**:
   - 내가 만든 것 → repo push → 사용자는 `raw.githubusercontent.com/.../<branch>/...` 로 봄
   - 사용자가 준 파일(footage, vo.mp3) → repo 업로드 → 내가 `git pull`로 가져와 편집
@@ -44,7 +46,8 @@
 ```
 index.html                     # 수익화 대시보드(별개 툴, PWA)
 manifest.json
-HANDOFF.md                     # ← 이 파일
+HANDOFF.md                     # ← 이 파일 (실행 파이프라인 현황)
+PLAN.md                        # ★확장 계획: 블로그 리스티클 + 토스쇼핑 병행 + 해외 검토
 VIDEO_PROJECT_모기퇴치기.md     # 초기 AI 클립 6개 링크 + 캡컷 조립안(참고용 기록)
 products/
   _template.json               # ★새 상품 시작점 (복사해서 값만 채움)
@@ -120,7 +123,8 @@ python3 tools/render_short.py products/<id>.json --auto-caps   # 무음 기준 �
 4. **[사용자] 링크 세팅**: 인포크링크(or 상세페이지 URL)를 인스타/틱톡 바이오에. **틱톡은 비즈니스 계정 전환**해야 바이오 링크 생김.
 5. **[사용자] 업로드**: `assets/mirra_final.mp4` + `posts/mosquito.md` 의 캡션 복붙. 틱톡은 앱에서 트렌딩 사운드 얹기.
 6. **[다음] 반응 데이터 보고** 훅/상품 조정 → 잘 되면 전체 흐름 Skill로 고정.
-7. **[다음] 2번째 상품**: `products/_template.json` 복사해서 시작. footage/VO만 사용자가 주면 나머지는 자동.
+7. **[계획] 블로그·토스쇼핑 확장** → `PLAN.md` 참고. 사용자 GO 사인 전까지 구현 대기.
+8. **[다음] 2번째 상품**: `products/_template.json` 복사해서 시작. footage/VO만 사용자가 주면 나머지는 자동.
 
 ## 8. 연결된 MCP (이 프로젝트에서 씀)
 - **higgsfield**: generate_image/video/audio(TTS), models_explore, list_voices, media_import_url(공개 URL만), job_display. (업로드는 egress로 막힘)
