@@ -46,21 +46,43 @@ def by_platform(items, key):
 # ---------- 조각 ----------
 
 def build_tldr(items):
+    """추천 근거는 데이터에 있는 것만 쓴다.
+
+    가격만 보고 뽑으면 20원 차이로 리뷰 1,098건짜리를 제치고 2건짜리가 올라온다.
+    "기능"도 spec 에 실제로 확인된 값이 있을 때만 말한다 — 비싸다고 기능이 많은 게 아니다.
+    """
     ok = [i for i in items if i.get("price")]
     if not ok:
         return "<p>가격 정보를 확인하지 못했습니다.</p>"
-    s = sorted(ok, key=lambda x: x["price"])
-    cheap, premium = s[0], s[-1]
-    # 리뷰가 가장 두터운 것 = 실패 확률이 가장 낮은 선택
+    out = []
+
+    # 1) 실패 회피 = 리뷰가 가장 두터운 것
     safe = max(ok, key=lambda x: x.get("reviews") or 0)
-    lines = []
-    lines.append(f'<p>· <b>실패를 피하고 싶다면</b> → {esc(safe["name"])} '
-                 f'({SHOP[safe["platform"]][0]} {won(safe["price"])}, 리뷰 {int(safe.get("reviews") or 0):,}건)</p>')
-    lines.append(f'<p>· <b>예산을 아끼고 싶다면</b> → {esc(cheap["name"])} '
-                 f'({SHOP[cheap["platform"]][0]} {won(cheap["price"])})</p>')
-    lines.append(f'<p>· <b>기능을 갖추고 싶다면</b> → {esc(premium["name"])} '
-                 f'({SHOP[premium["platform"]][0]} {won(premium["price"])})</p>')
-    return "\n".join(lines)
+    if safe.get("reviews"):
+        out.append(f'<p>· <b>실패를 피하고 싶다면</b> → {esc(safe["name"])} '
+                   f'({SHOP[safe["platform"]][0]} {won(safe["price"])}, 리뷰 {int(safe["reviews"]):,}건)</p>')
+
+    # 2) 가성비 = 최저가. 단 최저가와 5% 이내로 붙은 후보 중 리뷰가 두터운 쪽을 고른다
+    lowest = min(i["price"] for i in ok)
+    near = [i for i in ok if i["price"] <= lowest * 1.05]
+    cheap = max(near, key=lambda x: x.get("reviews") or 0)
+    if cheap["name"] != safe["name"]:
+        tail = f', 리뷰 {int(cheap["reviews"]):,}건' if cheap.get("reviews") else ""
+        out.append(f'<p>· <b>예산을 아끼고 싶다면</b> → {esc(cheap["name"])} '
+                   f'({SHOP[cheap["platform"]][0]} {won(cheap["price"])}{tail})</p>')
+
+    # 3) 기능 = spec 에 실제로 확인된 것이 있는 제품만
+    featured = [i for i in ok if (i.get("spec") or {}).get("app") or (i.get("spec") or {}).get("camera")]
+    if featured:
+        f = max(featured, key=lambda x: x["price"])
+        feats = [n for n, k in (("앱 연동", "app"), ("카메라", "camera")) if f["spec"].get(k)]
+        out.append(f'<p>· <b>{"·".join(feats)}이 필요하다면</b> → {esc(f["name"])} '
+                   f'({SHOP[f["platform"]][0]} {won(f["price"])})</p>')
+
+    out.append('<p style="margin-top:12px;color:#6b7280;font-size:14px">'
+               '※ 가장 비싼 제품이 기능이 가장 많은 것은 아닙니다. '
+               '판매 목록에 사양이 표기되지 않은 제품이 많아, 확인된 것만 적었습니다.</p>')
+    return "\n".join(out)
 
 
 def build_table(items):
@@ -87,9 +109,10 @@ def build_platform_compare(facts, items):
     cp, tp = c.get("point_rate"), t.get("point_rate")
     gap = round(tp - cp, 1) if (cp is not None and tp is not None) else None
 
-    cr = [i.get("reviews") or 0 for i in by_platform(items, "coupang")]
-    tr = [i.get("reviews") or 0 for i in by_platform(items, "toss")]
-    cmax, tmax = (max(cr) if cr else 0), (max(tr) if tr else 0)
+    # 글에 실은 몇 개가 아니라 "실제로 둘러본 범위"의 최대값을 쓴다.
+    # 고른 상품 안에서만 세면 "토스는 최대 2건" 같은 사실과 다른 문장이 나온다.
+    cmax = c.get("observed_max_reviews") or max([i.get("reviews") or 0 for i in by_platform(items, "coupang")] or [0])
+    tmax = t.get("observed_max_reviews") or max([i.get("reviews") or 0 for i in by_platform(items, "toss")] or [0])
 
     body = f"""<p>같은 제품이 양쪽에 다 올라오는 경우는 생각보다 드뭅니다. 판매자가 다르기 때문인데,
 그래서 "어느 쪽이 싸다"보다 <b>"어느 쪽에서 사는 게 나은가"</b>를 보는 게 실질적입니다.
@@ -110,8 +133,8 @@ def build_platform_compare(facts, items):
 <p style="color:#6b7280;font-size:14px">※ 양쪽 모두 "최대" 적립 표기라 카드·회원 조건에 따라 실제 금액은 달라질 수 있습니다.</p>
 
 <h3>② 리뷰는 쿠팡이 압도적입니다</h3>
-<p>쿠팡은 리뷰가 {cmax:,}건까지 쌓인 제품이 있는데, 토스는 가장 많은 것도 {tmax if tmax else "십여"}건 수준이었습니다.
-토스쇼핑이 아직 새 서비스라 거래가 덜 쌓인 것으로 보입니다.</p>
+<p>같은 키워드로 양쪽을 훑어보니, 쿠팡은 리뷰가 <b>{cmax:,}건</b>까지 쌓인 제품이 있는 반면
+토스에서 가장 많은 것도 <b>{tmax}건</b>이었습니다. 토스쇼핑이 아직 새 서비스라 거래가 덜 쌓인 것으로 보입니다.</p>
 <p>자동급식기처럼 <b>고장 나면 반려동물이 굶는</b> 제품에서 리뷰 수는 그냥 숫자가 아닙니다.
 처음 사시는 거라면 리뷰가 두꺼운 쪽이 안전합니다.</p>
 
@@ -158,12 +181,13 @@ def build_items(items, platform):
             cons.append("목록에 용량 표기가 없어 상세페이지 확인이 필요합니다")
         if not sp.get("blackout_backup"):
             cons.append("정전 대비 여부가 확인되지 않았습니다 — 오래 집을 비운다면 꼭 확인하세요")
-        if i.get("note"):
-            cons.append(esc(i["note"]))
+
 
         url = (i.get("link") or "").strip()
         btn = (f'<a class="btn {cls}" href="{esc(url)}" target="_blank" rel="noopener nofollow sponsored">{label}에서 보기</a>'
                if url else f'<span class="btn off">{label} 링크 준비 중</span>')
+
+        note_html = (f'<div class="who">ℹ️ {esc(i["note"])}</div>' if i.get("note") else "")
 
         ptxt = f'<p class="price">{won(i.get("price"))}'
         if i.get("list_price"):
@@ -179,6 +203,7 @@ def build_items(items, platform):
 <p>{" · ".join(specs)}</p>
 <ul class="pro">{"".join(f"<li>{p}</li>" for p in pros)}</ul>
 <ul class="con">{"".join(f"<li>{c}</li>" for c in cons)}</ul>
+{note_html}
 {btn}
 </div>""")
     return "\n".join(out) or "<p>해당 쇼핑몰에서 고른 상품이 없습니다.</p>"

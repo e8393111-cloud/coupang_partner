@@ -6,72 +6,164 @@
   "_앵글": "당초 '같은 모델 가격비교'로 잡았으나 양쪽에 겹치는 모델이 5개 중 1개뿐이라 성립하지 않았다. '쇼핑몰별로 살 만한 것'으로 전환(PLAN 1-5-3).",
   "_적립률": "13개 상품의 '최대 N원 적립' 표기로 계산 → 토스 7.00% / 쿠팡 5.00% 로 일정. 실측값.",
   "_주의": "검색 목록에 안 보이는 사양(정전 대비·습식 가능·세척 방식·소음)은 추측하지 않고 비워 뒀다.",
-
   "platform_facts": {
-    "coupang": { "point_rate": 5.0, "review_depth": "많음 (수백~수천 건)", "delivery": "로켓배송 시 내일 도착" },
-    "toss": { "point_rate": 7.0, "review_depth": "적음 (한 자리~십여 건)", "delivery": "내일출발 표기 상품은 2~3일" }
+    "coupang": {
+      "point_rate": 5.0,
+      "review_depth": "많음 (수백~수천 건)",
+      "delivery": "로켓배송 시 내일 도착",
+      "observed_max_reviews": 2253
+    },
+    "toss": {
+      "point_rate": 7.0,
+      "review_depth": "적음 (관찰 범위 1~12건)",
+      "delivery": "내일출발 표기 상품은 2~3일",
+      "observed_max_reviews": 12
+    }
   },
-
   "items": [
     {
       "platform": "coupang",
       "name": "파우시 강아지 고양이 자동급식기 3L 화이트",
-      "brand": "파우시", "model": "",
-      "price": 34920, "list_price": 58000, "points": 1746,
-      "delivery": "판매자로켓 · 내일 도착", "reviews": 1098, "rating": 4.5,
-      "spec": { "capacity_l": 3, "wet_food": false, "power": "", "blackout_backup": false, "app": false, "camera": false, "washable": "", "noise_db": null },
-      "note": "토스에도 '파우시 F14 3L'이 39,000원에 있다. 같은 제품일 가능성이 높지만 쿠팡 쪽에 모델명 표기가 없어 단정하지 않는다.",
+      "brand": "파우시",
+      "model": "",
+      "price": 34920,
+      "list_price": 58000,
+      "points": 1746,
+      "delivery": "판매자로켓 · 내일 도착",
+      "reviews": 1098,
+      "rating": 4.5,
+      "spec": {
+        "capacity_l": 3,
+        "wet_food": false,
+        "power": "",
+        "blackout_backup": false,
+        "app": false,
+        "camera": false,
+        "washable": "",
+        "noise_db": null
+      },
+      "note": "토스쇼핑에도 '파우시 F14 3L'이 39,000원에 올라와 있습니다. 같은 제품으로 보이지만 쿠팡 쪽에 모델명 표기가 없어 단정하지는 않겠습니다.",
       "link": ""
     },
     {
       "platform": "coupang",
       "name": "디클펫 반려동물 자동급식기 AT-310 4L",
-      "brand": "디클펫", "model": "AT-310",
-      "price": 47300, "list_price": 223000, "points": 2360,
-      "delivery": "로켓배송 · 내일 도착", "reviews": 2253, "rating": 4.8,
-      "spec": { "capacity_l": 4, "wet_food": false, "power": "", "blackout_backup": false, "app": false, "camera": false, "washable": "", "noise_db": null },
-      "note": "이 카테고리에서 리뷰가 가장 많다(2,253건). 쿠팡추천 배지.",
+      "brand": "디클펫",
+      "model": "AT-310",
+      "price": 47300,
+      "list_price": 223000,
+      "points": 2360,
+      "delivery": "로켓배송 · 내일 도착",
+      "reviews": 2253,
+      "rating": 4.8,
+      "spec": {
+        "capacity_l": 4,
+        "wet_food": false,
+        "power": "",
+        "blackout_backup": false,
+        "app": false,
+        "camera": false,
+        "washable": "",
+        "noise_db": null
+      },
+      "note": "이번에 살펴본 자동급식기 중 리뷰가 가장 많았습니다. 쿠팡추천 배지도 붙어 있습니다.",
       "link": ""
     },
     {
       "platform": "coupang",
       "name": "페블펫 와이파이 앱연동 스마트 자동급식기 IPF-W100 3.5L",
-      "brand": "페블펫", "model": "IPF-W100",
-      "price": 51900, "list_price": 139000, "points": 2595,
-      "delivery": "판매자로켓 · 내일 도착", "reviews": 648, "rating": 4.8,
-      "spec": { "capacity_l": 3.5, "wet_food": false, "power": "", "blackout_backup": false, "app": true, "camera": false, "washable": "", "noise_db": null },
-      "note": "이 가격대에서 와이파이 앱 연동이 되는 몇 안 되는 선택지.",
+      "brand": "페블펫",
+      "model": "IPF-W100",
+      "price": 51900,
+      "list_price": 139000,
+      "points": 2595,
+      "delivery": "판매자로켓 · 내일 도착",
+      "reviews": 648,
+      "rating": 4.8,
+      "spec": {
+        "capacity_l": 3.5,
+        "wet_food": false,
+        "power": "",
+        "blackout_backup": false,
+        "app": true,
+        "camera": false,
+        "washable": "",
+        "noise_db": null
+      },
+      "note": "5만 원대에서 와이파이 앱 연동이 되는 몇 안 되는 선택지입니다.",
       "link": ""
     },
     {
       "platform": "toss",
       "name": "디토펫 반려동물 자동급식기 화이트 4L",
-      "brand": "디토펫", "model": "",
-      "price": 34900, "list_price": 39660, "points": 2443,
-      "delivery": "내일출발 · 모레 도착 예정", "reviews": 2, "rating": 5.0,
-      "spec": { "capacity_l": 4, "wet_food": false, "power": "", "blackout_backup": false, "app": false, "camera": false, "washable": "", "noise_db": null },
-      "note": "토스 최저가 구간에서 4L. 다만 리뷰 2건으로 검증이 어렵다.",
-      "link": ""
+      "brand": "디토펫",
+      "model": "",
+      "price": 34900,
+      "points": 2443,
+      "delivery": "내일출발 · 모레 도착 예정",
+      "reviews": 2,
+      "rating": 5.0,
+      "spec": {
+        "capacity_l": 4,
+        "wet_food": false,
+        "power": "",
+        "blackout_backup": false,
+        "app": false,
+        "camera": false,
+        "washable": "",
+        "noise_db": null
+      },
+      "note": "토스쇼핑 최저가 구간에서 4L을 챙길 수 있습니다. 다만 리뷰가 2건뿐이라 판단 근거는 얇습니다.",
+      "link": "",
+      "_할인율표기": "화면에는 할인율(%)만 있고 정가는 표기되지 않아 정가를 넣지 않는다"
     },
     {
       "platform": "toss",
       "name": "디클펫 반려동물 자동급식기 AT-330",
-      "brand": "디클펫", "model": "AT-330",
-      "price": 42900, "list_price": 286000, "points": 3003,
-      "delivery": "표기 없음", "reviews": null, "rating": null,
-      "spec": { "capacity_l": null, "wet_food": false, "power": "", "blackout_backup": false, "app": false, "camera": false, "washable": "", "noise_db": null },
-      "note": "쿠팡의 AT-310과 같은 브랜드지만 다른 모델이다. 사양이 어떻게 다른지는 각 상세페이지 확인이 필요하다.",
-      "link": ""
+      "brand": "디클펫",
+      "model": "AT-330",
+      "price": 42900,
+      "points": 3003,
+      "delivery": "표기 없음",
+      "reviews": null,
+      "rating": null,
+      "spec": {
+        "capacity_l": null,
+        "wet_food": false,
+        "power": "",
+        "blackout_backup": false,
+        "app": false,
+        "camera": false,
+        "washable": "",
+        "noise_db": null
+      },
+      "note": "쿠팡에 있는 AT-310과 같은 브랜드지만 다른 모델입니다. 두 모델의 사양 차이는 각 상세페이지에서 확인하셔야 합니다.",
+      "link": "",
+      "_할인율표기": "화면에는 할인율(%)만 있고 정가는 표기되지 않아 정가를 넣지 않는다"
     },
     {
       "platform": "toss",
       "name": "신일전자 퍼비 자동급식기 SIP-PFD3 계열",
-      "brand": "신일전자", "model": "SIP-PFD3(일부 표기)",
-      "price": 99000, "list_price": 128571, "points": 6930,
-      "delivery": "내일출발 · 모레 도착 예정", "reviews": null, "rating": null,
-      "spec": { "capacity_l": null, "wet_food": false, "power": "", "blackout_backup": false, "app": false, "camera": false, "washable": "", "noise_db": null },
-      "note": "국내 가전 브랜드(신일전자) 제품. A/S 접근성이 중요한 분께. 모델명이 목록에서 잘려 있어 구매 전 상세페이지에서 정확한 모델을 확인할 것.",
-      "link": ""
+      "brand": "신일전자",
+      "model": "SIP-PFD3(일부 표기)",
+      "price": 99000,
+      "points": 6930,
+      "delivery": "내일출발 · 모레 도착 예정",
+      "reviews": null,
+      "rating": null,
+      "spec": {
+        "capacity_l": null,
+        "wet_food": false,
+        "power": "",
+        "blackout_backup": false,
+        "app": false,
+        "camera": false,
+        "washable": "",
+        "noise_db": null
+      },
+      "note": "국내 가전 브랜드 제품이라 A/S 접근성을 중요하게 보신다면 후보가 됩니다. 다만 판매 목록에서 모델명이 잘려 있어, 구매 전 상세페이지에서 정확한 모델을 확인해 주세요.",
+      "link": "",
+      "_할인율표기": "화면에는 할인율(%)만 있고 정가는 표기되지 않아 정가를 넣지 않는다"
     }
   ]
 }
