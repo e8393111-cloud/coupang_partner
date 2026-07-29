@@ -1,0 +1,17 @@
+{"category":"자동급식기","checked_at":"2026-07-29","items":[
+ {"name":"A 자동급식기 4L","brand":"에이","model":"A-400",
+  "coupang":{"price":39900,"rocket":true,"reviews":1240,"rating":4.6,"url":"https://x"},
+  "toss":{"price":36900,"shipping":"무료","sharelink_available":true,"url":"https://y"},
+  "spec":{"capacity_l":4,"wet_food":false,"power":"어댑터+건전지","blackout_backup":true,"app":false,"camera":false,"washable":"급여통 분리","noise_db":45},
+  "note":""},
+ {"name":"B 스마트 급식기 6L","brand":"비","model":"B-600",
+  "coupang":{"price":119000,"rocket":true,"reviews":320,"rating":4.4,"url":"https://x"},
+  "toss":{"price":124000,"shipping":"3000원","sharelink_available":false,"url":"https://y"},
+  "spec":{"capacity_l":6,"wet_food":false,"power":"어댑터","blackout_backup":false,"app":true,"camera":false,"washable":"","noise_db":null},
+  "note":"모델명 확인 불가 — 상세페이지 재확인 필요"},
+ {"name":"C 카메라 급식기 5L","brand":"씨","model":"C-500",
+  "coupang":{"price":215000,"rocket":false,"reviews":88,"rating":4.7,"url":"https://x"},
+  "toss":null,
+  "spec":{"capacity_l":5,"wet_food":false,"power":"어댑터+배터리","blackout_backup":true,"app":true,"camera":true,"washable":"전체 분리","noise_db":null},
+  "note":"","links":{"coupang":"https://link.coupang.com/a/TEST"}}
+]}

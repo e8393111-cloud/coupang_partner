@@ -1,0 +1,73 @@
+<!-- 자동 생성: tools/make_blogpost.py · 직접 고치지 말고 JSON/템플릿을 고칠 것 -->
+<style>
+.eds{line-height:1.75;word-break:keep-all;font-size:16px}
+.eds .disc{background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;padding:12px 14px;font-size:13.5px;color:#4c1d95;margin:0 0 22px}
+.eds .asof{color:#6b7280;font-size:13px;margin:-10px 0 22px}
+.eds h2{font-size:22px;font-weight:800;margin:34px 0 14px;padding-bottom:8px;border-bottom:2px solid #ede9fe}
+.eds h3{font-size:18px;font-weight:700;margin:26px 0 8px}
+.eds .tldr{background:#faf5ff;border-left:4px solid #8b5cf6;border-radius:0 10px 10px 0;padding:16px 18px;margin:0 0 24px}
+.eds .tldr p{margin:6px 0}
+.eds .tldr b{color:#6d28d9}
+.eds .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 10px}
+.eds table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+.eds th,.eds td{border:1px solid #e5e7eb;padding:9px 10px;text-align:center;vertical-align:middle}
+.eds th{background:#f9fafb;font-weight:700;white-space:nowrap}
+.eds td.name{text-align:left;font-weight:600;min-width:150px}
+.eds .win{background:#f0fdf4;font-weight:700;color:#15803d}
+.eds .card{border:1px solid #e5e7eb;border-radius:12px;padding:18px;margin:0 0 20px}
+.eds .meta{color:#6b7280;font-size:13.5px;margin:2px 0 12px}
+.eds ul{padding-left:20px;margin:8px 0}
+.eds li{margin:4px 0}
+.eds .pro li::marker{content:"+ ";color:#16a34a;font-weight:800}
+.eds .con li::marker{content:"− ";color:#dc2626;font-weight:800}
+.eds .who{background:#f9fafb;border-radius:8px;padding:10px 12px;margin:12px 0 0;font-size:14.5px}
+.eds .btns{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+.eds .btn{display:inline-block;padding:11px 16px;border-radius:9px;text-decoration:none;font-weight:700;font-size:14.5px}
+.eds .btn.t{background:#3182f6;color:#fff}
+.eds .btn.c{background:#ffffff;color:#374151;border:1px solid #d1d5db}
+.eds .btn.off{background:#e5e7eb;color:#9ca3af;cursor:not-allowed}
+.eds .faq{border-top:1px solid #e5e7eb;padding:14px 0}
+.eds .faq b{display:block;margin-bottom:5px}
+.eds .foot{margin-top:32px;padding-top:16px;border-top:1px solid #e5e7eb;color:#6b7280;font-size:13px}
+@media (max-width:520px){ .eds .btn{flex:1 1 100%;text-align:center} }
+</style>
+
+<div class="eds">
+
+<div class="disc">이 포스팅은 쿠팡 파트너스 및 토스쇼핑 쉐어링크 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</div>
+
+<p class="asof">📅 가격 확인: <b>{{checked_at}}</b> · 쇼핑몰 가격은 수시로 바뀌니 <b>구매 직전 실제 페이지에서 다시 확인</b>해 주세요.</p>
+
+<h2>결론부터</h2>
+<div class="tldr">
+{{tldr}}
+</div>
+
+<h2>한눈에 비교</h2>
+<div class="scroll">
+{{table}}
+</div>
+<p class="asof">{{price_summary}}</p>
+
+<h2>어디서 사는 게 유리한가</h2>
+{{where}}
+
+<h2>제품별로 보기</h2>
+{{items}}
+
+<h2>고를 때 볼 것</h2>
+{{criteria}}
+
+<h2>자주 묻는 질문</h2>
+{{faq}}
+
+<div class="foot">
+이 글은 제품을 직접 사용해 본 후기가 아니라, <b>제조사가 공개한 사양과 판매처 가격을 정리한 비교 가이드</b>입니다.
+효능·성능은 제조사 표기를 인용한 것이며 글쓴이가 검증한 것이 아닙니다.
+가격·재고·배송 조건은 각 쇼핑몰 기준이며 변동될 수 있습니다.
+정보가 실제와 다르면 <a href="/p/contact.html">연락처</a>로 알려주시면 확인해 고치겠습니다.
+<br><br>
+이 포스팅은 쿠팡 파트너스 및 토스쇼핑 쉐어링크 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+</div>
+
+</div>
