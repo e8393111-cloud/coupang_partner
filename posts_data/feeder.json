@@ -1,0 +1,122 @@
+{
+  "category": "강아지 고양이 자동급식기",
+  "checked_at": "",
+  "_주의": "danawa_price 는 시세 참고용. 글에 싣는 가격은 쿠팡·토스 실제 페이지 기준이어야 한다.",
+  "items": [
+    {
+      "name": "와이파이 제어 저소음 설계 대용량 반려동물 자동 급식기 강아지 고양이 겸용",
+      "brand": "와이파이",
+      "model": "",
+      "danawa_price": 29410,
+      "coupang": null,
+      "toss": null,
+      "spec": {
+        "capacity_l": null,
+        "wet_food": false,
+        "power": "",
+        "blackout_backup": false,
+        "app": false,
+        "camera": false,
+        "washable": "",
+        "noise_db": null
+      },
+      "note": "용량 확인 필요 · 전원 방식 확인 필요",
+      "links": {
+        "coupang": "",
+        "toss": ""
+      }
+    },
+    {
+      "name": "페페 자동급식기 SF-300",
+      "brand": "페페",
+      "model": "SF-300",
+      "danawa_price": 86770,
+      "coupang": null,
+      "toss": null,
+      "spec": {
+        "capacity_l": null,
+        "wet_food": false,
+        "power": "",
+        "blackout_backup": false,
+        "app": true,
+        "camera": false,
+        "washable": "분리세척",
+        "noise_db": null
+      },
+      "note": "용량 확인 필요 · 전원 방식 확인 필요 · 다나와 표기: 자동급식기, 급여횟수: 6회, 재질: ABS, 크기: 32x32x8.3cm",
+      "links": {
+        "coupang": "",
+        "toss": ""
+      }
+    },
+    {
+      "name": "샤오미 자동급식기 XWPF01MG (3.6L)",
+      "brand": "샤오미",
+      "model": "XWPF01MG",
+      "danawa_price": 111584,
+      "coupang": null,
+      "toss": null,
+      "spec": {
+        "capacity_l": 3.6,
+        "wet_food": false,
+        "power": "",
+        "blackout_backup": false,
+        "app": true,
+        "camera": false,
+        "washable": "",
+        "noise_db": null
+      },
+      "note": "전원 방식 확인 필요 · 다나와 표기: 강아지·고양이 겸용, 자동급식기, 음성 녹음, 타이머",
+      "links": {
+        "coupang": "",
+        "toss": ""
+      }
+    },
+    {
+      "name": "고양이 스마트앱 자동 급식기 1P 애견 원격제어 식사",
+      "brand": "고양이",
+      "model": "",
+      "danawa_price": 119600,
+      "coupang": null,
+      "toss": null,
+      "spec": {
+        "capacity_l": null,
+        "wet_food": false,
+        "power": "",
+        "blackout_backup": false,
+        "app": false,
+        "camera": false,
+        "washable": "",
+        "noise_db": null
+      },
+      "note": "용량 확인 필요 · 전원 방식 확인 필요",
+      "links": {
+        "coupang": "",
+        "toss": ""
+      }
+    },
+    {
+      "name": "[해외] 자동급식기 고양이 강아지 도그니스 3.6L 화이트 + 1L자동정수기",
+      "brand": "[해외]",
+      "model": "",
+      "danawa_price": 153500,
+      "coupang": null,
+      "toss": null,
+      "spec": {
+        "capacity_l": null,
+        "wet_food": false,
+        "power": "",
+        "blackout_backup": false,
+        "app": false,
+        "camera": false,
+        "washable": "",
+        "noise_db": null
+      },
+      "note": "용량 확인 필요 · 전원 방식 확인 필요",
+      "links": {
+        "coupang": "",
+        "toss": ""
+      }
+    }
+  ]
+}
