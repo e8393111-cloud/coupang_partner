@@ -33,6 +33,16 @@
 - **egress 차단**: 쿠팡/쇼핑몰/cloudfront **다운로드 불가**(403), higgsfield 스토리지 **업로드 불가**.
 - ✅ **단, `curl` 은 WebFetch 보다 많이 통과한다** (2026-07-29 확인): 네이버 블로그·티스토리·토스 문서 정상 수신. WebSearch 툴도 동작.
   **쿠팡 본체(`www.coupang.com`)와 `shopping.toss.im` 은 curl 로도 403** → 가격·재고 확인은 여전히 사용자 몫.
+- ❌ **브라우저(Chromium/Playwright)는 쓸 수 없다** (2026-07-29 실측):
+  Chromium 은 `/opt/pw-browsers/chromium-1194` 에 설치돼 있고 실행도 되지만,
+  **모든 페이지가 `ERR_CONNECTION_RESET`** 으로 실패한다(example.com 포함).
+  정책 프록시를 curl 은 통과하지만 브라우저 트래픽은 통과하지 못한다. 프록시 로그에도
+  기록되지 않고 리셋된다. → **JS 렌더링이 필요한 사이트(토스쇼핑·쿠팡)는 방법이 없다.**
+  다음 세션에서 다시 시도하지 말 것.
+- ❌ **Blogger 커넥터 없음** → 블로그 직접 수정 불가. 자동 발행은 **Make 경유**가 유일한 실용 경로
+  (Make 에 네이티브 Blogger 앱 확인: Create/Update/Publish a post. 단 **페이지(Page) 생성 모듈은 없음** → 필수 페이지는 수동).
+  blogId = `5230656979093557379`. googleapis.com 자체는 도달 가능(403=인증없음, 차단 아님)이나
+  OAuth 토큰을 세션에 넘기는 방식은 권장하지 않는다.
 - **우회 = 공개 GitHub repo가 "파일 다리"**:
   - 내가 만든 것 → repo push → 사용자는 `raw.githubusercontent.com/.../<branch>/...` 로 봄
   - 사용자가 준 파일(footage, vo.mp3) → repo 업로드 → 내가 `git pull`로 가져와 편집
