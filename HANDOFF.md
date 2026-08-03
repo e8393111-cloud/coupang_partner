@@ -35,7 +35,8 @@
 - 자막 폰트에 **이모지 없음** → 영상 자막엔 이모지 쓰지 말 것 (캡션·상세페이지는 OK).
 
 ## 3. 환경 제약 (반드시 인지)
-- **egress 차단**: 쿠팡/쇼핑몰/cloudfront **다운로드 불가**(403), higgsfield 스토리지 **업로드 불가**.
+- **egress 차단**: 쿠팡/쇼핑몰 **다운로드 불가**(403), higgsfield 스토리지 **업로드 불가**.
+  ~~cloudfront 다운로드 불가~~ → **틀린 기록이었다. cloudfront 는 받아진다** (아래 §3 파일 다리 항목 참고).
 - ✅ **단, `curl` 은 WebFetch 보다 많이 통과한다** (2026-07-29 확인): 네이버 블로그·티스토리·토스 문서 정상 수신. WebSearch 툴도 동작.
   **쿠팡 본체(`www.coupang.com`)와 `shopping.toss.im` 은 curl 로도 403** → 가격·재고 확인은 여전히 사용자 몫.
 - ❌ **브라우저(Chromium/Playwright)는 쓸 수 없다** (2026-07-29 정밀 진단 완료):
@@ -72,7 +73,16 @@
 - **우회 = 공개 GitHub repo가 "파일 다리"**:
   - 내가 만든 것 → repo push → 사용자는 `raw.githubusercontent.com/.../<branch>/...` 로 봄
   - 사용자가 준 파일(footage, vo.mp3) → repo 업로드 → 내가 `git pull`로 가져와 편집
-  - higgsfield 생성물(영상/이미지/오디오)은 내가 못 받음 → 톤 확인용으로 URL만 주고, 합성은 repo에 올라온 파일로만.
+  - ✅ **higgsfield 생성물은 내가 직접 받을 수 있다** (2026-07-29 실측, 이전 기록은 틀렸다):
+    ```
+    GET https://d8j0ntlcm91z4.cloudfront.net/.../hf_20260724_015736_….png
+    → HTTP 200 · 6,225,704B · image/png · 매직바이트 \x89PNG 정상
+    ```
+    생성물을 못 받으면 concat·렌더가 불가능하므로 이건 기능의 존폐를 가르는 사실이다.
+    **단, cloudfront URL 은 만료될 수 있다** → 생성 직후 바로 받아서 repo 에 커밋할 것.
+  - 사진을 higgsfield 로 넣을 때는 **업로드하지 말고** repo 다리를 쓴다:
+    repo commit → `raw.githubusercontent.com/...` → `media_import_url` → media_id.
+    (`upload.higgsfield.ai` 는 403. `medias[].value` 는 media_id/job_id 만 받고 URL 은 안 받는다.)
 - repo는 **공개(public)** 상태 (Pages·raw URL 위해)
 - 세션 시작할 때마다 설치 필요: `pip install imageio-ffmpeg Pillow`
   - ffmpeg 7.0.2 static (libx264 O, **drawtext 없음** → 자막은 PIL로 PNG 그려 overlay)
