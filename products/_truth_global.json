@@ -1,0 +1,37 @@
+{
+  "_": "모든 제품의 shots 설정에 병합되는 전역 규칙. make_shots.py 가 제품별 truth 보다 먼저 적용한다.",
+  "_왜": [
+    "페이스리스 같은 규칙을 제품마다 다시 쓰면 언젠가 빠뜨린다.",
+    "여기 두면 빠뜨리는 것이 구조적으로 불가능해진다.",
+    "제품별 파일에는 그 제품 고유의 제약만 적는다."
+  ],
+
+  "never_show": [
+    { "pattern": "(?i)사람|인물|모델|person|people|human|model\\b",
+      "why": "페이스리스 — 얼굴 노출 금지 (HANDOFF §1)" },
+    { "pattern": "(?i)얼굴|face|portrait|selfie|셀피",
+      "why": "페이스리스 — 얼굴 노출 금지 (HANDOFF §1)" },
+    { "pattern": "(?i)\\bhands?\\b|손가락|손이|손을|손으로|finger|palm|holding",
+      "why": "페이스리스 — 손 노출 금지 (HANDOFF §1)" },
+    { "pattern": "(?i)글자|자막|텍스트|\\btext\\b|caption|typography|lettering|글씨",
+      "why": "생성 모델의 한글은 항상 깨진다. 자막은 render_short.py 가 PIL 로 그린다" },
+    { "pattern": "(?i)로고|\\blogo\\b|브랜드|brand mark|watermark|워터마크",
+      "why": "실재하지 않는 브랜드가 찍히면 허위 표시가 된다" },
+    { "pattern": "(?i)쿠팡|coupang|토스|toss\\b|네이버|naver",
+      "why": "판매처 BI 무단 사용 — 토스는 계약 해지 사유로 명시돼 있다" },
+    { "pattern": "(?i)가격|원\\b|할인|세일|price|\\$|₩|discount|sale\\b",
+      "why": "가격은 매일 바뀐다. 영상에 박으면 곧 거짓이 된다 — 자막으로만 다룬다" },
+    { "pattern": "(?i)전후\\s*비교|before\\s*and\\s*after|효과\\s*입증|임상|clinically",
+      "why": "효능 단정은 표시광고법 위험. 후기 인용으로만 다룬다" }
+  ],
+
+  "require": {
+    "aspect_ratio": "9:16",
+    "video_sound": "off",
+    "_video_sound_왜": "concat 데믹서는 스트림이 균일해야 한다. 게다가 render_short.py 는 영상 오디오를 버리고 VO 만 쓴다(-map 1:a). 켜봐야 돈만 든다",
+    "safe_band": { "top": 170, "bottom": 1320 },
+    "_safe_band_왜": "render_short.py 가 상단·하단에 불투명 바를 그린다. 이 밖은 무조건 가려지므로 제품이 이 안에 들어와야 한다"
+  },
+
+  "prompt_suffix": "vertical 9:16 composition, subject centered in the UPPER TWO THIRDS of the frame, lower third intentionally empty negative space, absolutely no people, no faces, no hands, no body parts, no on-screen text, no logos, no watermarks, natural household lighting, handheld phone camera look, slightly imperfect, one single clear action"
+}

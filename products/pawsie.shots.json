@@ -1,0 +1,296 @@
+{
+  "_사용법": "컷 스토리보드 상태 파일. products/pawsie.json 과 짝. 사람이 고치는 건 prompt·truth·cuts 뿐이고 attempts·log·budget.spent 는 make_shots.py 가 쓴다.",
+  "id": "pawsie",
+  "product_ref": "products/pawsie.json",
+  "out_dir": "assets/shots",
+  "budget": {
+    "cap_credits": 110,
+    "reserve_credits": 40,
+    "spent": 0,
+    "balance": 197.57
+  },
+  "pace": {
+    "_": "속도감이 목표. 생성은 5초로 하고 여기서 잘게 썬다. 자르는 건 공짜, 늘리는 건 재생성.",
+    "target_beat_sec": 1.2,
+    "beat_range": [
+      0.6,
+      1.8
+    ],
+    "gen_duration": 5,
+    "hook_sec": 3.0
+  },
+  "hook_caption": "이건 자동이 아닙니다",
+  "_hook_caption": "12자 이내. 벤치마크상 경고형이 이 카테고리에서 압도적(중앙 17만 vs 기타 2.7만).",
+  "truth": {
+    "may_show": {
+      "timed_dispense": "정해진 시각에 정해진 양이 배출된다",
+      "battery": "D사이즈 건전지 겸용 — 코드가 빠져도 급여가 이어진다",
+      "level_line": "투명 라인으로 남은 사료가 보인다",
+      "refill": "뚜껑을 열어 사료를 채운다",
+      "gravity_trap": "중력식 반자동은 타이머가 없다 (대조 대상)"
+    },
+    "never_show": [
+      {
+        "pattern": "(?i)앱|어플|application\\b|smartphone|스마트폰|모바일",
+        "why": "파우시 3L 은 앱 연동이 없다"
+      },
+      {
+        "pattern": "(?i)카메라|camera|모니터링|monitor",
+        "why": "카메라 기능이 없다"
+      },
+      {
+        "pattern": "(?i)습식|wet food|캔|파우치",
+        "why": "건사료 전용이다"
+      }
+    ],
+    "review_evidence": [
+      {
+        "claim": "timed_dispense",
+        "quote": "시간은 정확한데 양이 들쭉날쭉",
+        "source": "쿠팡 상품평 1,098건 — 반복 언급"
+      },
+      {
+        "claim": "battery",
+        "quote": "건전지 넣어두면 정전에도 급여가 이어진다",
+        "source": "쿠팡 상품평"
+      },
+      {
+        "claim": "level_line",
+        "quote": "사료량 확인 라인이 있어 남은 양 보기 쉽다",
+        "source": "쿠팡 상품평"
+      },
+      {
+        "claim": "refill",
+        "quote": "사료통 분리돼서 청소·충전 편함",
+        "source": "쿠팡 상품평 다수"
+      },
+      {
+        "claim": "gravity_trap",
+        "quote": "토스쇼핑 자동급식기 판매 1위가 회전형 반자동",
+        "source": "토스쇼핑 판매 순위 (2026-07-29)"
+      }
+    ]
+  },
+  "refs": [],
+  "_refs": "사용자가 준 실제 제품 사진. assets/refs/ 에 커밋 → raw.githubusercontent URL → media_import_url → media_id",
+  "defaults": {
+    "image_model": "seedream_v5_pro",
+    "aspect_ratio": "9:16",
+    "video_model": "kling3_0",
+    "video_params": {
+      "duration": 5,
+      "mode": "pro",
+      "sound": "off"
+    },
+    "prompt_suffix": ""
+  },
+  "shots": [],
+  "_shots": "훅 확정 후 채운다. 훅이 안 서면 본문 컷을 만들지 않는다 (PLAN 접기 조건).",
+  "clips": [],
+  "cuts": [],
+  "_cuts": "앞 3초는 0.6~1.4 로 빠르게, 이후 1.2 균일. emit 이 prep.src/segments 로 변환.",
+  "benchmark": {
+    "_": "bench_shorts.py 가 기록. 훅 설계의 출처. 조회수는 전환이 아니다.",
+    "query": "자동급식기",
+    "by_hook_type": [
+      {
+        "type": "경고형",
+        "n": 3,
+        "median_views": 170000
+      },
+      {
+        "type": "의문형",
+        "n": 1,
+        "median_views": 100000
+      },
+      {
+        "type": "부정형",
+        "n": 1,
+        "median_views": 66000
+      },
+      {
+        "type": "비교형",
+        "n": 2,
+        "median_views": 45500
+      },
+      {
+        "type": "기타",
+        "n": 7,
+        "median_views": 35610
+      },
+      {
+        "type": "추천형",
+        "n": 1,
+        "median_views": 20000
+      }
+    ],
+    "refs": [
+      {
+        "video_id": "okRvC8UTDiA",
+        "title": "닭장 모이통 DIY | 페트병으로 만드는 자동 급식기",
+        "views_text": "조회수 244만회",
+        "views": 2440000,
+        "hook_type": "기타",
+        "url": "https://www.youtube.com/shorts/okRvC8UTDiA",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "7EZopLOtew0",
+        "title": "고양이 자동급식기 살 때 주의하세요‼️",
+        "views_text": "조회수 67만회",
+        "views": 670000,
+        "hook_type": "경고형",
+        "url": "https://www.youtube.com/shorts/7EZopLOtew0",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "r3AjHrKbMV4",
+        "title": "자동급식기 장난 하나;",
+        "views_text": "조회수 38만회",
+        "views": 380000,
+        "hook_type": "기타",
+        "url": "https://www.youtube.com/shorts/r3AjHrKbMV4",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "W5W30SvXRnU",
+        "title": "자동급식기 사지 마세요ㅠㅠㅋㅋ#cat #자동급식기",
+        "views_text": "조회수 17만회",
+        "views": 170000,
+        "hook_type": "경고형",
+        "url": "https://www.youtube.com/shorts/W5W30SvXRnU",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "xyNJP9-Uya4",
+        "title": "고양이가 자동 급식기 앞에서 매일 비는 이유",
+        "views_text": "조회수 10만회",
+        "views": 100000,
+        "hook_type": "의문형",
+        "url": "https://www.youtube.com/shorts/xyNJP9-Uya4",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "bVPO7o-WILU",
+        "title": "내가 강아지 자동급식기를 절대 사지 않는 이유 #말티즈 #dog #shorts",
+        "views_text": "조회수 9.1만회",
+        "views": 91000,
+        "hook_type": "경고형",
+        "url": "https://www.youtube.com/shorts/bVPO7o-WILU",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "WfIcHtJc6A4",
+        "title": "고양이 자동급식기의 최후",
+        "views_text": "조회수 7.3만회",
+        "views": 73000,
+        "hook_type": "기타",
+        "url": "https://www.youtube.com/shorts/WfIcHtJc6A4",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "Wu-4S8GSFNc",
+        "title": "고양이 자동급식기 안쓰는 이유 #고양이 #자동급식기",
+        "views_text": "조회수 6.6만회",
+        "views": 66000,
+        "hook_type": "부정형",
+        "url": "https://www.youtube.com/shorts/Wu-4S8GSFNc",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "BRqmDcGLzRQ",
+        "title": "자동급식기와의 대결 #cat #cute",
+        "views_text": "조회수 6.1만회",
+        "views": 61000,
+        "hook_type": "비교형",
+        "url": "https://www.youtube.com/shorts/BRqmDcGLzRQ",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "I1Kekl7MP4c",
+        "title": "디클펫트리 자동급식기(AT-300) - 초기 셋팅 / 작동 방법",
+        "views_text": "조회수 35,610회",
+        "views": 35610,
+        "hook_type": "기타",
+        "url": "https://www.youtube.com/shorts/I1Kekl7MP4c",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "fzU40Fic2og",
+        "title": "밀리 vs 두잇🐶🥣 두 제품 모두 써 본 집사의 솔직 비교",
+        "views_text": "조회수 3만회",
+        "views": 30000,
+        "hook_type": "비교형",
+        "url": "https://www.youtube.com/shorts/fzU40Fic2og",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "cYEeoeK2gq0",
+        "title": "길고양이 자동급식기 만들기",
+        "views_text": "조회수 2.4만회",
+        "views": 24000,
+        "hook_type": "기타",
+        "url": "https://www.youtube.com/shorts/cYEeoeK2gq0",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "waMs0r0JH-o",
+        "title": "강아지 고양이 밥 걱정 끝내는 자동급식기 추천 TOP3",
+        "views_text": "조회수 2만회",
+        "views": 20000,
+        "hook_type": "추천형",
+        "url": "https://www.youtube.com/shorts/waMs0r0JH-o",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "MSW0k4k9MLI",
+        "title": "사료자동급식기 삶의질향상템#사료자동급식기#고양이",
+        "views_text": "조회수 1.9만회",
+        "views": 19000,
+        "hook_type": "기타",
+        "url": "https://www.youtube.com/shorts/MSW0k4k9MLI",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      },
+      {
+        "video_id": "jCAq_9lt3X4",
+        "title": "모르면 손해보는 스마트한 집사 홈런펫 자동급식기",
+        "views_text": "조회수 1.9만회",
+        "views": 19000,
+        "hook_type": "기타",
+        "url": "https://www.youtube.com/shorts/jCAq_9lt3X4",
+        "analysis_job": null,
+        "hook_beats": null,
+        "notes": null
+      }
+    ]
+  },
+  "log": []
+}

@@ -52,6 +52,11 @@ def parse_views(txt):
     return int(n * {"억": 1e8, "만": 1e4, "천": 1e3}.get(m.group(2), 1))
 
 
+# 검색어는 같지만 목적이 다른 영상들. 자작·동물영상은 조회수가 잘 나오는데
+# 우리가 배우려는 것(제품을 사게 만드는 훅)과는 무관해서 중앙값을 망친다.
+NOISE = r"DIY|만들기|만드는|자작|페트병|생수통|닭장|길고양이|쫀떡|장난|귀여|웃긴|먹방"
+
+
 def classify(title):
     for name, pat in PATTERNS:
         if re.search(pat, title, re.I):
@@ -121,6 +126,7 @@ def extract(html):
         seen.add(r["video_id"])
         r["views"] = parse_views(r["views_text"])
         r["hook_type"] = classify(r["title"])
+        r["noise"] = bool(re.search(NOISE, r["title"], re.I))
         r["url"] = f"https://www.youtube.com/shorts/{r['video_id']}"
         out.append(r)
     return sorted(out, key=lambda x: -x["views"])
@@ -141,11 +147,22 @@ def main():
     ap.add_argument("query")
     ap.add_argument("--top", type=int, default=15)
     ap.add_argument("--all", action="store_true", help="쇼츠 외 일반 영상도 포함")
+    ap.add_argument("--keep-noise", action="store_true",
+                    help="자작·동물영상도 포함 (기본은 제외 — 목적이 달라 중앙값을 망친다)")
     ap.add_argument("--write", help="shots json 의 benchmark 블록에 기록")
     args = ap.parse_args()
 
     rows = extract(fetch(args.query, shorts_only=not args.all))
-    print(f'"{args.query}" — {len(rows)}건\n')
+    total = len(rows)
+    if not args.keep_noise:
+        dropped = [r for r in rows if r["noise"]]
+        rows = [r for r in rows if not r["noise"]]
+        if dropped:
+            print(f"제외 {len(dropped)}건 (자작·동물영상 — 목적이 다름):")
+            for r in dropped[:5]:
+                print(f'    {r["views"]:>9,}  {r["title"][:44]}')
+            print()
+    print(f'"{args.query}" — {len(rows)}/{total}건\n')
     print(f'{"조회수":>10}  {"유형":<6}  제목')
     print("-" * 78)
     for r in rows[:args.top]:
