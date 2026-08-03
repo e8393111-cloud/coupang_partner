@@ -27,7 +27,8 @@
       "battery": "D사이즈 건전지 겸용 — 코드가 빠져도 급여가 이어진다",
       "level_line": "투명 라인으로 남은 사료가 보인다",
       "refill": "뚜껑을 열어 사료를 채운다",
-      "gravity_trap": "중력식 반자동은 타이머가 없다 (대조 대상)"
+      "gravity_trap": "중력식 반자동은 타이머가 없다 (대조 대상)",
+      "voice_record": "보호자 목소리를 녹음해 밥 줄 때 들려줄 수 있다"
     },
     "never_show": [
       {
@@ -68,6 +69,11 @@
         "claim": "gravity_trap",
         "quote": "토스쇼핑 자동급식기 판매 1위가 회전형 반자동",
         "source": "토스쇼핑 판매 순위 (2026-07-29)"
+      },
+      {
+        "claim": "voice_record",
+        "quote": "목소리를 녹음해 밥 줄 때 들려줄 수 있다 (녹음 재생 음량 조절은 안 됨)",
+        "source": "쿠팡 상세페이지 + 상품평 (blog feeder.json pros)"
       }
     ]
   },
