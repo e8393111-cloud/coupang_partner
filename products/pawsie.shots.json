@@ -6,8 +6,8 @@
   "budget": {
     "cap_credits": 110,
     "reserve_credits": 40,
-    "spent": 0,
-    "balance": 197.57
+    "spent": 6.0,
+    "balance": 191.57
   },
   "pace": {
     "_": "속도감이 목표. 생성은 5초로 하고 여기서 잘게 썬다. 자르는 건 공짜, 늘리는 건 재생성.",
@@ -71,7 +71,20 @@
       }
     ]
   },
-  "refs": [],
+  "refs": [
+    {
+      "key": "front",
+      "local": "assets/refs/pawsy_front.jpg",
+      "raw_url": "https://raw.githubusercontent.com/e8393111-cloud/coupang_partner/claude/coupang-partners-monetization-3xx5n7/assets/refs/pawsy_front.jpg",
+      "media_id": "b4c48954-a3d7-4775-bd2c-4ab66ceeac50"
+    },
+    {
+      "key": "open",
+      "local": "assets/refs/pawsy_open.jpg",
+      "raw_url": "https://raw.githubusercontent.com/e8393111-cloud/coupang_partner/claude/coupang-partners-monetization-3xx5n7/assets/refs/pawsy_open.jpg",
+      "media_id": "c9e6eee9-7156-453f-8709-5fdcb45a8aab"
+    }
+  ],
   "_refs": "사용자가 준 실제 제품 사진. assets/refs/ 에 커밋 → raw.githubusercontent URL → media_import_url → media_id",
   "defaults": {
     "image_model": "seedream_v5_pro",
@@ -84,7 +97,69 @@
     },
     "prompt_suffix": ""
   },
-  "shots": [],
+  "shots": [
+    {
+      "id": "j1",
+      "scene": "kitchen",
+      "role": "judge",
+      "count": 1,
+      "prompt": "The exact same white automatic pet feeder as in the reference photos — square top hopper with a narrow clear kibble level window, rounded lower body, stainless steel bowl filled with brown kibble — standing on a warm wooden kitchen floor near a plain wall, soft morning window light, seen from a low three-quarter viewpoint",
+      "refs": [
+        "front"
+      ],
+      "truth_claims": [
+        "level_line"
+      ],
+      "why": "판정①: 실물 사진을 참조로 줬을 때 새 배경에서도 제품이 그대로인가",
+      "state": "pending_review",
+      "est_cost": 3.0,
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "ac63febb-783f-4885-aad4-68a5e8bc14c6",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260803_224846_ac63febb-783f-4885-aad4-68a5e8bc14c6.png",
+          "credits": 3.0,
+          "state": "pending_review",
+          "local": "assets/shots/pawsie_j1_v1.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-03T22:50:12+00:00"
+        }
+      ],
+      "chosen": null
+    },
+    {
+      "id": "j2",
+      "scene": "kitchen",
+      "role": "judge",
+      "count": 1,
+      "prompt": "Close-up of the same white automatic pet feeder as in the reference photos, brown kibble pieces tumbling out of the dispenser opening into the stainless steel bowl, captured mid-pour with a few pieces bouncing, warm indoor light, slight motion blur on the falling kibble",
+      "refs": [
+        "front",
+        "open"
+      ],
+      "truth_claims": [
+        "timed_dispense"
+      ],
+      "why": "판정②: 배출 순간(핵심 보상 컷)이 폰 촬영 질감으로 나오나 — 광고티 재현 여부",
+      "state": "pending_review",
+      "est_cost": 3.0,
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "37f76211-4879-4309-85f4-fef4dfb0abfa",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260803_224858_37f76211-4879-4309-85f4-fef4dfb0abfa.png",
+          "credits": 3.0,
+          "state": "pending_review",
+          "local": "assets/shots/pawsie_j2_v1.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-03T22:50:12+00:00"
+        }
+      ],
+      "chosen": null
+    }
+  ],
   "_shots": "훅 확정 후 채운다. 훅이 안 서면 본문 컷을 만들지 않는다 (PLAN 접기 조건).",
   "clips": [],
   "cuts": [],
@@ -292,5 +367,18 @@
       }
     ]
   },
-  "log": []
+  "log": [
+    {
+      "ts": "2026-08-03T22:50:12+00:00",
+      "id": "j1",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-03T22:50:12+00:00",
+      "id": "j2",
+      "act": "record",
+      "credits": 3.0
+    }
+  ]
 }
