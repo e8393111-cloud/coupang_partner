@@ -1,0 +1,47 @@
+{
+  "_": "샘플. 실제로는 toss_api.py deals 결과 + 쉐어링크 발급분을 합쳐 넣는다.",
+  "items": [
+    {
+      "rank": 1,
+      "tacaItemId": 10001,
+      "displayName": "펫 자동급식기 4L 대용량",
+      "thumbnailUrl": "",
+      "displayPrice": 19900,
+      "originalPrice": 49900,
+      "discountRate": 60,
+      "isSoldOut": false,
+      "reviewScore": 4.7,
+      "reviewCount": 1240,
+      "endAt": "2026-08-05T23:59:59+09:00",
+      "shareUrl": "https://toss.im/_m/SAMPLE1"
+    },
+    {
+      "rank": 2,
+      "tacaItemId": 10002,
+      "displayName": "고양이 자동 화장실 스마트",
+      "thumbnailUrl": "",
+      "displayPrice": 89000,
+      "originalPrice": 159000,
+      "discountRate": 44,
+      "isSoldOut": false,
+      "reviewScore": 4.5,
+      "reviewCount": 312,
+      "endAt": "2026-08-05T23:59:59+09:00",
+      "shareUrl": ""
+    },
+    {
+      "rank": 3,
+      "tacaItemId": 10003,
+      "displayName": "품절된 상품(노출 안 됨)",
+      "thumbnailUrl": "",
+      "displayPrice": 9900,
+      "originalPrice": 29900,
+      "discountRate": 66,
+      "isSoldOut": true,
+      "reviewScore": 4.2,
+      "reviewCount": 88,
+      "endAt": "2026-08-05T23:59:59+09:00",
+      "shareUrl": "x"
+    }
+  ]
+}
