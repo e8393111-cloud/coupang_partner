@@ -13,10 +13,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DISCLOSURE = "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
 
 
-def caption(hook, post, link, tag_count):
+def caption(hook, post, link, tag_count, price_line=""):
     tags = " ".join(post["hashtags"][:tag_count])
     return "\n".join([
         DISCLOSURE,
+        # 영상이 "가격은 캡션에" 라고 말하면 캡션에 실제로 있어야 한다.
+        # 공정위 문구는 법적으로 맨 앞이라, 가격은 그 바로 다음 줄에 둔다.
+        *( [price_line] if price_line else [] ),
         "",
         hook,
         post["body"],
@@ -36,6 +39,7 @@ def main():
     with open(cfg_path, encoding="utf-8") as f:
         cfg = json.load(f)
     post, name = cfg["post"], cfg.get("name", cfg["id"])
+    price_line = post.get("price_line", "")
     hooks = post["hooks"]
 
     out = [
@@ -52,9 +56,9 @@ def main():
     ]
     for label, h in zip("ABC", hooks):
         out.append(f"- **{label}** {h}")
-    out += ["", "## 캡션 — 인스타 릴스", "```", caption(hooks[0], post, args.link, 6), "```",
-            "", "## 캡션 — 틱톡 (해시태그 3~4개)", "```", caption(hooks[1], post, args.link, 4), "```",
-            "", "## 캡션 — 유튜브 쇼츠", "```", caption(hooks[2], post, args.link, 6), "```",
+    out += ["", "## 캡션 — 인스타 릴스", "```", caption(hooks[0], post, args.link, 6, price_line), "```",
+            "", "## 캡션 — 틱톡 (해시태그 3~4개)", "```", caption(hooks[1], post, args.link, 4, price_line), "```",
+            "", "## 캡션 — 유튜브 쇼츠", "```", caption(hooks[2], post, args.link, 6, price_line), "```",
             "", "## 업로드 체크리스트"]
     if cfg.get("ai_generated", True):
         # 영상 안에 AI 표시를 넣지 않기로 했으므로(사용자 결정), 남은 위험은 토글을 잊는 것뿐이다.
