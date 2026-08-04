@@ -528,7 +528,106 @@
     }
   ],
   "_shots": "훅 확정 후 채운다. 훅이 안 서면 본문 컷을 만들지 않는다 (PLAN 접기 조건).",
-  "clips": [],
+  "clips": [
+    {
+      "id": "v_c1",
+      "from": "c1",
+      "prompt": "the orange tabby cat gently sniffs the top edge of the white feeder, whiskers twitching, tail swaying slowly, subtle slow push-in, product stays perfectly still",
+      "params": {
+        "duration": 5,
+        "mode": "pro",
+        "sound": "off"
+      },
+      "state": "cost_known",
+      "est_cost": 8.75,
+      "attempts": [],
+      "chosen": null
+    },
+    {
+      "id": "v_j2",
+      "from": "j2",
+      "prompt": "brown kibble pieces tumble from the dispenser opening into the stainless bowl in a steady short burst, a few pieces bounce, product stays perfectly still, fixed viewpoint",
+      "params": {
+        "duration": 5,
+        "mode": "pro",
+        "sound": "off"
+      },
+      "state": "cost_known",
+      "est_cost": 8.75,
+      "attempts": [],
+      "chosen": null
+    },
+    {
+      "id": "v_c3a",
+      "from": "c3a",
+      "prompt": "the orange tabby cat sits almost motionless in front of the empty bowl, only the tail tip flicks and ears rotate slightly, staring at the dispenser opening, fixed viewpoint",
+      "params": {
+        "duration": 5,
+        "mode": "pro",
+        "sound": "off"
+      },
+      "state": "cost_known",
+      "est_cost": 8.75,
+      "attempts": [],
+      "chosen": null
+    },
+    {
+      "id": "v_c3b",
+      "from": "c3b",
+      "prompt": "the orange tabby cat eats calmly from the bowl, small head movements, jaw munching, fixed viewpoint, product stays perfectly still",
+      "params": {
+        "duration": 5,
+        "mode": "pro",
+        "sound": "off"
+      },
+      "state": "cost_known",
+      "est_cost": 8.75,
+      "attempts": [],
+      "chosen": null
+    },
+    {
+      "id": "v_c5",
+      "from": "c5",
+      "prompt": "kibble falls from the dispenser opening into the bowl, the unplugged white power cord lies completely still on the floor in the foreground, fixed viewpoint",
+      "params": {
+        "duration": 5,
+        "mode": "pro",
+        "sound": "off"
+      },
+      "state": "cost_known",
+      "est_cost": 8.75,
+      "attempts": [],
+      "chosen": null
+    },
+    {
+      "id": "v_c6",
+      "from": "c6",
+      "prompt": "a steady stream of brown kibble pours into the open hopper from outside the frame, kibble level slowly rising, overhead fixed viewpoint, feeder stays still",
+      "params": {
+        "duration": 5,
+        "mode": "pro",
+        "sound": "off"
+      },
+      "state": "cost_known",
+      "est_cost": 8.75,
+      "attempts": [],
+      "chosen": null
+    },
+    {
+      "id": "v_c8",
+      "from": "c8",
+      "prompt": "the two small white Maltese dogs wag their tails excitedly as a few kibble pieces fall from the lower dispenser opening into the bowl, one dog leans toward the bowl",
+      "params": {
+        "duration": 5,
+        "mode": "pro",
+        "sound": "off"
+      },
+      "state": "cost_known",
+      "est_cost": 8.75,
+      "attempts": [],
+      "chosen": null
+    }
+  ],
   "cuts": [],
   "_cuts": "앞 3초는 0.6~1.4 로 빠르게, 이후 1.2 균일. emit 이 prep.src/segments 로 변환.",
   "benchmark": {
@@ -1547,5 +1646,10 @@
       ],
       "budget_check": "클립 8×8.75=70 + 이미지 9×3=27 = 97 · 누적 103/110 · 예상 잔액 94.57 (예비 40 위)"
     }
+  },
+  "vo_script": {
+    "_": "C-R5 VO 열 그대로. TTS: higgsfield generate_audio (Hana, 홈쇼핑 톤). 렌더에서 vo_atempo 1.6.",
+    "text": "천백 건, 다 읽었어요. 단점부터요. 양은 들쭉이고, 앱도 없어요. 차이는 한두 술 정도예요. 대신 시간은 칼같아요. 밥때를 먼저 알 정도. 밥때가 늘 같으니까요. 별 사쩜오가 꼽은 장점, 잔량 창. 강아지 고양이 다 씁니다. 정전에도 나왔다는 후기가 있어요. 삼 리터, 그냥 부어주면 돼요. 야근 여행 잦은 집엔 맞아요. 안 좋은 후기까지 다 정리했어요. 가격은, 이 영상 캡션 첫 줄에요.",
+    "beats_map": "비트1~13 순서 그대로. '끝' 글자 없음 확인."
   }
 }
