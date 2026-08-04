@@ -38,9 +38,11 @@ DEFAULTS = {
     "font": DEFAULT_FONT,
     "disclosure": DEFAULT_DISCLOSURE,
     "top_bar_h": 300,          # 상단 가림 바 높이(0이면 안 그림)
-    "bottom_bar_y": 1060,      # 하단 가림 바 시작 y (화면 끝까지 채움)
+    "bottom_bar_y": 1060,      # 하단 가림 바 시작 y
+    "bottom_bar_h": None,      # 바 높이. None 이면 화면 끝까지 채움(소싱 영상용)
     "caption_box_y1": 1740,    # 자막 세로 중앙 정렬용 하단 기준선
     "caption_size": 60,
+    "caption_stroke": 3,       # 바 없이 쓸 때는 굵게(6 정도)
     "disclosure_size": 36,
     "bar_color": [12, 14, 20],
     "tail_pad": 0.25,          # VO가 영상보다 길 때 끝프레임 홀드 여유(초)
@@ -150,7 +152,13 @@ def make_overlay_png(cfg, text, path):
             d.text(((W - tw) / 2, dy + i * dlh), ln, font=dfont, fill=(205, 208, 215, 255))
 
     y0 = cfg["bottom_bar_y"]
-    d.rectangle([0, y0, W, H], fill=bar)
+    # bottom_bar_h 가 있으면 화면 끝까지 채우지 않고 띄운 띠로 그린다.
+    # 소싱 영상은 원본 자막을 가려야 해서 끝까지 채웠지만(기본값 유지),
+    # AI 생성물은 가릴 게 없다. 띠로 만들면 아래쪽 영상이 살아나
+    # 밥그릇처럼 낮게 잡힌 피사체가 잘리지 않는다.
+    bh = cfg.get("bottom_bar_h")
+    if bh != 0:  # 0 이면 바 없이 자막만 띄운다(외곽선으로 가독성 확보)
+        d.rectangle([0, y0, W, y0 + bh if bh else H], fill=bar)
     font = ImageFont.truetype(cfg["font"], cfg["caption_size"])
     lines = wrap_text(d, text, font, W - 120)
     lh = int(cfg["caption_size"] * 1.27)
@@ -158,7 +166,7 @@ def make_overlay_png(cfg, text, path):
     for i, ln in enumerate(lines):
         tw = d.textlength(ln, font=font)
         d.text(((W - tw) / 2, cy + i * lh), ln, font=font, fill=(255, 255, 255, 255),
-               stroke_width=3, stroke_fill=(0, 0, 0, 255))
+               stroke_width=cfg["caption_stroke"], stroke_fill=(0, 0, 0, 255))
     img.save(path)
 
 

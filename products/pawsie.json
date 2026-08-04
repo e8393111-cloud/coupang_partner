@@ -233,7 +233,9 @@
   "ai_generated": true,
   "top_bar_h": 170,
   "disclosure_size": 38,
-  "bottom_bar_y": 1320,
-  "caption_box_y1": 1660,
-  "caption_size": 60
+  "bottom_bar_y": 1480,
+  "caption_box_y1": 1720,
+  "caption_size": 60,
+  "bottom_bar_h": 0,
+  "caption_stroke": 6
 }

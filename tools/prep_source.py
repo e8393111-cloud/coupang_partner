@@ -47,10 +47,16 @@ def abspath(p):
     return p if os.path.isabs(p) else os.path.join(ROOT, p)
 
 
-def build_vf(prep):
+def build_vf(prep, crop=None):
+    """crop 은 구간별로 다를 수 있다.
+
+    렌더러가 상·하단에 불투명 바를 그리므로, 피사체가 낮게 잡힌 컷은
+    아래를 잘라 위로 올려야 바에 안 잘린다. 재생성보다 훨씬 싸다.
+    """
     parts = []
-    if prep.get("crop"):
-        parts.append(f"crop={prep['crop']}")
+    c = crop if crop is not None else prep.get("crop")
+    if c:
+        parts.append(f"crop={c}")
     w, h = prep.get("width", 1080), prep.get("height", 1920)
     parts.append(f"scale={w}:{h}")
     parts.append("setsar=1")
@@ -81,11 +87,17 @@ def main():
     if len(srcs) > 1 and len(segs) != len(srcs):
         raise SystemExit("src 가 여러 개면 segments 개수도 같아야 합니다")
 
-    vf, fps = build_vf(prep), prep.get("fps", 30)
+    # crops[i] 가 있으면 그 구간만 다른 crop 을 쓴다. 없으면 prep.crop(전역).
+    crops = prep.get("crops")
+    if crops and len(crops) != len(segs):
+        raise SystemExit("crops 를 쓰려면 segments 와 개수가 같아야 합니다")
+
+    fps = prep.get("fps", 30)
     tmp = tempfile.mkdtemp(prefix="prep_")
     parts = []
     for i, (ss, dur) in enumerate(segs):
         src = srcs[i] if len(srcs) > 1 else srcs[0]
+        vf = build_vf(prep, crops[i] if crops else None)
         out = os.path.join(tmp, f"p{i}.mp4")
         r = run([FF, "-y", "-ss", str(ss), "-t", str(dur), "-i", src,
                  "-vf", vf, "-r", str(fps),
