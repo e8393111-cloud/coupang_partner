@@ -6,8 +6,8 @@
   "budget": {
     "cap_credits": 110,
     "reserve_credits": 40,
-    "spent": 42.0,
-    "balance": 155.57
+    "spent": 103.25,
+    "balance": 94.32
   },
   "pace": {
     "_": "속도감이 목표. 생성은 5초로 하고 여기서 잘게 썬다. 자르는 건 공짜, 늘리는 건 재생성.",
@@ -538,10 +538,26 @@
         "mode": "pro",
         "sound": "off"
       },
-      "state": "cost_known",
+      "state": "approved",
       "est_cost": 8.75,
-      "attempts": [],
-      "chosen": null
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "6d75be90-a9b6-414b-bf18-96a4f8b508e7",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_032339_6d75be90-a9b6-414b-bf18-96a4f8b508e7.mp4",
+          "credits": 8.75,
+          "state": "approved",
+          "local": "assets/shots/pawsie_v_c1_v1.mp4",
+          "w": 1080,
+          "h": 1916,
+          "ts": "2026-08-04T03:34:57+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "6d75be90-a9b6-414b-bf18-96a4f8b508e7",
+        "local": "assets/shots/pawsie_v_c1_v1.mp4",
+        "n": 1
+      }
     },
     {
       "id": "v_j2",
@@ -552,10 +568,26 @@
         "mode": "pro",
         "sound": "off"
       },
-      "state": "cost_known",
+      "state": "approved",
       "est_cost": 8.75,
-      "attempts": [],
-      "chosen": null
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "c52aa04e-b945-4424-bbe0-45ab87fe86dc",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_032338_c52aa04e-b945-4424-bbe0-45ab87fe86dc.mp4",
+          "credits": 8.75,
+          "state": "approved",
+          "local": "assets/shots/pawsie_v_j2_v1.mp4",
+          "w": 1080,
+          "h": 1916,
+          "ts": "2026-08-04T03:34:57+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "c52aa04e-b945-4424-bbe0-45ab87fe86dc",
+        "local": "assets/shots/pawsie_v_j2_v1.mp4",
+        "n": 1
+      }
     },
     {
       "id": "v_c3a",
@@ -566,10 +598,26 @@
         "mode": "pro",
         "sound": "off"
       },
-      "state": "cost_known",
+      "state": "approved",
       "est_cost": 8.75,
-      "attempts": [],
-      "chosen": null
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "9c45b95a-23e2-408e-aaab-9ec5e7c2622c",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_032339_9c45b95a-23e2-408e-aaab-9ec5e7c2622c.mp4",
+          "credits": 8.75,
+          "state": "approved",
+          "local": "assets/shots/pawsie_v_c3a_v1.mp4",
+          "w": 1080,
+          "h": 1916,
+          "ts": "2026-08-04T03:34:57+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "9c45b95a-23e2-408e-aaab-9ec5e7c2622c",
+        "local": "assets/shots/pawsie_v_c3a_v1.mp4",
+        "n": 1
+      }
     },
     {
       "id": "v_c3b",
@@ -580,10 +628,26 @@
         "mode": "pro",
         "sound": "off"
       },
-      "state": "cost_known",
+      "state": "approved",
       "est_cost": 8.75,
-      "attempts": [],
-      "chosen": null
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "82a8cf26-888b-4301-82dc-25af3e20873e",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_032339_82a8cf26-888b-4301-82dc-25af3e20873e.mp4",
+          "credits": 8.75,
+          "state": "approved",
+          "local": "assets/shots/pawsie_v_c3b_v1.mp4",
+          "w": 1080,
+          "h": 1916,
+          "ts": "2026-08-04T03:34:57+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "82a8cf26-888b-4301-82dc-25af3e20873e",
+        "local": "assets/shots/pawsie_v_c3b_v1.mp4",
+        "n": 1
+      }
     },
     {
       "id": "v_c5",
@@ -594,10 +658,26 @@
         "mode": "pro",
         "sound": "off"
       },
-      "state": "cost_known",
+      "state": "approved",
       "est_cost": 8.75,
-      "attempts": [],
-      "chosen": null
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "ebd18879-c945-43cf-87d2-78be948f67b6",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_032355_ebd18879-c945-43cf-87d2-78be948f67b6.mp4",
+          "credits": 8.75,
+          "state": "approved",
+          "local": "assets/shots/pawsie_v_c5_v1.mp4",
+          "w": 1080,
+          "h": 1916,
+          "ts": "2026-08-04T03:34:57+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "ebd18879-c945-43cf-87d2-78be948f67b6",
+        "local": "assets/shots/pawsie_v_c5_v1.mp4",
+        "n": 1
+      }
     },
     {
       "id": "v_c6",
@@ -608,10 +688,26 @@
         "mode": "pro",
         "sound": "off"
       },
-      "state": "cost_known",
+      "state": "approved",
       "est_cost": 8.75,
-      "attempts": [],
-      "chosen": null
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "46cb5fd7-f9aa-4834-95a3-276b7ba09460",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_032339_46cb5fd7-f9aa-4834-95a3-276b7ba09460.mp4",
+          "credits": 8.75,
+          "state": "approved",
+          "local": "assets/shots/pawsie_v_c6_v1.mp4",
+          "w": 1080,
+          "h": 1916,
+          "ts": "2026-08-04T03:34:57+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "46cb5fd7-f9aa-4834-95a3-276b7ba09460",
+        "local": "assets/shots/pawsie_v_c6_v1.mp4",
+        "n": 1
+      }
     },
     {
       "id": "v_c8",
@@ -622,13 +718,108 @@
         "mode": "pro",
         "sound": "off"
       },
-      "state": "cost_known",
+      "state": "approved",
       "est_cost": 8.75,
-      "attempts": [],
-      "chosen": null
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "8a466ca1-d124-4e2f-aa40-e179f71ce6c5",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_032338_8a466ca1-d124-4e2f-aa40-e179f71ce6c5.mp4",
+          "credits": 8.75,
+          "state": "approved",
+          "local": "assets/shots/pawsie_v_c8_v1.mp4",
+          "w": 1080,
+          "h": 1916,
+          "ts": "2026-08-04T03:34:57+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "8a466ca1-d124-4e2f-aa40-e179f71ce6c5",
+        "local": "assets/shots/pawsie_v_c8_v1.mp4",
+        "n": 1
+      }
     }
   ],
-  "cuts": [],
+  "cuts": [
+    {
+      "clip": "v_c1",
+      "start": 0.0,
+      "dur": 0.7,
+      "_": "1 킁킁 훅"
+    },
+    {
+      "direct": "assets/shots/z_j2c.mp4",
+      "start": 0.0,
+      "dur": 0.8,
+      "_": "2 배출구 클로즈업(정지 줌)"
+    },
+    {
+      "clip": "v_j2",
+      "start": 0.0,
+      "dur": 1.1,
+      "_": "3 배출 — 1.3s 전까지만(바닥 흘림 회피)"
+    },
+    {
+      "direct": "assets/shots/z_s4.mp4",
+      "start": 0.0,
+      "dur": 1.0,
+      "_": "4 계량컵 편차"
+    },
+    {
+      "direct": "assets/shots/z_j1.mp4",
+      "start": 0.0,
+      "dur": 0.8,
+      "_": "5 아침 마루 하드컷"
+    },
+    {
+      "clip": "v_c3a",
+      "start": 0.6,
+      "dur": 0.9,
+      "_": "6 대기"
+    },
+    {
+      "clip": "v_c3b",
+      "start": 0.8,
+      "dur": 1.0,
+      "_": "7 먹기"
+    },
+    {
+      "direct": "assets/shots/z_c4.mp4",
+      "start": 0.0,
+      "dur": 1.1,
+      "_": "8 가시창 ★4.5"
+    },
+    {
+      "clip": "v_c8",
+      "start": 1.0,
+      "dur": 1.1,
+      "_": "9 강아지"
+    },
+    {
+      "clip": "v_c5",
+      "start": 0.4,
+      "dur": 1.1,
+      "_": "10 정전"
+    },
+    {
+      "clip": "v_c6",
+      "start": 0.3,
+      "dur": 1.3,
+      "_": "11 리필 3L"
+    },
+    {
+      "direct": "assets/shots/z_c7.mp4",
+      "start": 0.0,
+      "dur": 1.1,
+      "_": "12 밤 거실"
+    },
+    {
+      "clip": "v_c1",
+      "start": 2.2,
+      "dur": 1.8,
+      "_": "13 킁킁 재사용 — 수미상관 홀드"
+    }
+  ],
   "_cuts": "앞 3초는 0.6~1.4 로 빠르게, 이후 1.2 균일. emit 이 prep.src/segments 로 변환.",
   "benchmark": {
     "_": "bench_shorts.py 가 기록. 훅 설계의 출처. 조회수는 전환이 아니다.",
@@ -995,6 +1186,97 @@
     {
       "ts": "2026-08-04T00:52:28+00:00",
       "id": "c8",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T03:34:57+00:00",
+      "id": "v_c1",
+      "act": "record",
+      "credits": 8.75
+    },
+    {
+      "ts": "2026-08-04T03:34:57+00:00",
+      "id": "v_j2",
+      "act": "record",
+      "credits": 8.75
+    },
+    {
+      "ts": "2026-08-04T03:34:57+00:00",
+      "id": "v_c3a",
+      "act": "record",
+      "credits": 8.75
+    },
+    {
+      "ts": "2026-08-04T03:34:57+00:00",
+      "id": "v_c3b",
+      "act": "record",
+      "credits": 8.75
+    },
+    {
+      "ts": "2026-08-04T03:34:57+00:00",
+      "id": "v_c5",
+      "act": "record",
+      "credits": 8.75
+    },
+    {
+      "ts": "2026-08-04T03:34:57+00:00",
+      "id": "v_c6",
+      "act": "record",
+      "credits": 8.75
+    },
+    {
+      "ts": "2026-08-04T03:34:57+00:00",
+      "id": "v_c8",
+      "act": "record",
+      "credits": 8.75
+    },
+    {
+      "ts": "2026-08-04T03:37:13+00:00",
+      "id": "v_c1",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T03:37:13+00:00",
+      "id": "v_j2",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T03:37:13+00:00",
+      "id": "v_c3a",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T03:37:13+00:00",
+      "id": "v_c3b",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T03:37:13+00:00",
+      "id": "v_c5",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T03:37:14+00:00",
+      "id": "v_c6",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T03:37:14+00:00",
+      "id": "v_c8",
       "act": "approve",
       "forced": false,
       "reason": null

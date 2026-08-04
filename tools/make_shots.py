@@ -411,6 +411,13 @@ def cmd_emit(cfg, args, path):
         raise SystemExit("cuts 가 비었다")
     src, seg = [], []
     for c in cuts:
+        # zoompan(still_clip.py)으로 만든 컷은 생성 장부에 없다 — 경로를 그대로 쓴다.
+        if c.get("direct"):
+            if not os.path.exists(rp(c["direct"])):
+                raise SystemExit(f'{c["direct"]}: 파일이 없다')
+            src.append(c["direct"])
+            seg.append([c["start"], c["dur"]])
+            continue
         it, _ = find(cfg, c["clip"])
         ch = it.get("chosen")
         if not ch or not ch.get("local"):
