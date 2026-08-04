@@ -6,8 +6,8 @@
   "budget": {
     "cap_credits": 110,
     "reserve_credits": 40,
-    "spent": 6.0,
-    "balance": 191.57
+    "spent": 42.0,
+    "balance": 155.57
   },
   "pace": {
     "_": "속도감이 목표. 생성은 5초로 하고 여기서 잘게 썬다. 자르는 건 공짜, 늘리는 건 재생성.",
@@ -28,7 +28,9 @@
       "level_line": "투명 라인으로 남은 사료가 보인다",
       "refill": "뚜껑을 열어 사료를 채운다",
       "gravity_trap": "중력식 반자동은 타이머가 없다 (대조 대상)",
-      "voice_record": "보호자 목소리를 녹음해 밥 줄 때 들려줄 수 있다"
+      "voice_record": "보호자 목소리를 녹음해 밥 줄 때 들려줄 수 있다",
+      "companion_use": "강아지·고양이 겸용 (제품명에 명시)",
+      "variance_scale": "배출량 편차는 ±10~20g 수준"
     },
     "never_show": [
       {
@@ -74,6 +76,16 @@
         "claim": "voice_record",
         "quote": "목소리를 녹음해 밥 줄 때 들려줄 수 있다 (녹음 재생 음량 조절은 안 됨)",
         "source": "쿠팡 상세페이지 + 상품평 (blog feeder.json pros)"
+      },
+      {
+        "claim": "companion_use",
+        "quote": "제품명: 파우시 강아지 고양이 자동급식기 3L",
+        "source": "쿠팡 상품명"
+      },
+      {
+        "claim": "variance_scale",
+        "quote": "설정한 그램 수와 ±10~20g 차이가 나거나",
+        "source": "쿠팡 상품평 (blog feeder.json cons)"
       }
     ]
   },
@@ -117,7 +129,7 @@
         "level_line"
       ],
       "why": "판정①: 실물 사진을 참조로 줬을 때 새 배경에서도 제품이 그대로인가",
-      "state": "pending_review",
+      "state": "approved",
       "est_cost": 3.0,
       "attempts": [
         {
@@ -125,14 +137,18 @@
           "job_id": "ac63febb-783f-4885-aad4-68a5e8bc14c6",
           "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260803_224846_ac63febb-783f-4885-aad4-68a5e8bc14c6.png",
           "credits": 3.0,
-          "state": "pending_review",
+          "state": "approved",
           "local": "assets/shots/pawsie_j1_v1.png",
           "w": 1536,
           "h": 2720,
           "ts": "2026-08-03T22:50:12+00:00"
         }
       ],
-      "chosen": null
+      "chosen": {
+        "job_id": "ac63febb-783f-4885-aad4-68a5e8bc14c6",
+        "local": "assets/shots/pawsie_j1_v1.png",
+        "n": 1
+      }
     },
     {
       "id": "j2",
@@ -148,7 +164,7 @@
         "timed_dispense"
       ],
       "why": "판정②: 배출 순간(핵심 보상 컷)이 폰 촬영 질감으로 나오나 — 광고티 재현 여부",
-      "state": "pending_review",
+      "state": "approved",
       "est_cost": 3.0,
       "attempts": [
         {
@@ -156,14 +172,359 @@
           "job_id": "37f76211-4879-4309-85f4-fef4dfb0abfa",
           "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260803_224858_37f76211-4879-4309-85f4-fef4dfb0abfa.png",
           "credits": 3.0,
-          "state": "pending_review",
+          "state": "approved",
           "local": "assets/shots/pawsie_j2_v1.png",
           "w": 1536,
           "h": 2720,
           "ts": "2026-08-03T22:50:12+00:00"
         }
       ],
-      "chosen": null
+      "chosen": {
+        "job_id": "37f76211-4879-4309-85f4-fef4dfb0abfa",
+        "local": "assets/shots/pawsie_j2_v1.png",
+        "n": 1
+      }
+    },
+    {
+      "id": "c1",
+      "scene": "home",
+      "role": "c_r5",
+      "count": 1,
+      "prompt": "the exact same white automatic pet feeder as in the reference photos standing upright on a warm wooden living room floor in soft morning light; a short-haired orange tabby cat leans in and sniffs the top edge of the feeder lid, tail relaxed, product fully visible",
+      "refs": [
+        "front"
+      ],
+      "truth_claims": [
+        "companion_use"
+      ],
+      "why": "비트1·13 킁킁 투샷 (수미상관)",
+      "state": "approved",
+      "est_cost": 3.0,
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "75fa0890-b29a-41fd-b9e8-26f901dd5be9",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_004624_75fa0890-b29a-41fd-b9e8-26f901dd5be9.png",
+          "credits": 3.0,
+          "state": "approved",
+          "local": "assets/shots/pawsie_c1_v1.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-04T00:47:43+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "75fa0890-b29a-41fd-b9e8-26f901dd5be9",
+        "local": "assets/shots/pawsie_c1_v1.png",
+        "n": 1
+      }
+    },
+    {
+      "id": "s4",
+      "scene": "home",
+      "role": "c_r5",
+      "count": 1,
+      "prompt": "two small transparent measuring cups side by side on a wooden kitchen counter, each filled with dry brown pet kibble, the fill levels differing only slightly, a plain metal spoon lying beside them, soft daylight",
+      "refs": [],
+      "truth_claims": [
+        "variance_scale"
+      ],
+      "why": "비트4 편차 스케일 앵커 — 클립 없이 zoompan",
+      "state": "approved",
+      "est_cost": 3.0,
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "39111c23-e685-411c-a972-04b2c834ec46",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_004623_39111c23-e685-411c-a972-04b2c834ec46.png",
+          "credits": 3.0,
+          "state": "approved",
+          "local": "assets/shots/pawsie_s4_v1.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-04T00:47:43+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "39111c23-e685-411c-a972-04b2c834ec46",
+        "local": "assets/shots/pawsie_s4_v1.png",
+        "n": 1
+      }
+    },
+    {
+      "id": "c3a",
+      "scene": "home",
+      "role": "c_r5",
+      "count": 1,
+      "prompt": "fixed viewpoint: the exact same white automatic pet feeder as in the reference photos against a bright kitchen wall, stainless bowl empty; a short-haired orange tabby cat sits perfectly still in front of the bowl, upright posture, staring at the dispenser opening, waiting",
+      "refs": [
+        "front"
+      ],
+      "truth_claims": [
+        "timed_dispense"
+      ],
+      "why": "비트6 대기 (고정 시점)",
+      "state": "approved",
+      "est_cost": 3.0,
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "76d6484c-a904-44d2-a905-82981ecf4d6c",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_004624_76d6484c-a904-44d2-a905-82981ecf4d6c.png",
+          "credits": 3.0,
+          "state": "approved",
+          "local": "assets/shots/pawsie_c3a_v1.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-04T00:47:44+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "76d6484c-a904-44d2-a905-82981ecf4d6c",
+        "local": "assets/shots/pawsie_c3a_v1.png",
+        "n": 1
+      }
+    },
+    {
+      "id": "c3b",
+      "scene": "home",
+      "role": "c_r5",
+      "count": 1,
+      "prompt": "same fixed viewpoint: the exact same white automatic pet feeder as in the reference photos, a short-haired orange tabby cat now eating calmly from the stainless bowl filled with kibble, head down, relaxed",
+      "refs": [
+        "front"
+      ],
+      "truth_claims": [
+        "timed_dispense"
+      ],
+      "why": "비트7 먹기 (하드컷 짝)",
+      "state": "approved",
+      "est_cost": 3.0,
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "be6264bc-3866-4120-8782-6c36c4349bff",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_004624_be6264bc-3866-4120-8782-6c36c4349bff.png",
+          "credits": 3.0,
+          "state": "rejected",
+          "local": "assets/shots/pawsie_c3b_v1.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-04T00:47:44+00:00",
+          "note": "c3a와 배경 불일치(조리대vs바닥) — 하드컷 연속성 깨짐"
+        },
+        {
+          "n": 2,
+          "job_id": "74d4ed05-b0bc-4588-b5c7-6a4a77414faf",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_005012_74d4ed05-b0bc-4588-b5c7-6a4a77414faf.png",
+          "credits": 3.0,
+          "state": "approved",
+          "local": "assets/shots/pawsie_c3b_v2.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-04T00:51:31+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "74d4ed05-b0bc-4588-b5c7-6a4a77414faf",
+        "local": "assets/shots/pawsie_c3b_v2.png",
+        "n": 2
+      }
+    },
+    {
+      "id": "c4",
+      "scene": "home",
+      "role": "c_r5",
+      "count": 1,
+      "prompt": "extreme close-up of the front of the exact same white automatic pet feeder as in the reference photos, the narrow transparent kibble level window clearly showing brown kibble filled to mid-level, soft window light, shallow depth of field",
+      "refs": [
+        "front"
+      ],
+      "truth_claims": [
+        "level_line"
+      ],
+      "why": "비트8 가시창 — zoompan",
+      "state": "approved",
+      "est_cost": 3.0,
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "0807a5c0-151d-4dfc-a255-61f21b3f39c5",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_004624_0807a5c0-151d-4dfc-a255-61f21b3f39c5.png",
+          "credits": 3.0,
+          "state": "approved",
+          "local": "assets/shots/pawsie_c4_v1.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-04T00:47:44+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "0807a5c0-151d-4dfc-a255-61f21b3f39c5",
+        "local": "assets/shots/pawsie_c4_v1.png",
+        "n": 1
+      }
+    },
+    {
+      "id": "c5",
+      "scene": "home",
+      "role": "c_r5",
+      "count": 1,
+      "prompt": "the exact same white automatic pet feeder as in the reference photos on a wooden floor, kibble falling from its dispenser opening into the stainless bowl mid-action; in the lower foreground an unplugged white power cord lies loose on the floor near a wall outlet, clearly disconnected",
+      "refs": [
+        "front"
+      ],
+      "truth_claims": [
+        "battery"
+      ],
+      "why": "비트10 정전에도 배출",
+      "state": "approved",
+      "est_cost": 3.0,
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "9a87b259-48e3-4457-af34-c9c1de92a407",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_004624_9a87b259-48e3-4457-af34-c9c1de92a407.png",
+          "credits": 3.0,
+          "state": "approved",
+          "local": "assets/shots/pawsie_c5_v1.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-04T00:47:44+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "9a87b259-48e3-4457-af34-c9c1de92a407",
+        "local": "assets/shots/pawsie_c5_v1.png",
+        "n": 1
+      }
+    },
+    {
+      "id": "c6",
+      "scene": "home",
+      "role": "c_r5",
+      "count": 1,
+      "prompt": "top-down overhead view of the exact same white automatic pet feeder as in the reference photos with its lid open, the 3-liter hopper partly filled with brown kibble, a stream of kibble pouring in from outside the frame, wooden floor background",
+      "refs": [
+        "front",
+        "open"
+      ],
+      "truth_claims": [
+        "refill"
+      ],
+      "why": "비트11 리필 부감",
+      "state": "approved",
+      "est_cost": 3.0,
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "7c775170-2b8e-4bb9-8aeb-4d82d0900571",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_004624_7c775170-2b8e-4bb9-8aeb-4d82d0900571.png",
+          "credits": 3.0,
+          "state": "rejected",
+          "local": "assets/shots/pawsie_c6_v1.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-04T00:47:44+00:00",
+          "note": "가시창 2~3개 — 실물은 1개, 제품 동일성 위반"
+        },
+        {
+          "n": 2,
+          "job_id": "a9958809-03e7-407c-85f5-2992526ad3b0",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_005012_a9958809-03e7-407c-85f5-2992526ad3b0.png",
+          "credits": 3.0,
+          "state": "approved",
+          "local": "assets/shots/pawsie_c6_v2.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-04T00:51:32+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "a9958809-03e7-407c-85f5-2992526ad3b0",
+        "local": "assets/shots/pawsie_c6_v2.png",
+        "n": 2
+      }
+    },
+    {
+      "id": "c7",
+      "scene": "home",
+      "role": "c_r5",
+      "count": 1,
+      "prompt": "dim evening living room, city lights outside a window in the far background, the exact same white automatic pet feeder as in the reference photos softly lit by warm lamp light, a short-haired orange tabby cat sitting beside it looking toward the front door, quiet mood",
+      "refs": [
+        "front"
+      ],
+      "truth_claims": [
+        "companion_use"
+      ],
+      "why": "비트12 밤 거실 — 야근 호명",
+      "state": "approved",
+      "est_cost": 3.0,
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "72138371-4975-4839-8899-11f661525cc1",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_004624_72138371-4975-4839-8899-11f661525cc1.png",
+          "credits": 3.0,
+          "state": "approved",
+          "local": "assets/shots/pawsie_c7_v1.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-04T00:47:44+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "72138371-4975-4839-8899-11f661525cc1",
+        "local": "assets/shots/pawsie_c7_v1.png",
+        "n": 1
+      }
+    },
+    {
+      "id": "c8",
+      "scene": "home",
+      "role": "c_r5",
+      "count": 1,
+      "prompt": "the exact same white automatic pet feeder as in the reference photos in a bright living room, a small white Maltese dog standing in front of the stainless bowl wagging its tail, looking up at the dispenser opening as kibble begins to fall",
+      "refs": [
+        "front"
+      ],
+      "truth_claims": [
+        "companion_use"
+      ],
+      "why": "비트9 강아지 컷",
+      "state": "approved",
+      "est_cost": 3.0,
+      "attempts": [
+        {
+          "n": 1,
+          "job_id": "4c67bd4e-39f2-451d-897c-a8f36b226cca",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_004624_4c67bd4e-39f2-451d-897c-a8f36b226cca.png",
+          "credits": 3.0,
+          "state": "rejected",
+          "local": "assets/shots/pawsie_c8_v1.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-04T00:47:44+00:00",
+          "note": "상단 유닛에서 배출 — 없는 배출구 날조"
+        },
+        {
+          "n": 2,
+          "job_id": "5d760fff-c634-46ba-bb45-19e327a3215f",
+          "url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Dsa4cWEC5tOnoIFgMiqRdXyUUz/hf_20260804_005012_5d760fff-c634-46ba-bb45-19e327a3215f.png",
+          "credits": 3.0,
+          "state": "approved",
+          "local": "assets/shots/pawsie_c8_v2.png",
+          "w": 1536,
+          "h": 2720,
+          "ts": "2026-08-04T00:51:32+00:00"
+        }
+      ],
+      "chosen": {
+        "job_id": "5d760fff-c634-46ba-bb45-19e327a3215f",
+        "local": "assets/shots/pawsie_c8_v2.png",
+        "n": 2
+      }
     }
   ],
   "_shots": "훅 확정 후 채운다. 훅이 안 서면 본문 컷을 만들지 않는다 (PLAN 접기 조건).",
@@ -385,6 +746,159 @@
       "id": "j2",
       "act": "record",
       "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:47:43+00:00",
+      "id": "c1",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:47:43+00:00",
+      "id": "s4",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:47:44+00:00",
+      "id": "c3a",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:47:44+00:00",
+      "id": "c3b",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:47:44+00:00",
+      "id": "c4",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:47:44+00:00",
+      "id": "c5",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:47:44+00:00",
+      "id": "c6",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:47:44+00:00",
+      "id": "c7",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:47:44+00:00",
+      "id": "c8",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:49:51+00:00",
+      "id": "c3b",
+      "act": "reject",
+      "note": "c3a와 배경 불일치(조리대vs바닥) — 하드컷 연속성 깨짐"
+    },
+    {
+      "ts": "2026-08-04T00:49:51+00:00",
+      "id": "c6",
+      "act": "reject",
+      "note": "가시창 2~3개 — 실물은 1개, 제품 동일성 위반"
+    },
+    {
+      "ts": "2026-08-04T00:49:51+00:00",
+      "id": "c8",
+      "act": "reject",
+      "note": "상단 유닛에서 배출 — 없는 배출구 날조"
+    },
+    {
+      "ts": "2026-08-04T00:49:51+00:00",
+      "id": "c1",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T00:49:51+00:00",
+      "id": "s4",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T00:49:51+00:00",
+      "id": "c3a",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T00:49:51+00:00",
+      "id": "c4",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T00:49:51+00:00",
+      "id": "c5",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T00:49:51+00:00",
+      "id": "c7",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T00:51:31+00:00",
+      "id": "c3b",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:51:32+00:00",
+      "id": "c6",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:51:32+00:00",
+      "id": "c8",
+      "act": "record",
+      "credits": 3.0
+    },
+    {
+      "ts": "2026-08-04T00:52:28+00:00",
+      "id": "c3b",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T00:52:28+00:00",
+      "id": "c6",
+      "act": "approve",
+      "forced": false,
+      "reason": null
+    },
+    {
+      "ts": "2026-08-04T00:52:28+00:00",
+      "id": "c8",
+      "act": "approve",
+      "forced": false,
+      "reason": null
     }
   ],
   "panel_gate": {
