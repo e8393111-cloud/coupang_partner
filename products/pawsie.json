@@ -84,43 +84,67 @@
   "vo": "vo_pawsie.mp3",
   "_vo": "higgsfield generate_audio(qwen_audio_tts/ko/Hana, 홈쇼핑 instruction) 로 뽑아 사용자가 repo 에 업로드. 'ㄲㅡㅌ' 같이 깨지는 글자는 대본에서 회피",
   "out": "assets/pawsie_final.mp4",
-  "vo_atempo": 1.6,
+  "vo_atempo": 1.4,
   "captions": [
     {
-      "text": "1,101건 다 읽었다"
+      "text": "1,101건 다 읽었다",
+      "start": 0.0,
+      "end": 0.7
     },
     {
-      "text": "단점부터 말합니다"
+      "text": "단점부터 말합니다",
+      "start": 0.7,
+      "end": 1.5
     },
     {
-      "text": "양은 조금 들쭉, 앱도 없어요"
+      "text": "양은 조금 들쭉, 앱도 없어요",
+      "start": 1.5,
+      "end": 2.6
     },
     {
-      "text": "차이는 숟가락 한두 술"
+      "text": "차이는 숟가락 한두 술",
+      "start": 2.6,
+      "end": 3.6
     },
     {
-      "text": "대신 시간은 칼"
+      "text": "대신 시간은 칼",
+      "start": 3.6,
+      "end": 4.4
     },
     {
-      "text": "고양이가 먼저 알아요"
+      "text": "고양이가 먼저 알아요",
+      "start": 4.4,
+      "end": 5.3
     },
     {
-      "text": "★4.5가 꼽은 잔량 창"
+      "text": "★4.5가 꼽은 잔량 창",
+      "start": 6.3,
+      "end": 7.4
     },
     {
-      "text": "강아지도, 고양이도"
+      "text": "강아지도, 고양이도",
+      "start": 7.4,
+      "end": 8.5
     },
     {
-      "text": "정전에도 나왔다는 후기"
+      "text": "정전에도 나왔다는 후기",
+      "start": 8.5,
+      "end": 9.6
     },
     {
-      "text": "3L, 부어주면 그만"
+      "text": "3L, 부어주면 그만",
+      "start": 9.6,
+      "end": 10.9
     },
     {
-      "text": "야근 잦은 집이라면"
+      "text": "야근 잦은 집이라면",
+      "start": 10.9,
+      "end": 12.0
     },
     {
-      "text": "가격은 캡션 첫 줄에"
+      "text": "가격은 캡션 첫 줄에",
+      "start": 12.0,
+      "end": 13.8
     }
   ],
   "_captions": "end 를 빼면 다음 자막 시작까지 이어짐. 이모지는 폰트에 없어서 안 나온다",
@@ -237,5 +261,6 @@
   "caption_box_y1": 1720,
   "caption_size": 60,
   "bottom_bar_h": 0,
-  "caption_stroke": 6
+  "caption_stroke": 6,
+  "disclosure": "쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다"
 }
