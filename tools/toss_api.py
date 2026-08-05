@@ -11,6 +11,7 @@
     python3 tools/toss_api.py detail 12345,12346
     python3 tools/toss_api.py link 12345                 # 쉐어링크 발급
     python3 tools/toss_api.py refresh posts_data/feeder.json   # 저장된 상품 가격 갱신
+    python3 tools/toss_api.py sync                       # 하루특가 → 링크발급 → today.json
 
 🔴 키를 파일에 쓰지 마세요. 이 repo 는 공개입니다. 환경변수로만 넘깁니다.
    --alpha 를 붙이면 알파(테스트) 환경으로 갑니다.
@@ -163,6 +164,70 @@ def show(items):
 
 # ───────────────────────── 명령 ─────────────────────────
 
+LINK_CACHE = os.path.join(ROOT, "deals_data", "links.json")
+
+
+def share_url(env, token, taca_id, cache):
+    """쉐어링크를 발급하되 이미 받은 건 재사용한다.
+
+    수익은 이 링크로만 집계된다 — 조회 응답의 productUrl 은 추적이 안 된다.
+    같은 상품이 다시 편성돼도 링크는 그대로 쓸 수 있어서, 발급분을 캐시해
+    호출 한도(파트너 단위 10rps)를 아낀다.
+    """
+    key = str(taca_id)
+    if key in cache:
+        return cache[key]
+    pub = os.environ.get("TOSS_PUBLISHER_ID")
+    if not pub:
+        die("TOSS_PUBLISHER_ID 환경변수가 없습니다 (퍼블리셔 UUID)")
+    r = call(env, "/links", token, method="POST",
+             body={"tacaItemId": int(taca_id), "publisherId": pub})
+    url = r.get("shortUrl") or r.get("url") or ""
+    if url:
+        cache[key] = url
+    return url
+
+
+def cmd_sync(env, token, out_path, size=20):
+    """하루특가 조회 → 쉐어링크 발급 → deals_data/today.json 저장.
+
+    하루 네 번 돌릴 작업 전체다. 이 세션 환경은 출발지 IP 가 호출마다 바뀌어
+    어드민 허용목록(단일 IP 10개)에 못 넣으므로, 고정 IP 가 있는 곳에서 돈다.
+    """
+    res = call(env, "/products/today-deals", token, params={"size": size})
+    items = res.get("items", [])
+    show(items)
+
+    cache = {}
+    if os.path.exists(LINK_CACHE):
+        cache = json.load(open(LINK_CACHE, encoding="utf-8"))
+    before = len(cache)
+
+    live = [i for i in items if not i.get("isSoldOut")]
+    for i in live:
+        i["shareUrl"] = share_url(env, token, i["tacaItemId"], cache)
+
+    os.makedirs(os.path.dirname(LINK_CACHE), exist_ok=True)
+    json.dump(cache, open(LINK_CACHE, "w", encoding="utf-8"),
+              ensure_ascii=False, indent=2, sort_keys=True)
+
+    # source 가 "api" 여야 make_deals.py 가 갱신 시각과 "편성 없음" 을 찍는다.
+    # 손으로 만든 껍데기를 확인된 결과처럼 쓰지 않기 위한 구분이다.
+    out = {"source": "api",
+           "fetched_at": time.strftime("%Y-%m-%dT%H:%M:%S+09:00", time.localtime()),
+           "items": items}
+    p = out_path if os.path.isabs(out_path) else os.path.join(ROOT, out_path)
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    json.dump(out, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+
+    nolink = [i for i in live if not i.get("shareUrl")]
+    print(f'\n저장: {os.path.relpath(p, ROOT)} · 편성 {len(items)}건 '
+          f'(노출 {len(live)}건) · 링크 신규발급 {len(cache) - before}건')
+    if nolink:
+        print(f'⚠ 쉐어링크 미발급 {len(nolink)}건 → 그 상품은 수익이 집계되지 않습니다')
+    print('다음: python3 tools/make_deals.py ' + os.path.relpath(p, ROOT))
+
+
 def cmd_refresh(env, token, path):
     """저장해 둔 상품의 최신 가격·품절 여부를 확인한다.
 
@@ -207,7 +272,8 @@ def cmd_refresh(env, token, path):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["health", "whoami", "best", "categories",
-                                    "category-best", "deals", "detail", "link", "refresh"])
+                                    "category-best", "deals", "detail", "link",
+                                    "refresh", "sync"])
     ap.add_argument("arg", nargs="?")
     ap.add_argument("--alpha", action="store_true", help="알파(테스트) 환경")
     ap.add_argument("--size", type=int, default=20)
@@ -263,6 +329,8 @@ def main():
         print("\n⚠ 수익은 이 링크로만 집계됩니다. productUrl 은 추적되지 않습니다.")
     elif a.cmd == "refresh":
         cmd_refresh(env, token, a.arg or "posts_data/feeder.json")
+    elif a.cmd == "sync":
+        cmd_sync(env, token, a.arg or "deals_data/today.json", a.size)
 
 
 if __name__ == "__main__":
