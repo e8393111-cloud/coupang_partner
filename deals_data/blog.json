@@ -1,0 +1,11 @@
+{
+  "_": "블로거 식별자. 비밀이 아니다(공개 페이지에서 보이는 값). 토큰은 환경변수로만 다룬다.",
+  "blog": "oneulmandeal.blogspot.com",
+  "blog_id": "6692048625594636316",
+  "pages": {
+    "today":   { "id": "5948420653045379325", "title": "오늘의특가",      "url": "/p/today.html" },
+    "contact": { "id": "8483867241106284492", "title": "연락처",          "url": "/p/blog-page_857.html" },
+    "privacy": { "id": "7241110962036182937", "title": "개인정보처리방침", "url": "/p/blog-page_04.html" },
+    "about":   { "id": "360711182009705771",  "title": "소개",            "url": "/p/blog-page.html" }
+  }
+}
