@@ -73,14 +73,20 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", default=None, help="라이브 HTML 을 받아둔 디렉터리")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--css", default=None, help="오버라이드 CSS 경로 (기본: 어디사)")
+    ap.add_argument("--title", default="어디사", help="미리보기 제목")
+    ap.add_argument("--page", action="append", default=[],
+                    help="파일명:라벨:설명 (여러 번). 생략하면 어디사 기본값")
     args = ap.parse_args()
 
     src = args.src or os.path.dirname(os.path.abspath(args.out))
-    css = open(CSS, encoding="utf-8").read()
+    css_path = args.css or CSS
+    css_path = css_path if os.path.isabs(css_path) else os.path.join(ROOT, css_path)
+    css = open(css_path, encoding="utf-8").read()
     # @import 는 아티팩트에서 어차피 차단되므로 인라인 서브셋으로 대체한다
     css = re.sub(r"@import[^;]+;", "", css)
 
-    pages = [
+    pages = [tuple(x.split(":", 2)) for x in args.page] or [
         ("home2.html", "홈 — 적용 후", "Contempo 기본 → 어디사"),
         ("live.html", "글 — 적용 후", "본문과 껍데기가 같은 팔레트"),
     ]
@@ -105,7 +111,7 @@ def main():
                    f'<iframe id="f{i}" title="{label}"></iframe>'
                    f'<script type="application/octet-stream" id="d{i}">{b64}</script></section>')
 
-    shell = f"""<title>어디사 — 테마 미리보기</title>
+    shell = f"""<title>{args.title} — 테마 미리보기</title>
 <style>
  body{{margin:0;background:#eceaf2;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif}}
  .wrap{{max-width:1180px;margin:0 auto;padding:20px}}
