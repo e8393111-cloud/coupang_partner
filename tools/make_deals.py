@@ -113,25 +113,38 @@ def build(data, weekly=False):
                 f'<p class="note">그 주 하루특가 중 할인율이 가장 컸던 상품입니다. '
                 f'<b>특가는 이미 끝났습니다.</b> 지금 가격은 다를 수 있고, '
                 f'이 기록은 "이 정도면 싸다"는 기준선으로만 봐주세요.</p>')
-    else:
+    elif data.get("source") == "api":
         head = (f'<div class="stamp"><b>오늘의 특가</b>'
                 f'<span>{now.strftime("%m월 %d일 %H:%M")} 기준 · 하루 네 번 갱신합니다</span></div>'
                 f'<p class="note">토스쇼핑 하루특가입니다. <b>남은 시간이 지나면 원래 가격으로 돌아갑니다.</b> '
                 f'종료된 상품은 이 목록에서 자동으로 빠집니다.</p>')
+    else:
+        # 갱신 시각을 찍지 않는다. 갱신한 적이 없기 때문이다.
+        head = ('<div class="stamp"><b>오늘의 특가</b><span>하루 네 번 갱신 예정</span></div>'
+                '<p class="note">토스쇼핑 하루특가를 정리하는 자리입니다. '
+                '<b>남은 시간이 지나면 원래 가격으로 돌아갑니다.</b> '
+                '종료된 상품은 목록에서 자동으로 빠집니다.</p>')
 
-    if not rows:
+    if rows:
+        body = rows
+    elif data.get("source") == "api":
         # 편성이 없는 날이 정상이다. 지난 특가를 재탕하지 않는다.
         body = ('<div class="empty">오늘은 <b>편성된 하루특가가 없습니다.</b><br>'
                 '지난 특가를 그대로 두면 눌렀을 때 특가가 아닌 가격이 나오기 때문에, '
                 '없는 날은 없다고 적습니다. 다음 갱신 때 다시 확인해 주세요.</div>')
     else:
-        body = rows
+        # 0건이라고 "편성이 없다"고 쓰면 안 된다. 확인을 못 한 것과 확인해서
+        # 없는 것은 다른 상태다. 전자를 후자처럼 쓰면 그게 거짓말이다.
+        body = ('<div class="empty"><b>준비 중입니다.</b><br>'
+                '토스쇼핑 하루특가를 하루 네 번 정리해 이 자리에 올릴 예정입니다. '
+                '연동이 끝나는 대로 시작합니다.</div>')
 
+    stamp = (f'<br>마지막 갱신 {now.strftime("%Y-%m-%d %H:%M")} KST'
+             if data.get("source") == "api" else "")
     return (f'<style>{CSS}</style>\n<div class="dl">\n'
             f'<p class="disc">{DISCLOSURE}</p>\n{head}\n{body}\n'
             f'<div class="foot">가격·재고는 표기 시각 기준이며 판매처 사정으로 바뀔 수 있습니다. '
-            f'구매 전 상품 페이지에서 다시 확인해 주세요.<br>'
-            f'마지막 갱신 {now.strftime("%Y-%m-%d %H:%M")} KST</div>\n</div>')
+            f'구매 전 상품 페이지에서 다시 확인해 주세요.{stamp}</div>\n</div>')
 
 
 def main():
