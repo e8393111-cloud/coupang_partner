@@ -87,6 +87,13 @@ DISCLOSURE = "이 페이지는 토스쇼핑 쉐어링크 활동의 일환으로,
 # 며칠 낡아도 틀리지 않는다 — 갱신은 "거짓말 방지"가 아니라 "새 특가 반영"이 된다.
 #
 # 블로거 편집기를 통과해야 하므로 < 와 & 를 쓰지 않는다 (HTML 로 오인돼 깨진다).
+#
+# ⚠️ 기본값은 꺼짐(--countdown 으로만 켠다). 2026-08-04~05 구글이 블로그스팟에
+# 「악성코드 및 유사 악성 콘텐츠」 정책으로 일괄 단속을 돌렸고 오탐이 대거 나왔다.
+# 배경은 VEIL#DROP — 블로그스팟이 암호화 페이로드 배포처로 악용된 사건이다.
+# 그 스위프 한가운데서 개설 직후 블로그가 제휴 리다이렉트 + 인라인 스크립트를
+# 달고 있는 건 위험한 조합이다. 기능의 값어치보다 블로그를 잃는 손실이 크다.
+# 판이 가라앉으면 켜거나, 예약 실행으로 페이지를 자주 다시 생성해 대체한다.
 JS = """<script>
 (function(){
   var root = document.querySelector('.dl');
@@ -143,7 +150,7 @@ def render_row(it, now):
             f'<div class="left">{left}</div><br>{btn}</div></div>')
 
 
-def build(data, weekly=False):
+def build(data, weekly=False, countdown=False):
     now = datetime.now(KST)
     items = [i for i in data.get("items", []) if not i.get("isSoldOut")]
     rows = "".join(render_row(i, now) for i in items)
@@ -167,11 +174,14 @@ def build(data, weekly=False):
                 '종료된 상품은 목록에서 자동으로 빠집니다.</p>')
 
     if rows:
-        # 전부 만료되면 브라우저가 이 블록을 대신 보여준다.
-        body = (rows + '<div class="empty" id="dl-gone" hidden>'
+        # 전부 만료되면 브라우저가 이 블록을 대신 보여준다. 카운트다운이 꺼져 있으면
+        # 아무도 이걸 열지 않으므로 아예 내보내지 않는다 (죽은 마크업 금지).
+        gone = ('<div class="empty" id="dl-gone" hidden>'
                 '<b>지금은 진행 중인 특가가 없습니다.</b><br>'
                 '올려둔 특가가 모두 종료됐습니다. 끝난 가격을 그대로 두면 눌렀을 때 '
-                '특가가 아닌 값이 나오기 때문에 화면에서 내렸습니다.</div>')
+                '특가가 아닌 값이 나오기 때문에 화면에서 내렸습니다.</div>'
+                ) if countdown and not weekly else ""
+        body = rows + gone
     elif data.get("source") == "api":
         # 편성이 없는 날이 정상이다. 지난 특가를 재탕하지 않는다.
         body = ('<div class="empty">오늘은 <b>편성된 하루특가가 없습니다.</b><br>'
@@ -186,17 +196,24 @@ def build(data, weekly=False):
 
     stamp = (f'<br>마지막 확인 {now.strftime("%Y-%m-%d %H:%M")} KST'
              if data.get("source") == "api" else "")
+    if rows and not countdown:
+        # 브라우저가 만료를 못 지우므로, 표기 시각 이후는 사람이 판단해야 한다.
+        stamp += ('<br>남은 시간은 <b>표기 시각 기준</b>입니다. '
+                  '갱신 전에 종료된 상품이 남아 있을 수 있으니 종료 시각을 확인해 주세요.')
     return (f'<style>{CSS}</style>\n<div class="dl">\n'
             f'<p class="disc">{DISCLOSURE}</p>\n{head}\n{body}\n'
             f'<div class="foot">가격·재고는 표기 시각 기준이며 판매처 사정으로 바뀔 수 있습니다. '
             f'구매 전 상품 페이지에서 다시 확인해 주세요.{stamp}</div>\n'
-            + (JS if rows and not weekly else "") + '</div>')
+            + (JS if rows and countdown and not weekly else "") + '</div>')
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("data")
     ap.add_argument("--weekly", action="store_true")
+    ap.add_argument("--countdown", action="store_true",
+                    help="만료 카운트다운 스크립트를 넣는다. 기본은 꺼짐 — "
+                         "블로그스팟 악성코드 오탐 단속(2026-08) 때문에 명시적으로만 켠다")
     ap.add_argument("--out")
     a = ap.parse_args()
 
@@ -204,7 +221,7 @@ def main():
     with open(p, encoding="utf-8") as f:
         data = json.load(f)
 
-    out_html = build(data, a.weekly)
+    out_html = build(data, a.weekly, a.countdown)
     out = a.out or os.path.join("blog", "deals",
                                 "weekly.html" if a.weekly else "today.html")
     out = out if os.path.isabs(out) else os.path.join(ROOT, out)
