@@ -5,6 +5,7 @@
     python3 tools/publish_blogger.py pages  --blog oneulmandeal.blogspot.com
     python3 tools/publish_blogger.py update <pageId> blog/deals/today.html
     python3 tools/publish_blogger.py post   blog/deals/weekly.html --title "이번 주 가장 쌌던 것"
+    python3 tools/publish_blogger.py backup --blog eodisanow.blogspot.com
 
 토큰이 없다면 (폰만으로도 됩니다):
     python3 tools/publish_blogger.py authurl      # 이 주소를 폰 브라우저에서 열고 승인
@@ -71,7 +72,7 @@ def access_token():
 def api(path, token, method="GET", body=None, params=None):
     url = API + path
     if params:
-        url += "?" + urllib.parse.urlencode(params)
+        url += "?" + urllib.parse.urlencode(params, doseq=True)
     args = ["-H", f"Authorization: Bearer {token}"]
     if method != "GET":
         args += ["-X", method, "-H", "Content-Type: application/json",
@@ -99,15 +100,60 @@ def read_html(path):
     return open(p, encoding="utf-8").read()
 
 
+def fetch_all(bid, token, kind):
+    """posts / pages 전체를 페이지네이션 끝까지 가져온다."""
+    out, tok = [], None
+    while True:
+        p = {"maxResults": 50, "fetchBodies": "true", "status": ["live", "draft"]}
+        if tok:
+            p["pageToken"] = tok
+        r = api(f"/blogs/{bid}/{kind}", token, params=p)
+        out += r.get("items", [])
+        tok = r.get("nextPageToken")
+        if not tok:
+            return out
+
+
+def cmd_backup(bid, token, blog, outdir):
+    """글·페이지를 레포에 받아둔다.
+
+    블로거 자체 백업(XML)은 사람이 읽기 어렵고 받은 기기에만 남는다. 레포는
+    깃허브에 있어서 블로그가 잠겨도 같이 사라지지 않고, 변경 이력도 남는다.
+    ⚠️ 이미지는 구글 포토에 따로 저장돼 본문에는 주소만 있다 — 여기에도 안 담긴다.
+    """
+    root = os.path.join(ROOT, outdir, blog.split(".")[0])
+    n = {}
+    for kind in ("posts", "pages"):
+        items = fetch_all(bid, token, kind)
+        d = os.path.join(root, kind)
+        os.makedirs(d, exist_ok=True)
+        for it in items:
+            # 초안은 url 이 블로그 루트라 슬러그가 안 나온다 → id 로 떨어뜨린다
+            url = it.get("url", "")
+            slug = url.rstrip("/").split("/")[-1] if url.endswith(".html") else ""
+            slug = (slug or f'{it.get("status", "draft").lower()}-{it["id"]}').replace(".html", "")
+            with open(os.path.join(d, f"{slug}.html"), "w", encoding="utf-8") as f:
+                f.write(f'<!-- {it.get("title","")} · {it.get("published","")} · '
+                        f'{it.get("url","")} -->\n{it.get("content","")}\n')
+        # 본문을 뺀 목록은 따로 남긴다 — 무엇이 있었는지 한눈에 보려고
+        with open(os.path.join(root, f"{kind}.json"), "w", encoding="utf-8") as f:
+            json.dump([{k: v for k, v in i.items() if k != "content"} for i in items],
+                      f, ensure_ascii=False, indent=2)
+        n[kind] = len(items)
+    print(f'백업: {os.path.relpath(root, ROOT)} · 글 {n["posts"]}개 · 페이지 {n["pages"]}개')
+    print("⚠️ 이미지는 포함되지 않습니다 (구글 포토에 별도 저장됨)")
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["authurl", "exchange", "pages", "update", "post"])
+    ap.add_argument("cmd", choices=["authurl", "exchange", "pages", "update", "post", "backup"])
     ap.add_argument("arg", nargs="?")
     ap.add_argument("arg2", nargs="?")
     ap.add_argument("--blog", default=os.environ.get("BLOGGER_BLOG", "oneulmandeal.blogspot.com"))
     ap.add_argument("--title")
     ap.add_argument("--labels", default="")
     ap.add_argument("--draft", action="store_true")
+    ap.add_argument("--out", default="blog/backup", help="backup 저장 위치")
     a = ap.parse_args()
 
     if a.cmd == "authurl":
@@ -150,6 +196,10 @@ def main():
 
     token = access_token()
     bid = blog_id(token, a.blog)
+
+    if a.cmd == "backup":
+        cmd_backup(bid, token, a.blog, a.out)
+        return
 
     if a.cmd == "pages":
         r = api(f"/blogs/{bid}/pages", token, params={"fetchBodies": "false"})

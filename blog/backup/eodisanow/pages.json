@@ -1,0 +1,68 @@
+[
+  {
+    "kind": "blogger#page",
+    "id": "7075263751209367116",
+    "status": "LIVE",
+    "blog": {
+      "id": "5230656979093557379"
+    },
+    "published": "2026-07-29T18:51:15+09:00",
+    "updated": "2026-07-29T19:31:36+09:00",
+    "url": "https://eodisanow.blogspot.com/p/contact.html",
+    "selfLink": "https://www.googleapis.com/blogger/v3/blogs/5230656979093557379/pages/7075263751209367116",
+    "title": "연락처",
+    "author": {
+      "id": "12727795695087929838",
+      "displayName": "블로거",
+      "url": "https://www.blogger.com/profile/12727795695087929838",
+      "image": {
+        "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+      }
+    },
+    "etag": "\"dGltZXN0YW1wOiAxNzg1MzIxMDk2MzkzCm9mZnNldDogMzI0MDAwMDAK\""
+  },
+  {
+    "kind": "blogger#page",
+    "id": "6508469597724585266",
+    "status": "LIVE",
+    "blog": {
+      "id": "5230656979093557379"
+    },
+    "published": "2026-07-29T18:49:17+09:00",
+    "updated": "2026-07-29T18:49:59+09:00",
+    "url": "https://eodisanow.blogspot.com/p/privacy.html",
+    "selfLink": "https://www.googleapis.com/blogger/v3/blogs/5230656979093557379/pages/6508469597724585266",
+    "title": "개인정보처리방침",
+    "author": {
+      "id": "12727795695087929838",
+      "displayName": "블로거",
+      "url": "https://www.blogger.com/profile/12727795695087929838",
+      "image": {
+        "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+      }
+    },
+    "etag": "\"dGltZXN0YW1wOiAxNzg1MzE4NTk5ODc4Cm9mZnNldDogMzI0MDAwMDAK\""
+  },
+  {
+    "kind": "blogger#page",
+    "id": "1541550875793204169",
+    "status": "LIVE",
+    "blog": {
+      "id": "5230656979093557379"
+    },
+    "published": "2026-07-29T18:46:59+09:00",
+    "updated": "2026-07-29T18:47:42+09:00",
+    "url": "https://eodisanow.blogspot.com/p/about.html",
+    "selfLink": "https://www.googleapis.com/blogger/v3/blogs/5230656979093557379/pages/1541550875793204169",
+    "title": "소개",
+    "author": {
+      "id": "12727795695087929838",
+      "displayName": "블로거",
+      "url": "https://www.blogger.com/profile/12727795695087929838",
+      "image": {
+        "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+      }
+    },
+    "etag": "\"dGltZXN0YW1wOiAxNzg1MzE4NDYyMDQ3Cm9mZnNldDogMzI0MDAwMDAK\""
+  }
+]

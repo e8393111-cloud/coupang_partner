@@ -1,0 +1,35 @@
+[
+  {
+    "kind": "blogger#post",
+    "id": "6457247129523978019",
+    "status": "LIVE",
+    "blog": {
+      "id": "5230656979093557379"
+    },
+    "published": "2026-07-29T22:50:19+09:00",
+    "updated": "2026-07-29T22:55:57+09:00",
+    "url": "https://eodisanow.blogspot.com/2026/07/auto-pet-feeder.html",
+    "selfLink": "https://www.googleapis.com/blogger/v3/blogs/5230656979093557379/posts/6457247129523978019",
+    "title": "자동급식기 추천 — 쿠팡·토스쇼핑, 어디서 살까 (반자동 함정 주의)",
+    "author": {
+      "id": "12727795695087929838",
+      "displayName": "블로거",
+      "url": "https://www.blogger.com/profile/12727795695087929838",
+      "image": {
+        "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+      }
+    },
+    "replies": {
+      "totalItems": "0",
+      "selfLink": "https://www.googleapis.com/blogger/v3/blogs/5230656979093557379/posts/6457247129523978019/comments"
+    },
+    "labels": [
+      "반려동물가전",
+      "자동급식기",
+      "쿠팡",
+      "토스쇼핑"
+    ],
+    "readerComments": "ALLOW",
+    "etag": "\"dGltZXN0YW1wOiAxNzg1MzMzMzU3ODg3Cm9mZnNldDogMzI0MDAwMDAK\""
+  }
+]

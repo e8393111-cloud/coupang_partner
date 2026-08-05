@@ -1,0 +1,33 @@
+[
+  {
+    "kind": "blogger#post",
+    "id": "6211309105163177349",
+    "status": "DRAFT",
+    "blog": {
+      "id": "6692048625594636316"
+    },
+    "published": "2026-08-05T12:49:03+09:00",
+    "updated": "2026-08-05T12:49:03+09:00",
+    "url": "https://oneulmandeal.blogspot.com/",
+    "selfLink": "https://www.googleapis.com/blogger/v3/blogs/6692048625594636316/posts/6211309105163177349",
+    "title": "하루특가, 할인율만 보고 사면 안 되는 이유",
+    "author": {
+      "id": "12727795695087929838",
+      "displayName": "블로거",
+      "url": "https://www.blogger.com/profile/12727795695087929838",
+      "image": {
+        "url": "//www.blogger.com/img/blogger_logo_round_35.png"
+      }
+    },
+    "replies": {
+      "totalItems": "0",
+      "selfLink": "https://www.googleapis.com/blogger/v3/blogs/6692048625594636316/posts/6211309105163177349/comments"
+    },
+    "labels": [
+      "쇼핑팁",
+      "하루특가"
+    ],
+    "readerComments": "ALLOW",
+    "etag": "\"dGltZXN0YW1wOiAxNzg1OTAxNzQzMjQ5Cm9mZnNldDogMzI0MDAwMDAK\""
+  }
+]
