@@ -29,16 +29,32 @@ def won(v):
 
 
 def remaining(end_at, now):
-    """남은 시간. 특가 페이지에서 제일 중요한 정보라 사람이 읽는 말로 쓴다."""
+    """만료 판정용. 표시에는 쓰지 않는다 — end_label 을 쓴다."""
     try:
         end = datetime.fromisoformat(end_at)
     except (TypeError, ValueError):
         return ""
-    sec = (end - now).total_seconds()
-    if sec <= 0:
-        return "종료"
-    h, m = int(sec // 3600), int(sec % 3600 // 60)
-    return f"{h}시간 {m}분 남음" if h else f"{m}분 남음"
+    return "종료" if (end - now).total_seconds() <= 0 else "진행"
+
+
+def end_label(end_at, now):
+    """종료 시각을 절대값으로 적는다.
+
+    「3시간 남음」은 페이지가 낡는 순간 거짓이 된다. 그걸 막으려면 자주 갱신하거나
+    브라우저에서 계산해야 하는데, 토스가 CIDR 을 지원하지 않아 자주 갱신할 수 없고
+    (클라우드 세션은 출발지 IP 가 고정되지 않는다), 블로그스팟 악성코드 단속 때문에
+    인라인 스크립트도 기본으로 안 넣는다.
+
+    「오늘 23:59까지」는 늙지 않는다. 며칠 뒤에 봐도 참인 문장이고, 보는 사람이
+    지금 시계와 비교해 판단할 수 있다. 제약이 오히려 정직한 표기를 강제한 경우다.
+    """
+    try:
+        end = datetime.fromisoformat(end_at)
+    except (TypeError, ValueError):
+        return ""
+    d = (end.date() - now.date()).days
+    day = "오늘" if d == 0 else "내일" if d == 1 else f"{end.month}월 {end.day}일"
+    return f'{day} {end.strftime("%H:%M")}까지'
 
 
 CSS = """
@@ -126,14 +142,16 @@ JS = """<script>
 
 
 def render_row(it, now):
-    left = remaining(it.get("endAt"), now)
-    if left == "종료":
-        return ""   # 만료분은 절대 노출하지 않는다 (문서 경고 사항)
+    if remaining(it.get("endAt"), now) == "종료":
+        return ""   # 만료분은 생성 시점에 걸러낸다 (문서 경고 사항)
+    left = end_label(it.get("endAt"), now)
     th = (f'<div class="th"><img src="{esc(it["thumbnailUrl"])}" alt="" loading="lazy"></div>'
           if it.get("thumbnailUrl") else "")
     rate = f'<span class="rate">{it["discountRate"]}%</span>' if it.get("discountRate") else ""
     orig = f'<s>{won(it.get("originalPrice"))}</s>' if it.get("originalPrice") else ""
-    rv = (f'★{it["reviewScore"]} · 후기 {int(it["reviewCount"]):,}건'
+    # 평점은 없고 후기 수만 있는 경우가 있다. 있는 것만 적는다.
+    score = f'★{it["reviewScore"]} · ' if it.get("reviewScore") else ""
+    rv = (f'{score}후기 {int(it["reviewCount"]):,}건'
           if it.get("reviewCount") else "후기 없음")
     # 수익은 발급받은 쉐어링크로만 집계된다. productUrl 은 추적이 안 된다.
     url = it.get("shareUrl") or ""
@@ -164,14 +182,14 @@ def build(data, weekly=False, countdown=False):
     elif data.get("source") == "api":
         head = (f'<div class="stamp"><b>오늘의 특가</b>'
                 f'<span>{now.strftime("%m월 %d일 %H:%M")} 확인</span></div>'
-                f'<p class="note">토스쇼핑 하루특가입니다. <b>남은 시간이 지나면 원래 가격으로 돌아갑니다.</b> '
-                f'종료된 상품은 이 목록에서 자동으로 빠집니다.</p>')
+                f'<p class="note">토스쇼핑 하루특가입니다. <b>종료 시각이 지나면 원래 가격으로 돌아갑니다.</b> '
+                f'각 상품에 끝나는 시각을 적어 뒀습니다.</p>')
     else:
         # 갱신 시각을 찍지 않는다. 갱신한 적이 없기 때문이다.
         head = ('<div class="stamp"><b>오늘의 특가</b><span>준비 중</span></div>'
                 '<p class="note">토스쇼핑 하루특가를 정리하는 자리입니다. '
-                '<b>남은 시간이 지나면 원래 가격으로 돌아갑니다.</b> '
-                '종료된 상품은 목록에서 자동으로 빠집니다.</p>')
+                '<b>종료 시각이 지나면 원래 가격으로 돌아갑니다.</b> '
+                '각 상품에 끝나는 시각을 적습니다.</p>')
 
     if rows:
         # 전부 만료되면 브라우저가 이 블록을 대신 보여준다. 카운트다운이 꺼져 있으면
@@ -197,9 +215,10 @@ def build(data, weekly=False, countdown=False):
     stamp = (f'<br>마지막 확인 {now.strftime("%Y-%m-%d %H:%M")} KST'
              if data.get("source") == "api" else "")
     if rows and not countdown:
-        # 브라우저가 만료를 못 지우므로, 표기 시각 이후는 사람이 판단해야 한다.
-        stamp += ('<br>남은 시간은 <b>표기 시각 기준</b>입니다. '
-                  '갱신 전에 종료된 상품이 남아 있을 수 있으니 종료 시각을 확인해 주세요.')
+        # 목록은 생성 시점에 걸러진다. 그 이후 끝난 건 남아 있을 수 있으므로,
+        # 각 상품의 종료 시각과 지금 시각을 비교하면 된다고 알려준다.
+        stamp += ('<br>갱신 사이에 종료된 상품이 남아 있을 수 있습니다. '
+                  '<b>각 상품의 종료 시각</b>을 지금 시각과 비교해 주세요.')
     return (f'<style>{CSS}</style>\n<div class="dl">\n'
             f'<p class="disc">{DISCLOSURE}</p>\n{head}\n{body}\n'
             f'<div class="foot">가격·재고는 표기 시각 기준이며 판매처 사정으로 바뀔 수 있습니다. '
