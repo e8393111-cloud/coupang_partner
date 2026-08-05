@@ -79,6 +79,44 @@ CSS = """
 
 DISCLOSURE = "이 페이지는 토스쇼핑 쉐어링크 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
 
+# 만료 판정을 방문자 브라우저로 옮긴다.
+#
+# 남은 시간을 생성 시점에 계산해 박아두면 페이지가 낡는 순간 거짓말이 된다.
+# 끝난 특가를 눌러 특가 아닌 가격을 보는 게 이 페이지가 신뢰를 잃는 유일한 방식이고,
+# 그걸 막으려고 하루 네 번 갱신이 필요했다. 종료 시각만 심어두고 화면에서 계산하면
+# 며칠 낡아도 틀리지 않는다 — 갱신은 "거짓말 방지"가 아니라 "새 특가 반영"이 된다.
+#
+# 블로거 편집기를 통과해야 하므로 < 와 & 를 쓰지 않는다 (HTML 로 오인돼 깨진다).
+JS = """<script>
+(function(){
+  var root = document.querySelector('.dl');
+  if (!root) { return; }
+  function tick(){
+    var rows = root.querySelectorAll('.row[data-end]');
+    var alive = 0;
+    rows.forEach(function(row){
+      var raw = row.getAttribute('data-end');
+      if (raw.indexOf('+') === -1) { if (raw.indexOf('Z') === -1) { raw = raw + '+09:00'; } }
+      var end = Date.parse(raw);
+      if (isNaN(end)) { alive = alive + 1; return; }
+      var sec = Math.floor((end - Date.now()) / 1000);
+      if (sec > 0) {
+        alive = alive + 1;
+        var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
+        var el = row.querySelector('.left');
+        if (el) { el.textContent = h ? (h + '시간 ' + m + '분 남음') : (m + '분 남음'); }
+      } else {
+        row.hidden = true;
+      }
+    });
+    var gone = root.querySelector('#dl-gone');
+    if (gone) { gone.hidden = (alive > 0); }
+  }
+  tick();
+  setInterval(tick, 30000);
+})();
+</script>"""
+
 
 def render_row(it, now):
     left = remaining(it.get("endAt"), now)
@@ -95,7 +133,10 @@ def render_row(it, now):
     btn = (f'<a class="buy" href="{esc(url)}" target="_blank" rel="noopener nofollow sponsored">'
            f'토스쇼핑에서 보기</a>' if url else
            '<span class="meta">링크 준비 중</span>')
-    return (f'<div class="row">{th}<div class="bd">'
+    # 종료 시각을 심어두면 브라우저가 만료를 판정한다 → 페이지가 낡아도 거짓말을
+    # 하지 않는다. 갱신 주기가 "거짓말 방지"가 아니라 "새 특가 반영"의 문제가 된다.
+    end = f' data-end="{esc(it["endAt"])}"' if it.get("endAt") else ""
+    return (f'<div class="row"{end}>{th}<div class="bd">'
             f'<p class="nm">{esc(it.get("displayName", ""))}</p>'
             f'<div class="pr">{rate}{won(it.get("displayPrice"))}{orig}</div>'
             f'<p class="meta">{rv}</p>'
@@ -115,18 +156,22 @@ def build(data, weekly=False):
                 f'이 기록은 "이 정도면 싸다"는 기준선으로만 봐주세요.</p>')
     elif data.get("source") == "api":
         head = (f'<div class="stamp"><b>오늘의 특가</b>'
-                f'<span>{now.strftime("%m월 %d일 %H:%M")} 기준 · 하루 네 번 갱신합니다</span></div>'
+                f'<span>{now.strftime("%m월 %d일 %H:%M")} 확인</span></div>'
                 f'<p class="note">토스쇼핑 하루특가입니다. <b>남은 시간이 지나면 원래 가격으로 돌아갑니다.</b> '
                 f'종료된 상품은 이 목록에서 자동으로 빠집니다.</p>')
     else:
         # 갱신 시각을 찍지 않는다. 갱신한 적이 없기 때문이다.
-        head = ('<div class="stamp"><b>오늘의 특가</b><span>하루 네 번 갱신 예정</span></div>'
+        head = ('<div class="stamp"><b>오늘의 특가</b><span>준비 중</span></div>'
                 '<p class="note">토스쇼핑 하루특가를 정리하는 자리입니다. '
                 '<b>남은 시간이 지나면 원래 가격으로 돌아갑니다.</b> '
                 '종료된 상품은 목록에서 자동으로 빠집니다.</p>')
 
     if rows:
-        body = rows
+        # 전부 만료되면 브라우저가 이 블록을 대신 보여준다.
+        body = (rows + '<div class="empty" id="dl-gone" hidden>'
+                '<b>지금은 진행 중인 특가가 없습니다.</b><br>'
+                '올려둔 특가가 모두 종료됐습니다. 끝난 가격을 그대로 두면 눌렀을 때 '
+                '특가가 아닌 값이 나오기 때문에 화면에서 내렸습니다.</div>')
     elif data.get("source") == "api":
         # 편성이 없는 날이 정상이다. 지난 특가를 재탕하지 않는다.
         body = ('<div class="empty">오늘은 <b>편성된 하루특가가 없습니다.</b><br>'
@@ -136,15 +181,16 @@ def build(data, weekly=False):
         # 0건이라고 "편성이 없다"고 쓰면 안 된다. 확인을 못 한 것과 확인해서
         # 없는 것은 다른 상태다. 전자를 후자처럼 쓰면 그게 거짓말이다.
         body = ('<div class="empty"><b>준비 중입니다.</b><br>'
-                '토스쇼핑 하루특가를 하루 네 번 정리해 이 자리에 올릴 예정입니다. '
+                '토스쇼핑 하루특가를 이 자리에 정리합니다. '
                 '연동이 끝나는 대로 시작합니다.</div>')
 
-    stamp = (f'<br>마지막 갱신 {now.strftime("%Y-%m-%d %H:%M")} KST'
+    stamp = (f'<br>마지막 확인 {now.strftime("%Y-%m-%d %H:%M")} KST'
              if data.get("source") == "api" else "")
     return (f'<style>{CSS}</style>\n<div class="dl">\n'
             f'<p class="disc">{DISCLOSURE}</p>\n{head}\n{body}\n'
             f'<div class="foot">가격·재고는 표기 시각 기준이며 판매처 사정으로 바뀔 수 있습니다. '
-            f'구매 전 상품 페이지에서 다시 확인해 주세요.{stamp}</div>\n</div>')
+            f'구매 전 상품 페이지에서 다시 확인해 주세요.{stamp}</div>\n'
+            + (JS if rows and not weekly else "") + '</div>')
 
 
 def main():
@@ -166,7 +212,11 @@ def main():
     with open(out, "w", encoding="utf-8") as f:
         f.write(out_html)
 
-    live = [i for i in data.get("items", []) if not i.get("isSoldOut")]
+    # 렌더와 같은 기준으로 센다. 품절만 걸러내면 이미 끝난 특가까지 "노출"로
+    # 잡혀서, 화면에 2건인데 3건이라고 보고하게 된다.
+    now = datetime.now(KST)
+    live = [i for i in data.get("items", [])
+            if not i.get("isSoldOut") and remaining(i.get("endAt"), now) != "종료"]
     nolink = [i for i in live if not i.get("shareUrl")]
     print(f'생성: {os.path.relpath(out, ROOT)} ({len(out_html):,}자) · 노출 {len(live)}건')
     if nolink:
